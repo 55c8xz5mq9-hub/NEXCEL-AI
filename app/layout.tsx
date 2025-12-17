@@ -1,0 +1,184 @@
+import type { Metadata } from "next";
+import "./globals.css";
+import dynamic from "next/dynamic";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+
+// Lazy load heavy components
+const NeuralAIBackground = dynamic(() => import("@/components/NeuralAIBackground"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const NeuralCursor = dynamic(() => import("@/components/NeuralCursor"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const CookieBanner = dynamic(() => import("@/components/CookieBanner"), {
+  ssr: false,
+});
+
+const WhatsAppChat = dynamic(() => import("@/components/WhatsAppChat"), {
+  ssr: false,
+});
+
+const AnalyticsTracker = dynamic(() => import("@/components/AnalyticsTracker"), {
+  ssr: false,
+});
+
+export const metadata: Metadata = {
+  title: "NEXCEL AI • Individuelle KI-Systeme & Softwarelösungen",
+  description: "Intelligente Software. Maßgeschneiderte KI. Zukunft, die funktioniert. Individuelle KI-Systeme, Automationen und digitale Produkte für Unternehmen.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="de" className="dark" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                  document.documentElement.classList.remove('dark', 'light');
+                  document.documentElement.classList.add(theme);
+                } catch (e) {
+                  // Fallback to dark if error
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                // Ensure nextjs-portal appears after #__next-build-watcher (DOM order fix)
+                // Target: Index 5, directly after #__next-build-watcher
+                // Specifically targets: nextjs-portal[data-cursor-element-id="cursor-el-10"]
+                function reorderPortal() {
+                  try {
+                    // Find the specific portal with data-cursor-element-id="cursor-el-10"
+                    const portal = document.querySelector('nextjs-portal[data-cursor-element-id="cursor-el-10"]');
+                    const buildWatcher = document.getElementById('__next-build-watcher');
+                    
+                    if (!portal || !buildWatcher) {
+                      return;
+                    }
+                    
+                    // Only process if portal is a direct child of body
+                    if (portal.parentNode === document.body && buildWatcher.parentNode === document.body) {
+                      const bodyChildren = Array.from(document.body.children);
+                      const watcherIndex = bodyChildren.indexOf(buildWatcher);
+                      const portalIndex = bodyChildren.indexOf(portal);
+                      
+                      // Target: Portal should be at index 5 (directly after build watcher)
+                      // Check if portal is already in correct position (watcherIndex + 1)
+                      if (portalIndex !== watcherIndex + 1 && portalIndex !== -1 && watcherIndex !== -1) {
+                        // Insert portal directly after build watcher
+                        // This ensures nextSiblingPath is "div#__next-build-watcher" and index is 5
+                        if (buildWatcher.nextSibling) {
+                          buildWatcher.parentNode.insertBefore(portal, buildWatcher.nextSibling);
+                        } else {
+                          buildWatcher.parentNode.appendChild(portal);
+                        }
+                      }
+                    }
+                  } catch (e) {
+                    console.warn('Portal reordering error:', e);
+                  }
+                }
+                
+                // Run immediately and on DOMContentLoaded
+                if (document.readyState === 'loading') {
+                  document.addEventListener('DOMContentLoaded', reorderPortal);
+                } else {
+                  reorderPortal();
+                }
+                
+                // Also run after delays to catch dynamically added portals
+                setTimeout(reorderPortal, 100);
+                setTimeout(reorderPortal, 300);
+                setTimeout(reorderPortal, 500);
+                setTimeout(reorderPortal, 1000);
+                
+                // Use MutationObserver to watch for portal creation - More aggressive
+                if (typeof MutationObserver !== 'undefined') {
+                  let observerTimeout;
+                  const observer = new MutationObserver(function(mutations) {
+                    // Debounce to avoid excessive calls
+                    clearTimeout(observerTimeout);
+                    observerTimeout = setTimeout(function() {
+                      mutations.forEach(function(mutation) {
+                        if (mutation.addedNodes.length) {
+                          mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeName === 'NEXTJS-PORTAL' || 
+                                (node.nodeType === 1 && node.querySelector && node.querySelector('nextjs-portal'))) {
+                              setTimeout(reorderPortal, 10);
+                            }
+                          });
+                        }
+                      });
+                    }, 50);
+                  });
+                  
+                  observer.observe(document.body, {
+                    childList: true,
+                    subtree: false // Only watch direct children for performance
+                  });
+                  
+                  // Also watch for attribute changes on body children
+                  observer.observe(document.body, {
+                    childList: true,
+                    attributes: false,
+                    subtree: false
+                  });
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="min-h-screen relative transition-colors duration-500" style={{ 
+        background: "linear-gradient(180deg, #0C0F1A 0%, #111622 50%, #0C0F1A 100%)",
+        position: "relative",
+      }}>
+        <ThemeProvider>
+          {/* Neural AI Energy Background - Premium Dark Mode */}
+          <NeuralAIBackground />
+          
+          {/* Neural Cursor */}
+          <NeuralCursor />
+          
+          {/* Content with proper z-index */}
+          <div style={{ 
+            minHeight: "100vh",
+            position: "relative",
+            zIndex: 1,
+            background: "transparent",
+          }}>
+            {children}
+          </div>
+          
+          {/* DSGVO-konformes Cookie-Banner */}
+          <CookieBanner />
+          
+          {/* High-End WhatsApp Chat */}
+          <WhatsAppChat />
+          
+          {/* Analytics Tracker */}
+          <AnalyticsTracker />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+
+

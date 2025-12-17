@@ -1,0 +1,1009 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   HIGH-END FLOATING ELEMENTS - APPLE iOS 26 / TESLA UI LEVEL
+   WhatsApp Chat & Cookie Banner - Always Visible, Responsive, DSGVO-konform
+   ============================================ */
+
+/* WhatsApp Floating Button - Apple iOS 26 Style */
+.whatsapp-floating-button {
+  position: fixed !important;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 99999;
+  pointer-events: auto;
+  isolation: isolate;
+  transform: translateZ(0); /* GPU acceleration */
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.whatsapp-button {
+  position: relative;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  box-shadow: 
+    0 8px 32px rgba(37, 211, 102, 0.4),
+    0 0 0 0 rgba(37, 211, 102, 0.7),
+    0 0 40px rgba(37, 211, 102, 0.2);
+  filter: drop-shadow(0 4px 12px rgba(37, 211, 102, 0.3));
+  will-change: transform, box-shadow;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.whatsapp-button:hover {
+  box-shadow: 
+    0 12px 48px rgba(37, 211, 102, 0.6),
+    0 0 0 8px rgba(37, 211, 102, 0.1),
+    0 0 60px rgba(37, 211, 102, 0.4);
+  filter: drop-shadow(0 8px 24px rgba(37, 211, 102, 0.5));
+}
+
+.whatsapp-button:active {
+  transform: scale(0.95);
+}
+
+.whatsapp-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: white;
+  z-index: 1;
+}
+
+.whatsapp-badge {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+  z-index: 2;
+}
+
+.whatsapp-badge-text {
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.whatsapp-pulse-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+/* WhatsApp Dialog - High-End Glassmorphism */
+.whatsapp-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  z-index: 10000;
+  will-change: opacity;
+}
+
+.whatsapp-dialog {
+  position: fixed;
+  bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4rem));
+  right: max(1rem, env(safe-area-inset-right));
+  width: calc(100vw - 2rem);
+  max-width: 24rem;
+  z-index: 10001;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.whatsapp-dialog-content {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+}
+
+.whatsapp-dialog-header {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+}
+
+.whatsapp-dialog-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.whatsapp-dialog-avatar {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.whatsapp-dialog-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+}
+
+.whatsapp-online-indicator {
+  position: absolute;
+  bottom: -0.125rem;
+  right: -0.125rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid white;
+  background: #10B981;
+}
+
+.whatsapp-dialog-title {
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.whatsapp-dialog-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.whatsapp-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.whatsapp-dialog-status span {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+}
+
+.whatsapp-dialog-close {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.15s;
+}
+
+.whatsapp-dialog-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.whatsapp-dialog-close svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.whatsapp-dialog-body {
+  padding: 1.5rem;
+  background: white;
+}
+
+.whatsapp-dialog-text {
+  color: #374151;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.whatsapp-dialog-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.whatsapp-dialog-button:hover {
+  box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
+}
+
+.whatsapp-dialog-button-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Cookie Banner - Apple iOS 26 Style */
+.cookie-floating-button {
+  position: fixed !important;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: max(1rem, env(safe-area-inset-left));
+  z-index: 99999;
+  pointer-events: auto;
+  isolation: isolate;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.cookie-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  will-change: transform;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cookie-button:hover {
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
+}
+
+.cookie-button:active {
+  transform: scale(0.95);
+}
+
+.cookie-icon-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.cookie-icon {
+  width: 3rem;
+  height: 3rem;
+}
+
+.cookie-badge {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  box-shadow: 0 2px 12px rgba(239, 68, 68, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 2;
+}
+
+.cookie-badge-text {
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Cookie Modal - High-End Glassmorphism */
+.cookie-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  z-index: 10000;
+  will-change: opacity;
+}
+
+.cookie-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.cookie-dialog-content {
+  width: 100%;
+  max-width: 42rem;
+  max-height: 90vh;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 0 80px rgba(124, 58, 237, 0.08);
+  overflow-y: auto;
+}
+
+.cookie-dialog-header {
+  position: relative;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cookie-dialog-header-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.cookie-dialog-header-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.cookie-dialog-header-text {
+  flex: 1;
+}
+
+.cookie-dialog-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0C0F1A;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.01em;
+}
+
+.cookie-dialog-subtitle {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(27, 32, 48, 0.7);
+}
+
+.cookie-dialog-close {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #0C0F1A;
+  transition: background-color 0.15s;
+}
+
+.cookie-dialog-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.cookie-dialog-close svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.cookie-dialog-body {
+  position: relative;
+  padding: 1.5rem;
+  max-height: calc(70vh - 5rem);
+  overflow-y: auto;
+}
+
+.cookie-dialog-text {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #1B2030;
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+
+.cookie-dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.cookie-dialog-button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.cookie-dialog-button-primary {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #0C0F1A;
+}
+
+.cookie-dialog-button-primary:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.cookie-dialog-button-accept {
+  background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+}
+
+.cookie-dialog-button-accept:hover {
+  box-shadow: 0 6px 30px rgba(124, 58, 237, 0.4);
+}
+
+.cookie-dialog-settings {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cookie-dialog-setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cookie-dialog-setting-item:last-child {
+  border-bottom: none;
+}
+
+.cookie-dialog-setting-text {
+  flex: 1;
+}
+
+.cookie-dialog-setting-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0C0F1A;
+  margin: 0 0 0.25rem 0;
+}
+
+.cookie-dialog-setting-description {
+  font-size: 0.8125rem;
+  color: rgba(27, 32, 48, 0.7);
+  line-height: 1.5;
+}
+
+.cookie-toggle-switch {
+  position: relative;
+  width: 3rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: rgba(124, 58, 237, 0.15);
+  border: none;
+  padding: 0;
+}
+
+.cookie-toggle-switch.enabled {
+  background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
+  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.cookie-toggle-switch.disabled {
+  background: rgba(124, 58, 237, 0.15);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cookie-toggle-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.cookie-toggle-thumb {
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cookie-toggle-switch.enabled .cookie-toggle-thumb {
+  transform: translateX(1.25rem);
+}
+
+.cookie-dialog-save-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+  transition: all 0.15s;
+}
+
+.cookie-dialog-save-button:hover {
+  box-shadow: 0 6px 30px rgba(124, 58, 237, 0.4);
+}
+
+/* Responsive Design - Mobile First */
+@media (min-width: 640px) {
+  .whatsapp-floating-button {
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    right: max(1.25rem, env(safe-area-inset-right));
+  }
+
+  .whatsapp-button {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .whatsapp-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .cookie-floating-button {
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    left: max(1.25rem, env(safe-area-inset-left));
+  }
+
+  .cookie-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .whatsapp-dialog {
+    bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5rem));
+    right: max(1rem, env(safe-area-inset-right));
+    width: 24rem;
+  }
+
+  .cookie-dialog {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .whatsapp-floating-button {
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+    right: max(1.5rem, env(safe-area-inset-right));
+  }
+
+  .cookie-floating-button {
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+    left: max(1.5rem, env(safe-area-inset-left));
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .cookie-dialog-content {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      0 1px 0 rgba(255, 255, 255, 0.1) inset,
+      0 0 80px rgba(164, 92, 255, 0.1);
+  }
+
+  .cookie-dialog-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .cookie-dialog-title {
+    color: white;
+  }
+
+  .cookie-dialog-subtitle {
+    color: rgba(229, 231, 235, 0.8);
+  }
+
+  .cookie-dialog-text {
+    color: #E5E7EB;
+  }
+
+  .cookie-dialog-close {
+    color: #E5E7EB;
+  }
+
+  .cookie-dialog-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .cookie-dialog-button-primary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #E5E7EB;
+  }
+
+  .cookie-dialog-button-primary:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .cookie-dialog-setting-title {
+    color: white;
+  }
+
+  .cookie-dialog-setting-description {
+    color: rgba(229, 231, 235, 0.7);
+  }
+
+  .cookie-dialog-setting-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .cookie-dialog-settings {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .cookie-dialog-header-icon {
+    background: rgba(164, 92, 255, 0.15);
+    border: 1px solid rgba(164, 92, 255, 0.25);
+  }
+
+  .cookie-toggle-switch.enabled {
+    background: linear-gradient(135deg, #A45CFF 0%, #C084FC 100%);
+    box-shadow: 0 2px 12px rgba(164, 92, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .cookie-toggle-switch.disabled {
+    background: rgba(107, 45, 184, 0.2);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Prevent Overlap - Smart Positioning */
+@media (max-width: 640px) {
+  /* On small screens, ensure buttons don't overlap */
+  .whatsapp-floating-button {
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .cookie-floating-button {
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    left: max(1rem, env(safe-area-inset-left));
+  }
+
+  /* If both are visible, adjust positioning */
+  .cookie-floating-button:has(+ .whatsapp-floating-button),
+  .whatsapp-floating-button:has(+ .cookie-floating-button) {
+    bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4rem));
+  }
+}
+
+/* Performance Optimizations */
+[data-whatsapp-chat],
+[data-cookie-banner] {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Ensure icons stay visible even when scrolling */
+body {
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Prevent any element from covering the floating icons */
+main,
+section,
+div[class*="container"],
+div[class*="wrapper"],
+div[class*="content"] {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+}
+
+/* ============================================
+   NEURAL BUTTONS - HIGH-END APPLE iOS 26 STYLE
+   ============================================ */
+
+/* Primary Button - Purple Gradient with Glow */
+.neural-button-primary {
+  background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 50%, #A78BFA 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 
+    0 4px 20px rgba(124, 58, 237, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.neural-button-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.neural-button-primary:hover {
+  box-shadow: 
+    0 6px 30px rgba(124, 58, 237, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.neural-button-primary:hover::before {
+  opacity: 1;
+}
+
+.neural-button-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 2px 10px rgba(124, 58, 237, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Secondary Button - Glassmorphism Style */
+.neural-button-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  position: relative;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.neural-button-secondary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.neural-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 6px 30px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.neural-button-secondary:hover::before {
+  opacity: 1;
+}
+
+.neural-button-secondary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 2px 10px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Hologram Button - For Pricing Cards */
+.neural-button-hologram {
+  background: rgba(107, 45, 184, 0.1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  color: white;
+  border: 1px solid rgba(107, 45, 184, 0.3);
+  cursor: pointer;
+  position: relative;
+  box-shadow: 
+    0 4px 20px rgba(107, 45, 184, 0.2),
+    inset 0 0 20px rgba(139, 109, 184, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.neural-button-hologram::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(139, 109, 184, 0.2) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.neural-button-hologram:hover {
+  background: rgba(107, 45, 184, 0.15);
+  border-color: rgba(107, 45, 184, 0.4);
+  box-shadow: 
+    0 6px 30px rgba(107, 45, 184, 0.3),
+    inset 0 0 30px rgba(139, 109, 184, 0.15);
+  transform: translateY(-2px);
+}
+
+.neural-button-hologram:hover::before {
+  opacity: 1;
+}
+
+.neural-button-hologram:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 2px 10px rgba(107, 45, 184, 0.2),
+    inset 0 0 15px rgba(139, 109, 184, 0.1);
+}
+
+/* Dark Mode Support for Buttons */
+@media (prefers-color-scheme: dark) {
+  .neural-button-primary {
+    background: linear-gradient(135deg, #A45CFF 0%, #C084FC 50%, #E879F9 100%);
+    box-shadow: 
+      0 4px 20px rgba(164, 92, 255, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .neural-button-primary:hover {
+    box-shadow: 
+      0 6px 30px rgba(164, 92, 255, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+
+  .neural-button-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .neural-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* ============================================
+   NEURAL NAVIGATION LINKS - HIGH-END APPLE iOS 26 STYLE
+   Button-Style mit Purple Border
+   ============================================ */
+
+.neural-nav-link {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  border-radius: 0.75rem;
+  background: rgba(124, 58, 237, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 
+    0 2px 8px rgba(124, 58, 237, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.neural-nav-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.neural-nav-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(124, 58, 237, 0.7);
+  background: rgba(124, 58, 237, 0.1);
+  color: rgba(124, 58, 237, 1) !important;
+  box-shadow: 
+    0 4px 16px rgba(124, 58, 237, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 0 20px rgba(124, 58, 237, 0.15);
+}
+
+.neural-nav-link:hover::before {
+  opacity: 1;
+}
+
+.neural-nav-link:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow: 
+    0 1px 4px rgba(124, 58, 237, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Dark Mode Support for Navigation Links */
+@media (prefers-color-scheme: dark) {
+  .neural-nav-link {
+    border-color: rgba(168, 85, 247, 0.4);
+    background: rgba(168, 85, 247, 0.05);
+    box-shadow: 
+      0 2px 8px rgba(168, 85, 247, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .neural-nav-link:hover {
+    border-color: rgba(168, 85, 247, 0.7);
+    background: rgba(168, 85, 247, 0.12);
+    color: rgba(168, 85, 247, 1) !important;
+    box-shadow: 
+      0 4px 16px rgba(168, 85, 247, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 20px rgba(168, 85, 247, 0.2);
+  }
+
+  .neural-nav-link::before {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, transparent 50%);
+  }
+}
