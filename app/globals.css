@@ -10,43 +10,70 @@
 /* WhatsApp Floating Button - Apple iOS 26 Style */
 .whatsapp-floating-button {
   position: fixed !important;
-  bottom: max(1rem, env(safe-area-inset-bottom));
-  right: max(1rem, env(safe-area-inset-right));
-  z-index: 99999;
+  right: 24px !important;
+  bottom: 24px !important;
+  z-index: 2147483647 !important;
+  overflow: visible !important;
   pointer-events: auto;
-  isolation: isolate;
-  transform: translateZ(0); /* GPU acceleration */
+  transform: translateZ(0);
   backface-visibility: hidden;
   will-change: transform, opacity;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  isolation: auto;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
 .whatsapp-button {
-  position: relative;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative !important;
+  width: 64px !important;
+  height: 64px !important;
+  min-width: 64px !important;
+  min-height: 64px !important;
+  max-width: 64px !important;
+  max-height: 64px !important;
+  border-radius: 50% !important;
+  background: #25d366 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   cursor: pointer;
-  border: none;
-  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  border: none !important;
+  outline: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  margin: 0 !important;
   box-shadow: 
     0 8px 32px rgba(37, 211, 102, 0.4),
     0 0 0 0 rgba(37, 211, 102, 0.7),
-    0 0 40px rgba(37, 211, 102, 0.2);
+    0 0 40px rgba(37, 211, 102, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   filter: drop-shadow(0 4px 12px rgba(37, 211, 102, 0.3));
   will-change: transform, box-shadow;
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  clip-path: none !important;
+  -webkit-clip-path: none !important;
 }
 
 .whatsapp-button:hover {
   box-shadow: 
     0 12px 48px rgba(37, 211, 102, 0.6),
-    0 0 0 8px rgba(37, 211, 102, 0.1),
-    0 0 60px rgba(37, 211, 102, 0.4);
+    0 0 0 0 rgba(37, 211, 102, 0.1),
+    0 0 60px rgba(37, 211, 102, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
   filter: drop-shadow(0 8px 24px rgba(37, 211, 102, 0.5));
 }
 
@@ -55,40 +82,63 @@
 }
 
 .whatsapp-icon {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 30px;
+  height: 30px;
   color: white;
-  z-index: 1;
+  z-index: 2;
+  flex-shrink: 0;
 }
 
 .whatsapp-badge {
-  position: absolute;
-  top: -0.25rem;
-  right: -0.25rem;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
-  z-index: 2;
+  position: absolute !important;
+  top: -6px !important;
+  right: -6px !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  border-radius: 50% !important;
+  background: #ef4444 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: white !important;
+  z-index: 10 !important;
+  overflow: visible !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5) !important;
+  flex-shrink: 0;
+  clip-path: none !important;
+  -webkit-clip-path: none !important;
 }
 
 .whatsapp-badge-text {
   color: white;
-  font-size: 0.625rem;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   line-height: 1;
 }
 
 .whatsapp-pulse-ring {
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  pointer-events: none;
+  position: absolute !important;
+  inset: -8px !important;
+  top: -8px !important;
+  left: -8px !important;
+  right: -8px !important;
+  bottom: -8px !important;
+  width: calc(100% + 16px) !important;
+  height: calc(100% + 16px) !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(37, 211, 102, 0.45) !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  clip-path: none !important;
+  -webkit-clip-path: none !important;
 }
 
 /* WhatsApp Dialog - High-End Glassmorphism */
@@ -593,8 +643,9 @@
   }
 
   .whatsapp-button {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 64px;
+    height: 64px;
+    overflow: visible !important;
   }
 
   .whatsapp-icon {
@@ -734,7 +785,13 @@
 }
 
 /* Performance Optimizations */
-[data-whatsapp-chat],
+[data-whatsapp-chat] {
+  contain: none !important;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  overflow: visible !important;
+}
+
 [data-cookie-banner] {
   contain: layout style paint;
   transform: translateZ(0);
@@ -745,6 +802,12 @@
 body {
   position: relative;
   overflow-x: hidden;
+}
+
+/* Ensure WhatsApp button is never clipped by body */
+body [data-whatsapp-chat] {
+  overflow: visible !important;
+  contain: none !important;
 }
 
 /* Prevent any element from covering the floating icons */

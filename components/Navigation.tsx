@@ -402,10 +402,10 @@ export default function Navigation() {
                       style={{
                         fontFamily: "system-ui, -apple-system, sans-serif",
                         letterSpacing: "0.02em",
-                        color: theme === "dark" ? "#FFFFFF" : "#0C0F1A",
-                        textShadow: theme === "dark"
-                          ? "0 1px 3px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 255, 255, 0.15)"
-                          : "0 1px 2px rgba(0, 0, 0, 0.1)",
+                        background: "linear-gradient(to right, #C0C0C0, #808080)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
                       }}
                     >
                       NEXCEL
@@ -415,10 +415,10 @@ export default function Navigation() {
                       style={{
                         fontFamily: "system-ui, -apple-system, sans-serif",
                         letterSpacing: "0.02em",
-                        color: theme === "dark" ? "#A45CFF" : "#7C3AED",
-                        textShadow: theme === "dark"
-                          ? "0 1px 3px rgba(0, 0, 0, 0.4), 0 0 30px rgba(164, 92, 255, 0.5)"
-                          : "0 1px 2px rgba(0, 0, 0, 0.1), 0 0 15px rgba(124, 58, 237, 0.3)",
+                        background: "linear-gradient(to right, #A855F7, #8B5CF6)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
                       }}
                     >
                       AI

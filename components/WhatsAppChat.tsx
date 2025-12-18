@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * WhatsApp Chat Button - Apple iOS 26 / Tesla UI Level
@@ -41,12 +42,32 @@ export default function WhatsAppChat() {
     window.open("https://wa.me/message/BTSGZLCN6GLFA1", "_blank", "noopener,noreferrer");
   };
 
-  return (
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(
     <>
       {/* Floating WhatsApp Button - Apple iOS 26 Style - Always Visible */}
       <motion.div
         data-whatsapp-chat
         className="whatsapp-floating-button"
+        style={{
+          position: "fixed",
+          right: "24px",
+          bottom: "24px",
+          zIndex: 2147483647,
+          overflow: "visible",
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          padding: "0",
+          margin: "0",
+          width: "auto",
+          height: "auto",
+          borderRadius: "0",
+          boxShadow: "none",
+        }}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ 
@@ -59,6 +80,22 @@ export default function WhatsAppChat() {
         <motion.button
           onClick={handleDirectWhatsApp}
           className="whatsapp-button"
+          style={{
+            position: "relative",
+            width: "64px",
+            height: "64px",
+            borderRadius: "50%",
+            background: "#25d366",
+            border: "none",
+            outline: "none",
+            overflow: "visible",
+            padding: "0",
+            margin: "0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+          }}
           whileHover={{ 
             scale: 1.1,
           }}
@@ -92,13 +129,17 @@ export default function WhatsAppChat() {
           <motion.div
             className="whatsapp-pulse-ring"
             animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.4, 0, 0.4],
+              scale: [1, 1.5, 2],
+              opacity: [0.7, 0.4, 0],
             }}
             transition={{
-              duration: 2.5,
+              duration: 2,
               repeat: Infinity,
               ease: "easeOut",
+              repeatDelay: 0.5,
+            }}
+            style={{
+              transformOrigin: "center center",
             }}
           />
         </motion.button>
@@ -196,6 +237,7 @@ export default function WhatsAppChat() {
           </>
         )}
       </AnimatePresence>
-    </>
+    </>,
+    document.body
   );
 }
