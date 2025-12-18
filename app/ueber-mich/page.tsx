@@ -28,6 +28,12 @@ export default function UeberMichPage() {
   useEffect(() => {
     // Versuche verschiedene Dateiformate und Dateinamen
     const formats = [
+      '/EBCD81F6-6A50-4ADA-BFFB-3625476A94B5.PNG',
+      '/EBCD81F6-6A50-4ADA-BFFB-3625476A94B5.png',
+      '/celina-portrait.jpg',
+      '/celina-portrait.png',
+      '/celina-portrait.jpeg',
+      '/celina-portrait.webp',
       '/Business Foto.PNG',
       '/Business Foto.png',
       '/business foto.png',

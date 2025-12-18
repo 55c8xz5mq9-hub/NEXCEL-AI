@@ -157,29 +157,21 @@ export default function Footer() {
                 <span
                   className="inline-block"
                   style={{
-                    color: "#FFFFFF",
-                    textShadow: `
-                      0 0 10px rgba(255, 255, 255, 0.8),
-                      0 0 20px rgba(135, 206, 250, 0.6),
-                      0 0 30px rgba(135, 206, 250, 0.4),
-                      0 0 40px rgba(135, 206, 250, 0.2)
-                    `,
-                    filter: "drop-shadow(0 0 8px rgba(135, 206, 250, 0.5))",
+                    background: "linear-gradient(to right, #C0C0C0, #808080)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
                   }}
                 >
                   NEXCEL
                 </span>
                 <span
-                  className="inline-block ml-1"
+                  className="inline-block ml-0.5 sm:ml-1"
                   style={{
-                    color: "#A45CFF",
-                    textShadow: `
-                      0 0 10px rgba(164, 92, 255, 0.9),
-                      0 0 20px rgba(164, 92, 255, 0.7),
-                      0 0 30px rgba(164, 92, 255, 0.5),
-                      0 0 40px rgba(164, 92, 255, 0.3)
-                    `,
-                    filter: "drop-shadow(0 0 8px rgba(164, 92, 255, 0.6))",
+                    background: "linear-gradient(to right, #A855F7, #8B5CF6)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
                   }}
                 >
                   AI
