@@ -35,9 +35,9 @@ const searchIndex = [
   },
   {
     id: "ueber-mich",
-    title: "Über mich",
+    title: "Über uns",
     href: "/ueber-mich",
-    description: "Über mich - Hintergrund, Expertise, Erfahrung",
+    description: "Über uns - Hintergrund, Expertise, Erfahrung",
     keywords: ["über mich", "about", "hintergrund", "expertise", "erfahrung", "team"],
     category: "page",
   },
@@ -400,8 +400,8 @@ export default function Navigation() {
                     <span
                       className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-tight transition-all duration-300"
                       style={{
-                        fontFamily: "system-ui, -apple-system, sans-serif",
-                        letterSpacing: "0.02em",
+                        fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
+                        letterSpacing: "-0.02em",
                         background: "linear-gradient(to right, #C0C0C0, #808080)",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
@@ -413,8 +413,8 @@ export default function Navigation() {
                     <span
                       className="ml-0.5 sm:ml-1 text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-tight transition-all duration-300"
                       style={{
-                        fontFamily: "system-ui, -apple-system, sans-serif",
-                        letterSpacing: "0.02em",
+                        fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
+                        letterSpacing: "-0.02em",
                         background: "linear-gradient(to right, #A855F7, #8B5CF6)",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
@@ -511,7 +511,7 @@ export default function Navigation() {
                         <input
                           ref={searchInputRef}
                           type="text"
-                          placeholder="Suche mit Apple Intelligence..."
+                          placeholder="Suche. Entscheiden. Autopilot."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           onFocus={() => {
@@ -539,7 +539,8 @@ export default function Navigation() {
                           className="flex-1 bg-transparent border-none outline-none text-xs md:text-sm lg:text-sm xl:text-base font-medium placeholder:opacity-60"
                           style={{
                             color: theme === "dark" ? "#FFFFFF" : "#0C0F1A",
-                            fontFamily: "system-ui, -apple-system, sans-serif",
+                            fontFamily: "var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif",
+                            letterSpacing: "-0.01em",
                           }}
                         />
 
@@ -752,7 +753,7 @@ export default function Navigation() {
                     { label: "Home", href: "/", showOn: "lg" },
                     { label: "Leistungen", href: "/leistungen", showOn: "lg" },
                     { label: "Projekte", href: "/projekte", showOn: "xl" },
-                    { label: "Über mich", href: "/ueber-mich", showOn: "xl" },
+                    { label: "Über uns", href: "/ueber-mich", showOn: "xl" },
                     { label: "Kontakt", href: "/kontakt", showOn: "lg" },
                   ].map((item, index) => (
                     <Link 
@@ -1175,7 +1176,7 @@ export default function Navigation() {
                       </svg>
                       <input
                         type="text"
-                        placeholder="Suche mit Apple Intelligence..."
+                        placeholder="Suche. Entscheiden. Autopilot."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => {
@@ -1193,7 +1194,8 @@ export default function Navigation() {
                         className="flex-1 bg-transparent border-none outline-none text-sm font-medium placeholder:opacity-60"
                         style={{
                           color: theme === "dark" ? "#FFFFFF" : "#0C0F1A",
-                          fontFamily: "system-ui, -apple-system, sans-serif",
+                          fontFamily: "var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif",
+                          letterSpacing: "-0.01em",
                         }}
                       />
                       {searchQuery && (
@@ -1322,7 +1324,7 @@ export default function Navigation() {
                     { label: "Home", href: "/" },
                     { label: "Leistungen", href: "/leistungen" },
                     { label: "Projekte", href: "/projekte" },
-                    { label: "Über mich", href: "/ueber-mich" },
+                    { label: "Über uns", href: "/ueber-mich" },
                     { label: "Kontakt", href: "/kontakt" },
                   ].map((item, index) => (
                     <motion.div

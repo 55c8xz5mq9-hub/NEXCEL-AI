@@ -2,6 +2,23 @@ import type { Metadata } from "next";
 import "./globals.css";
 import dynamic from "next/dynamic";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { Space_Grotesk, Inter } from "next/font/google";
+
+// Headline Font - Elegant, Modern Sans
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-headline",
+  display: "swap",
+});
+
+// Body Font - High-quality, Readable Sans
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 // Lazy load heavy components
 const NeuralAIBackground = dynamic(() => import("@/components/NeuralAIBackground"), {
@@ -37,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de" className="dark" suppressHydrationWarning>
+    <html lang="de" className={`dark ${spaceGrotesk.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -146,9 +163,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen relative transition-colors duration-500" style={{ 
+      <body className={`min-h-screen relative transition-colors duration-500 ${inter.className}`} style={{ 
         background: "linear-gradient(180deg, #0C0F1A 0%, #111622 50%, #0C0F1A 100%)",
         position: "relative",
+        fontFamily: "var(--font-body)",
       }}>
         <ThemeProvider>
           {/* Neural AI Energy Background - Premium Dark Mode */}

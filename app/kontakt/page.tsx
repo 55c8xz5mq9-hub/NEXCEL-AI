@@ -27,7 +27,7 @@ const FloatingParticles = () => {
             top: `${particle.y}%`,
             width: particle.size,
             height: particle.size,
-            background: `radial-gradient(circle, rgba(164, 92, 255, 0.6) 0%, rgba(0, 225, 255, 0.3) 50%, transparent 100%)`,
+            background: `radial-gradient(circle, rgba(164, 92, 255, 0.6) 0%, rgba(198, 168, 255, 0.3) 50%, transparent 100%)`,
             boxShadow: `0 0 ${particle.size * 2}px rgba(164, 92, 255, 0.4)`,
           }}
           animate={{
@@ -138,7 +138,7 @@ const PremiumInput = ({
         {/* Bottom Border Animation - Only on Focus */}
         {isFocused && (
           <motion.div
-            className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#A45CFF] via-[#00E1FF] to-[#A45CFF]"
+            className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#F1E9FF] via-[#C6A8FF] to-[#8A5CFF]"
             initial={{ width: 0, x: "50%" }}
             animate={{ width: "100%", x: "0%" }}
             exit={{ width: 0, x: "50%" }}
@@ -255,7 +255,7 @@ const PremiumCheckbox = ({
           {linkText && linkHref && (
             <a
               href={linkHref}
-              className="text-[#A45CFF] hover:text-[#00E1FF] transition-colors duration-300 underline underline-offset-2"
+              className="text-[#A45CFF] hover:text-[#C6A8FF] transition-colors duration-300 underline underline-offset-2"
             >
               {linkText}
             </a>
@@ -316,8 +316,8 @@ const PremiumSubmitButton = ({
       className="relative w-full px-10 py-5 rounded-2xl font-semibold text-base overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
       style={{
         background: isLoading
-          ? "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(0, 225, 255, 0.3))"
-          : "linear-gradient(135deg, rgba(164, 92, 255, 0.8), rgba(0, 225, 255, 0.8))",
+          ? "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(198, 168, 255, 0.3))"
+          : "linear-gradient(135deg, rgba(164, 92, 255, 0.8), rgba(198, 168, 255, 0.8))",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         border: "1px solid rgba(164, 92, 255, 0.3)",
@@ -438,7 +438,7 @@ const SuccessAnimation = ({ onClose }: { onClose: () => void }) => {
         <motion.div
           className="relative w-full h-full rounded-full flex items-center justify-center"
           style={{
-            background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(0, 225, 255, 0.3))",
+            background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(198, 168, 255, 0.3))",
             backdropFilter: "blur(20px)",
             border: "2px solid rgba(164, 92, 255, 0.5)",
             boxShadow: "0 0 40px rgba(164, 92, 255, 0.5)",
@@ -637,7 +637,7 @@ export default function KontaktPage() {
           <motion.div
             className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full opacity-30 blur-3xl"
             style={{
-              background: "radial-gradient(circle, rgba(0, 225, 255, 0.4), transparent 70%)",
+              background: "radial-gradient(circle, rgba(198, 168, 255, 0.4), transparent 70%)",
             }}
             animate={{
               x: [0, -100, 0],
@@ -673,7 +673,7 @@ export default function KontaktPage() {
             >
               Kontakt{" "}
               <motion.span
-                className="text-transparent bg-clip-text bg-gradient-to-r from-[#A45CFF] via-[#00E1FF] to-[#A45CFF]"
+                className="text-transparent bg-clip-text bg-gradient-to-r from-[#F1E9FF] via-[#C6A8FF] to-[#8A5CFF]"
                 animate={{
                   backgroundPosition: ["0%", "100%", "0%"],
                 }}
@@ -727,7 +727,7 @@ export default function KontaktPage() {
                 <motion.div
                   className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500"
                   style={{
-                    background: "linear-gradient(135deg, rgba(164, 92, 255, 0.1), transparent 50%, rgba(0, 225, 255, 0.1))",
+                    background: "linear-gradient(135deg, rgba(164, 92, 255, 0.1), transparent 50%, rgba(198, 168, 255, 0.1))",
                   }}
                 />
 
@@ -970,7 +970,7 @@ export default function KontaktPage() {
                       <motion.div
                         className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
                         style={{
-                          background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(0, 225, 255, 0.3))",
+                          background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(198, 168, 255, 0.3))",
                           border: "2px solid rgba(164, 92, 255, 0.4)",
                           boxShadow: "0 0 20px rgba(164, 92, 255, 0.3)",
                         }}
@@ -1039,7 +1039,7 @@ export default function KontaktPage() {
                       <motion.div
                         className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
                         style={{
-                          background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(0, 225, 255, 0.3))",
+                          background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(198, 168, 255, 0.3))",
                           border: "2px solid rgba(164, 92, 255, 0.4)",
                           boxShadow: "0 0 20px rgba(164, 92, 255, 0.3)",
                         }}
@@ -1107,7 +1107,7 @@ export default function KontaktPage() {
                       <motion.div
                         className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
                         style={{
-                          background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(0, 225, 255, 0.3))",
+                          background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(198, 168, 255, 0.3))",
                           border: "2px solid rgba(164, 92, 255, 0.4)",
                           boxShadow: "0 0 20px rgba(164, 92, 255, 0.3)",
                         }}

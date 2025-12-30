@@ -49,13 +49,16 @@ export default function AdminDashboard() {
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
 
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 30000); // Refresh every 30s
+    loadData(true);
+    const interval = setInterval(() => loadData(false), 30000); // Refresh every 30s
     return () => clearInterval(interval);
   }, []);
 
-  const loadData = async () => {
+  const loadData = async (isInitial = false) => {
     try {
+      if (isInitial) {
+        setLoading(true);
+      }
       const [statsRes, contactsRes, demoRes, userRes] = await Promise.all([
         fetch("/api/admin/stats"),
         fetch("/api/admin/contacts?archived=false"),
@@ -70,7 +73,9 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
-      setLoading(false);
+      if (isInitial) {
+        setLoading(false);
+      }
     }
   };
 

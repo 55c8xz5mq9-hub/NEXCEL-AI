@@ -2,10 +2,17 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useCallback } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Hero() {
   const { theme } = useTheme();
+  
+  const handleScrollToServices = useCallback(() => {
+    const element = document.getElementById("services");
+    element?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+  
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Hauptinhalt */}
@@ -13,39 +20,30 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
           className="space-y-6 sm:space-y-8 md:space-y-10"
         >
           <motion.h1
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold tracking-tight leading-[1.05] px-2"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold tracking-tight leading-[1.15] px-2 typography-h1 mb-6 md:mb-8"
+            initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <span className={`block transition-colors duration-500 ${theme === "dark" ? "text-[#FFFFFF]" : "text-[#0C0F1A]"}`}>
-              Autonome KI-Systeme statt
+            <span className="block text-white">
+              Autonome KI-Systeme.
             </span>
-            <span
-              className={`block mt-1 sm:mt-2 transition-colors duration-500 ${theme === "dark" ? "text-[#7A3FC7]" : "text-[#7C3AED]"}`}
-              style={{
-                textShadow: theme === "dark"
-                  ? "0 0 20px rgba(122, 63, 199, 0.5), 0 0 40px rgba(122, 63, 199, 0.3)"
-                  : "0 0 20px rgba(124, 58, 237, 0.3), 0 0 40px rgba(124, 58, 237, 0.2)",
-              }}
-            >
-              Zettelwirtschaft.
+            <span className="block mt-1 sm:mt-2 typography-h1-gradient">
+              Statt Abhängigkeit.
             </span>
           </motion.h1>
 
           <motion.p
-            className={`text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-light max-w-3xl mx-auto leading-relaxed px-4 transition-colors duration-500 ${
-              theme === "dark" ? "text-[#E5E7EB]" : "text-[#1B2030]"
-            }`}
+            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl typography-body max-w-3xl mx-auto leading-relaxed px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            Wir ersetzen manuelle Organisation durch vollständig digitale, selbststeuernde KI-Infrastrukturen – für Unternehmen, die ohne Personalabhängigkeit wachsen wollen.
+            Manuelle Organisation und Personalabhängigkeit durch selbststeuernde KI-Infrastrukturen.
           </motion.p>
 
           {/* Premium CTA Buttons */}
@@ -58,22 +56,19 @@ export default function Hero() {
             <Link href="/kontakt" prefetch={true} className="w-full sm:w-auto">
               <motion.button
                 className="neural-button-primary relative px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-[20px] font-semibold text-xs sm:text-sm md:text-base w-full sm:w-auto overflow-hidden"
-                whileHover={{ scale: 1.02, y: -2 }}
+                whileHover={{ scale: 1.0 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <span className="relative z-10 block overflow-hidden rounded-[20px]">Kostenlose Analyse anfragen</span>
+                <span className="relative z-10 block overflow-hidden rounded-[20px]">Abhängigkeiten analysieren</span>
               </motion.button>
             </Link>
             <motion.button
-              onClick={() => {
-                const element = document.getElementById("services");
-                element?.scrollIntoView({ behavior: "smooth" });
-              }}
+              onClick={handleScrollToServices}
               className="neural-button-secondary relative px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-[20px] font-semibold text-xs sm:text-sm md:text-base w-full sm:w-auto overflow-hidden"
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span className="relative z-10 block overflow-hidden rounded-[20px]">Mehr erfahren</span>
+              <span className="relative z-10 block overflow-hidden rounded-[20px]">Systeme verstehen</span>
             </motion.button>
           </motion.div>
         </motion.div>

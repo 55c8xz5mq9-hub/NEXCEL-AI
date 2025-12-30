@@ -81,696 +81,238 @@ export const StatistikAutomationIcon = ({ className = "w-16 h-16" }: { className
   </svg>
 );
 
-// KI-Automationen & autonome Agenten – Neu komponierte High-End 3D-Visualisierung, zentriert ohne Anschnitt
+// KI-Automationen & autonome Agenten – System-Architektur: Aufgaben → KI → Aktionen
 export const KIAutomationIcon = ({ className = "w-72 h-72" }: { className?: string }) => {
-  const uniqueId = `ki-automation-3d-${Math.random().toString(36).substr(2, 9)}`;
   return (
     <svg
       className={className}
-      viewBox="0 0 520 520"
+      viewBox="0 0 400 300"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      style={{ filter: "drop-shadow(0 12px 44px rgba(0, 225, 255, 0.32)) drop-shadow(0 0 90px rgba(168, 85, 247, 0.28))" }}
       preserveAspectRatio="xMidYMid meet"
     >
       <defs>
-        <radialGradient id={`${uniqueId}-bg`} cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stopColor="rgba(0, 225, 255, 0.32)" />
-          <stop offset="40%" stopColor="rgba(168, 85, 247, 0.2)" />
-          <stop offset="100%" stopColor="rgba(10, 10, 30, 0)" />
-        </radialGradient>
-        <radialGradient id={`${uniqueId}-node`} cx="50%" cy="50%">
-          <stop offset="0%" stopColor="#00F5FF" stopOpacity="1" />
-          <stop offset="35%" stopColor="#9C6BFF" stopOpacity="0.9" />
-          <stop offset="70%" stopColor="#5B21B6" stopOpacity="0.7" />
-          <stop offset="100%" stopColor="#1A1032" stopOpacity="0.65" />
-        </radialGradient>
-        <radialGradient id={`${uniqueId}-core`} cx="50%" cy="50%">
-          <stop offset="0%" stopColor="#7CF3FF" stopOpacity="1" />
-          <stop offset="80%" stopColor="#00E1FF" stopOpacity="0.45" />
-          <stop offset="100%" stopColor="#00E1FF" stopOpacity="0.1" />
-        </radialGradient>
-        <linearGradient id={`${uniqueId}-beam`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="rgba(0,225,255,0.0)" />
-          <stop offset="25%" stopColor="rgba(0,225,255,0.35)" />
-          <stop offset="50%" stopColor="rgba(156,107,255,0.75)" />
-          <stop offset="75%" stopColor="rgba(0,225,255,0.35)" />
-          <stop offset="100%" stopColor="rgba(0,225,255,0.0)" />
+        <linearGradient id="ki-flow" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="rgba(168, 85, 247, 0.2)" />
+          <stop offset="50%" stopColor="rgba(168, 85, 247, 0.4)" />
+          <stop offset="100%" stopColor="rgba(168, 85, 247, 0.2)" />
         </linearGradient>
-        <filter id={`${uniqueId}-glow-soft`}>
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <filter id={`${uniqueId}-glow-strong`}>
-          <feGaussianBlur stdDeviation="10" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <filter id={`${uniqueId}-shadow`}>
-          <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="blur" />
-          <feOffset in="blur" dx="0" dy="10" result="offsetBlur" />
-          <feComponentTransfer>
-            <feFuncA type="linear" slope="0.25" />
-          </feComponentTransfer>
-          <feMerge>
-            <feMergeNode />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        {/* Partikelbahnen */}
-        <path id={`${uniqueId}-orbit1`} d="M 180 160 C 260 90 360 120 370 210 C 380 300 260 360 180 300 C 120 250 120 190 180 160 Z" fill="none" />
-        <path id={`${uniqueId}-orbit2`} d="M 140 240 C 220 140 360 150 380 250 C 400 350 250 390 180 340 C 130 305 110 270 140 240 Z" fill="none" />
-        <path id={`${uniqueId}-orbit3`} d="M 230 140 C 310 130 360 190 340 260 C 320 330 230 350 170 300 C 120 255 150 150 230 140 Z" fill="none" />
       </defs>
-
-      {/* Hintergrund-Glas */}
-      <rect x="20" y="20" width="480" height="480" rx="28" fill={`url(#${uniqueId}-bg)`} opacity="0.7" />
-      <ellipse cx="260" cy="250" rx="220" ry="190" fill="rgba(4,6,12,0.36)" />
-
-      {/* Schwebende Layer-Plattformen */}
-      {[140, 220, 300].map((y, idx) => (
-        <g key={y} opacity={0.55 + idx * 0.1} filter={`url(#${uniqueId}-glow-soft)`}>
-          <rect x="120" y={y} width="280" height="18" rx="9" fill="rgba(0, 225, 255, 0.16)" />
-          <rect x="140" y={y - 6} width="240" height="12" rx="6" fill="rgba(156, 107, 255, 0.14)" />
-          <animate attributeName="opacity" values="0.45;0.75;0.45" dur={`${3 + idx * 0.5}s`} repeatCount="indefinite" begin={`${idx * 0.8}s`} />
-        </g>
-      ))}
-
-      {/* Zentrales Entscheidungs-Cluster */}
-      <g transform="translate(260 230)">
-        <ellipse cx="0" cy="86" rx="84" ry="20" fill="rgba(0,0,0,0.38)" filter={`url(#${uniqueId}-shadow)`} />
-        <circle cx="0" cy="0" r="78" fill={`url(#${uniqueId}-node)`} filter={`url(#${uniqueId}-glow-strong)`}>
-          <animate attributeName="r" values="78;84;78" dur="4s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="0" cy="0" r="48" fill={`url(#${uniqueId}-core)`} />
-        <circle cx="0" cy="0" r="20" fill="#FFFFFF" opacity="0.9" />
-        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
-          const rad = (angle * Math.PI) / 180;
-          const x = Math.cos(rad) * 92;
-          const y = Math.sin(rad) * 92;
-          return (
-            <g key={angle} transform={`translate(${x}, ${y})`}>
-              <circle r="9" fill={i % 2 === 0 ? "#00E1FF" : "#9C6BFF"} filter={`url(#${uniqueId}-glow-soft)`}>
-                <animate attributeName="r" values="9;13;9" dur="2.1s" repeatCount="indefinite" begin={`${i * 0.2}s`} />
-              </circle>
-              <circle r="3.2" fill="#FFFFFF" opacity="0.92" />
-            </g>
-          );
-        })}
+      
+      {/* Aufgaben (Links) */}
+      <g opacity="0.8">
+        <rect x="20" y="80" width="80" height="60" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+        <rect x="30" y="90" width="60" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+        <rect x="30" y="105" width="45" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+        <rect x="30" y="115" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
       </g>
-
-      {/* Energie-Beams (Entscheidungswege) */}
-      {[
-        { x1: 120, y1: 140, x2: 260, y2: 230, delay: 0 },
-        { x1: 400, y1: 150, x2: 260, y2: 230, delay: 0.2 },
-        { x1: 140, y1: 320, x2: 260, y2: 230, delay: 0.4 },
-        { x1: 380, y1: 320, x2: 260, y2: 230, delay: 0.6 },
-      ].map((line, i) => (
-        <line
-          key={i}
-          x1={line.x1}
-          y1={line.y1}
-          x2={line.x2}
-          y2={line.y2}
-          stroke={`url(#${uniqueId}-beam)`}
-          strokeWidth="5"
-          opacity="0.78"
-          filter={`url(#${uniqueId}-glow-soft)`}
-        >
-          <animate attributeName="opacity" values="0.45;0.95;0.45" dur="2.6s" repeatCount="indefinite" begin={`${line.delay}s`} />
-          <animate attributeName="stroke-width" values="5;7;5" dur="2.6s" repeatCount="indefinite" begin={`${line.delay}s`} />
-        </line>
-      ))}
-
-      {/* Orbitale Agenten (autonome Knoten) */}
-      {[
-        { path: "orbit1", size: 9, color: "#00E1FF", delay: 0 },
-        { path: "orbit2", size: 7.5, color: "#9C6BFF", delay: 0.6 },
-        { path: "orbit3", size: 6.5, color: "#7CF3FF", delay: 1.2 },
-      ].map((p, idx) => (
-        <g key={p.path} filter={`url(#${uniqueId}-glow-soft)`}>
-          <circle r={p.size} fill={p.color} opacity="0.95">
-            <animateMotion dur={`${8 + idx * 1.5}s`} repeatCount="indefinite" begin={`${p.delay}s`} rotate="auto">
-              <mpath href={`#${uniqueId}-${p.path}`} />
-            </animateMotion>
-            <animate attributeName="r" values={`${p.size};${p.size + 2.2};${p.size}`} dur={`${3 + idx}s`} repeatCount="indefinite" begin={`${p.delay}s`} />
-          </circle>
-        </g>
-      ))}
-
-      {/* Mikro-Entscheidungspunkte */}
-      {Array.from({ length: 12 }).map((_, i) => {
-        const angle = (i / 12) * Math.PI * 2;
-        const radius = 155;
-        const x = 260 + Math.cos(angle) * radius;
-        const y = 230 + Math.sin(angle) * radius;
-        return (
-          <g key={i} transform={`translate(${x}, ${y})`} opacity="0.75">
-            <circle r="5.5" fill={i % 2 === 0 ? "#00F5FF" : "#9C6BFF"} />
-            <animate attributeName="opacity" values="0.5;1;0.5" dur="2.6s" repeatCount="indefinite" begin={`${i * 0.18}s`} />
-          </g>
-        );
-      })}
+      
+      <g opacity="0.8">
+        <rect x="20" y="160" width="80" height="60" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+        <rect x="30" y="170" width="60" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+        <rect x="30" y="185" width="45" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+        <rect x="30" y="195" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      </g>
+      
+      {/* Pfeile: Aufgaben → KI */}
+      <path d="M 110 110 L 160 150" stroke="url(#ki-flow)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path d="M 110 190 L 160 150" stroke="url(#ki-flow)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <polygon points="155,148 160,150 155,152" fill="rgba(168, 85, 247, 0.4)" />
+      
+      {/* KI-Zentrum (Mitte) */}
+      <circle cx="200" cy="150" r="40" fill="rgba(168, 85, 247, 0.1)" stroke="rgba(168, 85, 247, 0.3)" strokeWidth="2" />
+      <circle cx="200" cy="150" r="25" fill="rgba(168, 85, 247, 0.15)" stroke="rgba(168, 85, 247, 0.4)" strokeWidth="1.5" />
+      <circle cx="200" cy="150" r="12" fill="rgba(168, 85, 247, 0.3)" />
+      
+      {/* Pfeile: KI → Aktionen */}
+      <path d="M 240 150 L 290 110" stroke="url(#ki-flow)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path d="M 240 150 L 290 190" stroke="url(#ki-flow)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <polygon points="285,108 290,110 285,112" fill="rgba(168, 85, 247, 0.4)" />
+      <polygon points="285,188 290,190 285,192" fill="rgba(168, 85, 247, 0.4)" />
+      
+      {/* Aktionen (Rechts) */}
+      <g opacity="0.8">
+        <rect x="300" y="80" width="80" height="60" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+        <circle cx="320" cy="100" r="6" fill="rgba(168, 85, 247, 0.4)" />
+        <rect x="335" y="95" width="35" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+        <rect x="320" y="110" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      </g>
+      
+      <g opacity="0.8">
+        <rect x="300" y="160" width="80" height="60" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+        <circle cx="320" cy="180" r="6" fill="rgba(168, 85, 247, 0.4)" />
+        <rect x="335" y="175" width="35" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+        <rect x="320" y="190" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      </g>
     </svg>
   );
 };
 
-// Individuelle Softwaresysteme – Veredeltes Code-Grid mit Blueprint-Panels & Datenströmen (High-End)
+// Individuelle Softwaresysteme – Module/Blöcke, die exakt zusammenpassen
 export const SoftwareSystemsIcon = ({ className = "w-72 h-72" }: { className?: string }) => {
-  const uniqueId = `software-systems-3d-${Math.random().toString(36).substr(2, 9)}`;
   return (
     <svg
       className={className}
-      viewBox="0 0 540 540"
+      viewBox="0 0 400 300"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
       preserveAspectRatio="xMidYMid meet"
-      style={{ filter: "drop-shadow(0 12px 44px rgba(0, 225, 255, 0.3)) drop-shadow(0 0 90px rgba(124, 58, 237, 0.2))" }}
     >
       <defs>
-        <radialGradient id={`${uniqueId}-bg`} cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stopColor="rgba(90, 249, 255, 0.34)" />
-          <stop offset="36%" stopColor="rgba(124, 58, 237, 0.2)" />
-          <stop offset="100%" stopColor="rgba(8, 10, 20, 0)" />
-        </radialGradient>
-        <linearGradient id={`${uniqueId}-slab`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="rgba(90, 249, 255, 0.36)" />
-          <stop offset="55%" stopColor="rgba(124, 58, 237, 0.26)" />
-          <stop offset="100%" stopColor="rgba(29, 78, 216, 0.2)" />
+        <linearGradient id="module-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="rgba(168, 85, 247, 0.15)" />
+          <stop offset="100%" stopColor="rgba(168, 85, 247, 0.05)" />
         </linearGradient>
-        <linearGradient id={`${uniqueId}-wire`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="rgba(90,249,255,0.0)" />
-          <stop offset="25%" stopColor="rgba(90,249,255,0.5)" />
-          <stop offset="50%" stopColor="rgba(124,58,237,0.9)" />
-          <stop offset="75%" stopColor="rgba(90,249,255,0.5)" />
-          <stop offset="100%" stopColor="rgba(90,249,255,0.0)" />
-        </linearGradient>
-        <radialGradient id={`${uniqueId}-node`} cx="50%" cy="50%">
-          <stop offset="0%" stopColor="#5AF9FF" stopOpacity="1" />
-          <stop offset="75%" stopColor="#8B5CF6" stopOpacity="0.7" />
-          <stop offset="100%" stopColor="#0B1024" stopOpacity="0.6" />
-        </radialGradient>
-        <radialGradient id={`${uniqueId}-pulse`} cx="50%" cy="50%">
-          <stop offset="0%" stopColor="#5AF9FF" stopOpacity="1" />
-          <stop offset="85%" stopColor="#5AF9FF" stopOpacity="0" />
-        </radialGradient>
-        <filter id={`${uniqueId}-glow-soft`}>
-          <feGaussianBlur stdDeviation="5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <filter id={`${uniqueId}-glow-strong`}>
-          <feGaussianBlur stdDeviation="12" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
-
-      {/* Hintergrund */}
-      <rect x="14" y="14" width="512" height="512" rx="30" fill={`url(#${uniqueId}-bg)`} opacity="0.9" />
-      <ellipse cx="270" cy="260" rx="240" ry="200" fill="rgba(4,6,12,0.38)" />
-
-      {/* Layered Code-Grid (holografische Ebenen) */}
-      {[150, 220, 290, 360].map((y, idx) => (
-        <g key={y} opacity={0.5 + idx * 0.09} filter={`url(#${uniqueId}-glow-soft)`}>
-          <rect x="85" y={y} width="370" height="28" rx="12" fill={`url(#${uniqueId}-slab)`} />
-          <rect x="120" y={y - 10} width="300" height="16" rx="8" fill="rgba(255,255,255,0.1)" />
-          {/* Gridlines */}
-          {[...Array(6)].map((_, j) => (
-            <line
-              key={j}
-              x1={110 + j * 60}
-              y1={y - 6}
-              x2={110 + j * 60}
-              y2={y + 24}
-              stroke="rgba(90,249,255,0.3)"
-              strokeWidth="1.3"
-            />
-          ))}
-          {[...Array(2)].map((_, j) => (
-            <line
-              key={`h-${j}`}
-              x1={100}
-              y1={y + 6 + j * 12}
-              x2={430}
-              y2={y + 6 + j * 12}
-              stroke="rgba(124,58,237,0.3)"
-              strokeWidth="1.05"
-            />
-          ))}
-          <animate attributeName="opacity" values="0.5;0.9;0.5" dur={`${3 + idx * 0.5}s`} repeatCount="indefinite" begin={`${idx * 0.6}s`} />
-        </g>
-      ))}
-
-      {/* Horizontale Daten-Pipelines */}
-      {[
-        { y: 195, delay: 0 },
-        { y: 245, delay: 0.25 },
-        { y: 295, delay: 0.5 },
-        { y: 345, delay: 0.75 },
-      ].map((row, i) => (
-        <line
-          key={i}
-          x1="140"
-          y1={row.y}
-          x2="400"
-          y2={row.y}
-          stroke={`url(#${uniqueId}-wire)`}
-          strokeWidth="6.2"
-          opacity="0.74"
-          filter={`url(#${uniqueId}-glow-soft)`}
-        >
-          <animate attributeName="opacity" values="0.45;1;0.45" dur="2.2s" repeatCount="indefinite" begin={`${row.delay}s`} />
-          <animate attributeName="stroke-width" values="6.2;9.5;6.2" dur="2.2s" repeatCount="indefinite" begin={`${row.delay}s`} />
-        </line>
-      ))}
-
-      {/* Vertikale Connectoren */}
-      {[180, 240, 300, 360].map((x, i) => (
-        <line
-          key={x}
-          x1={x}
-          y1="170"
-          x2={x}
-          y2="370"
-          stroke="rgba(90,249,255,0.4)"
-          strokeWidth="3.1"
-          opacity="0.74"
-          filter={`url(#${uniqueId}-glow-soft)`}
-        >
-          <animate attributeName="opacity" values="0.35;0.85;0.35" dur="2.6s" repeatCount="indefinite" begin={`${i * 0.2}s`} />
-        </line>
-      ))}
-
-      {/* Zentrales Orchestrierungs-Hub */}
-      <g transform="translate(270 230)">
-        <ellipse cx="0" cy="96" rx="88" ry="22" fill="rgba(0,0,0,0.4)" filter={`url(#${uniqueId}-glow-soft)`} />
-        <circle cx="0" cy="0" r="72" fill={`url(#${uniqueId}-node)`} filter={`url(#${uniqueId}-glow-strong)`}>
-          <animate attributeName="r" values="72;78;72" dur="4s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="0" cy="0" r="40" fill="#5AF9FF" opacity="0.58" />
-        <circle cx="0" cy="0" r="18" fill="#FFFFFF" opacity="0.96" />
-        {[0, 60, 120, 180, 240, 300].map((angle, i) => {
-          const rad = (angle * Math.PI) / 180;
-          const x = Math.cos(rad) * 96;
-          const y = Math.sin(rad) * 96;
-          return (
-            <g key={angle} transform={`translate(${x}, ${y})`} filter={`url(#${uniqueId}-glow-soft)`}>
-              <circle r="9.5" fill={i % 2 === 0 ? "#5AF9FF" : "#8B5CF6"}>
-                <animate attributeName="r" values="9.5;13.5;9.5" dur="2s" repeatCount="indefinite" begin={`${i * 0.2}s`} />
-              </circle>
-              <circle r="4" fill="#FFFFFF" opacity="0.88" />
-            </g>
-          );
-        })}
-      </g>
-
-      {/* Animierte Datenpakete auf Pfaden */}
-      {[{ path: "pipe1", size: 6, delay: 0 }, { path: "pipe2", size: 5.5, delay: 0.4 }, { path: "pipe3", size: 5, delay: 0.8 }].map((p, idx) => (
-        <g key={p.path} filter={`url(#${uniqueId}-glow-soft)`}>
-          <circle r={p.size} fill={idx % 2 === 0 ? "#5AF9FF" : "#8B5CF6"} opacity="0.95">
-            <animateMotion dur={`${7 + idx * 1.2}s`} repeatCount="indefinite" begin={`${p.delay}s`} rotate="auto">
-              <mpath href={`#${uniqueId}-${p.path}`} />
-            </animateMotion>
-            <animate attributeName="r" values={`${p.size};${p.size + 1.5};${p.size}`} dur={`${2.6 + idx * 0.3}s`} repeatCount="indefinite" begin={`${p.delay}s`} />
-          </circle>
-        </g>
-      ))}
-
-      {/* Pulsierende Messpunkte */}
-      {Array.from({ length: 14 }).map((_, i) => {
-        const angle = (i / 14) * Math.PI * 2;
-        const radius = 155;
-        const x = 270 + Math.cos(angle) * radius;
-        const y = 240 + Math.sin(angle) * radius;
-        return (
-          <g key={i} transform={`translate(${x}, ${y})`} opacity="0.7">
-            <circle r="5.5" fill={i % 2 === 0 ? "#5AF9FF" : "#8B5CF6"} />
-            <circle r="11" fill={`url(#${uniqueId}-pulse)`} opacity="0.64">
-              <animate attributeName="r" values="11;17;11" dur="2.5s" repeatCount="indefinite" begin={`${i * 0.18}s`} />
-              <animate attributeName="opacity" values="0.64;0;0.64" dur="2.5s" repeatCount="indefinite" begin={`${i * 0.18}s`} />
-            </circle>
-          </g>
-        );
-      })}
+      
+      {/* Modul 1 (Links oben) */}
+      <rect x="40" y="40" width="100" height="80" rx="8" fill="url(#module-gradient)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      <rect x="50" y="50" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="50" y="65" width="60" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      <rect x="50" y="75" width="70" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      
+      {/* Modul 2 (Rechts oben) - passt exakt an Modul 1 */}
+      <rect x="150" y="40" width="100" height="80" rx="8" fill="url(#module-gradient)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      <rect x="160" y="50" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="160" y="65" width="60" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      <rect x="160" y="75" width="70" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      
+      {/* Modul 3 (Links unten) */}
+      <rect x="40" y="140" width="100" height="80" rx="8" fill="url(#module-gradient)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      <rect x="50" y="150" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="50" y="165" width="60" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      <rect x="50" y="175" width="70" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      
+      {/* Modul 4 (Rechts unten) - passt exakt an Modul 3 */}
+      <rect x="150" y="140" width="100" height="80" rx="8" fill="url(#module-gradient)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      <rect x="160" y="150" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="160" y="165" width="60" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      <rect x="160" y="175" width="70" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      
+      {/* Verbindungslinien zwischen Modulen */}
+      <line x1="140" y1="80" x2="150" y2="80" stroke="rgba(168, 85, 247, 0.3)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="90" y1="120" x2="90" y2="140" stroke="rgba(168, 85, 247, 0.3)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="200" y1="120" x2="200" y2="140" stroke="rgba(168, 85, 247, 0.3)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="140" y1="180" x2="150" y2="180" stroke="rgba(168, 85, 247, 0.3)" strokeWidth="2" strokeLinecap="round" />
+      
+      {/* Zentrales Modul (Mitte) - verbindet alle */}
+      <rect x="260" y="90" width="100" height="80" rx="8" fill="url(#module-gradient)" stroke="rgba(168, 85, 247, 0.4)" strokeWidth="2" />
+      <rect x="270" y="100" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.25)" />
+      <rect x="270" y="115" width="60" height="6" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="270" y="125" width="70" height="6" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <circle cx="310" cy="130" r="8" fill="rgba(168, 85, 247, 0.3)" />
+      
+      {/* Verbindungen zum zentralen Modul */}
+      <line x1="250" y1="110" x2="260" y2="110" stroke="rgba(168, 85, 247, 0.3)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="250" y1="150" x2="260" y2="150" stroke="rgba(168, 85, 247, 0.3)" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 };
 
-// Workflow-Systeme & Steuerungs-Dashboards – Control Grid mit Panels, Pipelines & Status-Nodes (kein Kreis-Hub)
+// Workflow-Systeme & Steuerungs-Dashboards – Prozesslinien + Status + Übersicht
 export const WorkflowDashboardIcon = ({ className = "w-72 h-72" }: { className?: string }) => {
-  const uniqueId = `workflow-dash-3d-${Math.random().toString(36).substr(2, 9)}`;
   return (
     <svg
       className={className}
-      viewBox="0 0 540 540"
+      viewBox="0 0 400 300"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
       preserveAspectRatio="xMidYMid meet"
-      style={{ filter: "drop-shadow(0 14px 38px rgba(124, 58, 237, 0.26)) drop-shadow(0 0 90px rgba(90, 249, 255, 0.16))" }}
     >
       <defs>
-        <radialGradient id={`${uniqueId}-bg`} cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stopColor="rgba(90, 249, 255, 0.32)" />
-          <stop offset="38%" stopColor="rgba(124, 58, 237, 0.2)" />
-          <stop offset="100%" stopColor="rgba(8, 10, 20, 0)" />
-        </radialGradient>
-        <linearGradient id={`${uniqueId}-bar`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="rgba(124, 58, 237, 0.38)" />
-          <stop offset="50%" stopColor="rgba(90, 249, 255, 0.55)" />
-          <stop offset="100%" stopColor="rgba(124, 58, 237, 0.38)" />
+        <linearGradient id="process-line" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="rgba(168, 85, 247, 0.2)" />
+          <stop offset="50%" stopColor="rgba(168, 85, 247, 0.4)" />
+          <stop offset="100%" stopColor="rgba(168, 85, 247, 0.2)" />
         </linearGradient>
-        <linearGradient id={`${uniqueId}-panel`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="rgba(22, 30, 55, 0.9)" />
-          <stop offset="100%" stopColor="rgba(12, 16, 34, 0.7)" />
-        </linearGradient>
-        <linearGradient id={`${uniqueId}-wire`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="rgba(90,249,255,0.0)" />
-          <stop offset="25%" stopColor="rgba(90,249,255,0.45)" />
-          <stop offset="50%" stopColor="rgba(124,58,237,0.85)" />
-          <stop offset="75%" stopColor="rgba(90,249,255,0.45)" />
-          <stop offset="100%" stopColor="rgba(90,249,255,0.0)" />
-        </linearGradient>
-        <radialGradient id={`${uniqueId}-node`} cx="50%" cy="50%">
-          <stop offset="0%" stopColor="#5AF9FF" stopOpacity="1" />
-          <stop offset="80%" stopColor="#8B5CF6" stopOpacity="0.65" />
-          <stop offset="100%" stopColor="#0B1024" stopOpacity="0.55" />
-        </radialGradient>
-        <filter id={`${uniqueId}-glow-soft`}>
-          <feGaussianBlur stdDeviation="5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <filter id={`${uniqueId}-glow-strong`}>
-          <feGaussianBlur stdDeviation="10" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
-
-      {/* Hintergrund */}
-      <rect x="14" y="14" width="512" height="512" rx="30" fill={`url(#${uniqueId}-bg)`} opacity="0.9" />
-      <ellipse cx="270" cy="260" rx="240" ry="200" fill="rgba(4,6,12,0.35)" />
-
-      {/* Top-Kontrollpanel */}
-      {/* weiter nach oben für symmetrischen Abstand */}
-      <g transform="translate(270 88)" filter={`url(#${uniqueId}-glow-soft)`} opacity="0.98">
-        <rect x="-168" y="-30" width="336" height="82" rx="20" fill={`url(#${uniqueId}-panel)`} stroke="rgba(90,249,255,0.36)" strokeWidth="1.8" />
-        {[ -96, -36, 24, 84 ].map((x, i) => (
-          <rect
-            key={x}
-            x={x}
-            y="-10"
-            width="48"
-            height="18"
-            rx="7"
-            fill={`url(#${uniqueId}-bar)`}
-            opacity="0.9"
-          >
-            <animate attributeName="width" values="36;68;36" dur={`${2 + i * 0.35}s`} repeatCount="indefinite" />
-          </rect>
-        ))}
-        <line x1="-124" y1="20" x2="124" y2="20" stroke="rgba(124,58,237,0.62)" strokeWidth="3.2" strokeLinecap="round">
-          <animate attributeName="stroke-dasharray" values="18 260;260 18;18 260" dur="4.6s" repeatCount="indefinite" />
-        </line>
-      </g>
-
-      {/* Mittel-Grid mit Statusknoten (keine Ringe) */}
-      <g transform="translate(270 248)">
-        {/* horizontale Verbindungslinien */}
-        {[ -60, 0, 60 ].map((y, idx) => (
-          <line
-            key={idx}
-            x1="-130"
-            y1={y}
-            x2="130"
-            y2={y}
-            stroke="rgba(90,249,255,0.35)"
-            strokeWidth="2"
-            opacity="0.6"
-            filter={`url(#${uniqueId}-glow-soft)`}
-          />
-        ))}
-        {/* vertikale Verbindungslinien */}
-        {[ -105, -35, 35, 105 ].map((x, idx) => (
-          <line
-            key={idx}
-            x1={x}
-            y1="-90"
-            x2={x}
-            y2="90"
-            stroke="rgba(124,58,237,0.28)"
-            strokeWidth="2"
-            opacity="0.6"
-            filter={`url(#${uniqueId}-glow-soft)`}
-          />
-        ))}
-        {[0, 1, 2].map((row) =>
-          [0, 1, 2, 3].map((col) => {
-            const dx = (col - 1.5) * 70;
-            const dy = (row - 1) * 60;
-            return (
-              <g key={`${row}-${col}`} transform={`translate(${dx} ${dy})`} opacity="0.9">
-                <rect x="-30" y="-20" width="60" height="40" rx="12" fill="rgba(16, 22, 42, 0.92)" stroke="rgba(90,249,255,0.32)" strokeWidth="1.2" />
-                <circle cx="0" cy="0" r="10" fill={`url(#${uniqueId}-node)`} />
-                <animate attributeName="opacity" values="0.7;1;0.7" dur={`${2.2 + row * 0.25 + col * 0.18}s`} repeatCount="indefinite" />
-              </g>
-            );
-          })
-        )}
-      </g>
-
-      {/* Verbindende Pipelines */}
-      {[
-        { y: 280, delay: 0 },
-        { y: 310, delay: 0.2 },
-        { y: 340, delay: 0.4 },
-      ].map((row, i) => (
-        <line
-          key={i}
-          x1="130"
-          y1={row.y}
-          x2="410"
-          y2={row.y}
-          stroke={`url(#${uniqueId}-wire)`}
-          strokeWidth="6"
-          opacity="0.7"
-          filter={`url(#${uniqueId}-glow-soft)`}
-        >
-          <animate attributeName="opacity" values="0.4;1;0.4" dur="2.3s" repeatCount="indefinite" begin={`${row.delay}s`} />
-          <animate attributeName="stroke-width" values="6;9;6" dur="2.3s" repeatCount="indefinite" begin={`${row.delay}s`} />
-        </line>
-      ))}
-
-      {/* KPI/Chart-Panel unten */}
-      <g transform="translate(270 402)" filter={`url(#${uniqueId}-glow-soft)`} opacity="0.96">
-        <rect x="-182" y="-34" width="364" height="88" rx="20" fill={`url(#${uniqueId}-panel)`} stroke="rgba(90,249,255,0.34)" strokeWidth="1.6" />
-        {/* Bars */}
-        {[ -110, -70, -30, 10, 50, 90, 130 ].map((x, i) => (
-          <rect
-            key={x}
-            x={x}
-            y={-8 - i * 1.5}
-            width="18"
-            height={22 + i * 3}
-            rx="6"
-            fill={`url(#${uniqueId}-bar)`}
-            opacity="0.92"
-          >
-            <animate attributeName="height" values={`${18 + i * 3};${38 + i * 3};${18 + i * 3}`} dur={`${2 + i * 0.22}s`} repeatCount="indefinite" />
-          </rect>
-        ))}
-        {/* Timeline line */}
-        <line x1="-140" y1="28" x2="140" y2="28" stroke="rgba(124,58,237,0.6)" strokeWidth="3.2" strokeLinecap="round">
-          <animate attributeName="stroke-dasharray" values="16 240;240 16;16 240" dur="4.5s" repeatCount="indefinite" />
-        </line>
-      </g>
-
-      {/* Status-/Milestone-Nodes (reduziert, klarer Fokus) */}
-      {[0,1,2,3,4,5,6,7].map((i) => {
-        const angle = (i / 8) * Math.PI * 2;
-        const radius = 205;
-        const x = 270 + Math.cos(angle) * radius;
-        const y = 270 + Math.sin(angle) * radius;
-        return (
-          <g key={i} transform={`translate(${x}, ${y})`} opacity="0.78">
-            <circle r="7" fill={i % 2 === 0 ? "#5AF9FF" : "#8B5CF6"} filter={`url(#${uniqueId}-glow-soft)`} />
-            <animate attributeName="opacity" values="0.55;1;0.55" dur="2s" repeatCount="indefinite" begin={`${i * 0.14}s`} />
-          </g>
-        );
-      })}
+      
+      {/* Prozesslinien (horizontal) */}
+      <line x1="40" y1="80" x2="360" y2="80" stroke="url(#process-line)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="40" y1="150" x2="360" y2="150" stroke="url(#process-line)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="40" y1="220" x2="360" y2="220" stroke="url(#process-line)" strokeWidth="2" strokeLinecap="round" />
+      
+      {/* Status-Punkte auf Prozesslinien */}
+      <circle cx="100" cy="80" r="6" fill="rgba(168, 85, 247, 0.4)" />
+      <circle cx="200" cy="80" r="6" fill="rgba(168, 85, 247, 0.4)" />
+      <circle cx="300" cy="80" r="6" fill="rgba(168, 85, 247, 0.4)" />
+      
+      <circle cx="100" cy="150" r="6" fill="rgba(168, 85, 247, 0.4)" />
+      <circle cx="200" cy="150" r="6" fill="rgba(168, 85, 247, 0.4)" />
+      <circle cx="300" cy="150" r="6" fill="rgba(168, 85, 247, 0.4)" />
+      
+      <circle cx="100" cy="220" r="6" fill="rgba(168, 85, 247, 0.4)" />
+      <circle cx="200" cy="220" r="6" fill="rgba(168, 85, 247, 0.4)" />
+      <circle cx="300" cy="220" r="6" fill="rgba(168, 85, 247, 0.4)" />
+      
+      {/* Dashboard-Übersicht (rechts) */}
+      <rect x="280" y="40" width="100" height="200" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      
+      {/* Dashboard-Inhalt */}
+      <rect x="290" y="50" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="290" y="65" width="60" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      
+      {/* Status-Bars im Dashboard */}
+      <rect x="290" y="85" width="70" height="4" rx="2" fill="rgba(168, 85, 247, 0.3)" />
+      <rect x="290" y="95" width="50" height="4" rx="2" fill="rgba(168, 85, 247, 0.3)" />
+      <rect x="290" y="105" width="65" height="4" rx="2" fill="rgba(168, 85, 247, 0.3)" />
+      
+      {/* Verbindungslinien: Prozesse → Dashboard */}
+      <line x1="360" y1="80" x2="280" y2="100" stroke="rgba(168, 85, 247, 0.2)" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="360" y1="150" x2="280" y2="130" stroke="rgba(168, 85, 247, 0.2)" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="360" y1="220" x2="280" y2="200" stroke="rgba(168, 85, 247, 0.2)" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 };
 
-// System-Integrationen & API-Engineering – Vernetzte Nodes, API-Gateways & Datenströme
+// System-Integrationen & APIs – verschiedene Systeme, die sauber verbunden werden
 export const ApiIntegrationIcon = ({ className = "w-72 h-72" }: { className?: string }) => {
-  const uniqueId = `api-integration-3d-${Math.random().toString(36).substr(2, 9)}`;
   return (
     <svg
       className={className}
-      viewBox="0 0 540 540"
+      viewBox="0 0 400 300"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
       preserveAspectRatio="xMidYMid meet"
-      style={{ filter: "drop-shadow(0 12px 36px rgba(124, 58, 237, 0.28)) drop-shadow(0 0 90px rgba(90, 249, 255, 0.18))" }}
     >
       <defs>
-        <radialGradient id={`${uniqueId}-bg`} cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stopColor="rgba(90, 249, 255, 0.3)" />
-          <stop offset="40%" stopColor="rgba(124, 58, 237, 0.2)" />
-          <stop offset="100%" stopColor="rgba(8, 10, 20, 0)" />
-        </radialGradient>
-        <linearGradient id={`${uniqueId}-path`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="rgba(90,249,255,0.0)" />
-          <stop offset="30%" stopColor="rgba(90,249,255,0.45)" />
-          <stop offset="50%" stopColor="rgba(124,58,237,0.85)" />
-          <stop offset="70%" stopColor="rgba(90,249,255,0.45)" />
-          <stop offset="100%" stopColor="rgba(90,249,255,0.0)" />
+        <linearGradient id="api-connection" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="rgba(168, 85, 247, 0.2)" />
+          <stop offset="50%" stopColor="rgba(168, 85, 247, 0.4)" />
+          <stop offset="100%" stopColor="rgba(168, 85, 247, 0.2)" />
         </linearGradient>
-        <linearGradient id={`${uniqueId}-panel`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="rgba(18, 26, 48, 0.9)" />
-          <stop offset="100%" stopColor="rgba(12, 16, 30, 0.75)" />
-        </linearGradient>
-        <radialGradient id={`${uniqueId}-node`} cx="50%" cy="50%">
-          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
-          <stop offset="60%" stopColor="#5AF9FF" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.7" />
-        </radialGradient>
-        <filter id={`${uniqueId}-glow-soft`}>
-          <feGaussianBlur stdDeviation="5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <filter id={`${uniqueId}-glow-strong`}>
-          <feGaussianBlur stdDeviation="12" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
-
-      {/* Hintergrund */}
-      <rect x="14" y="14" width="512" height="512" rx="30" fill={`url(#${uniqueId}-bg)`} opacity="0.9" />
-      <ellipse cx="270" cy="270" rx="230" ry="200" fill="rgba(4,6,12,0.32)" />
-
-      {/* Zentrale API-Gateway Box */}
-      <g transform="translate(270 240)" filter={`url(#${uniqueId}-glow-soft)`} opacity="0.98">
-        <rect x="-140" y="-40" width="280" height="90" rx="20" fill={`url(#${uniqueId}-panel)`} stroke="rgba(90,249,255,0.34)" strokeWidth="1.6" />
-        {/* Slots */}
-        {[ -90, -30, 30, 90 ].map((x, i) => (
-          <rect
-            key={x}
-            x={x}
-            y="-6"
-            width="50"
-            height="16"
-            rx="6"
-            fill={`url(#${uniqueId}-path)`}
-            opacity="0.95"
-          >
-            <animate attributeName="width" values="38;68;38" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
-          </rect>
-        ))}
-        <line x1="-110" y1="22" x2="110" y2="22" stroke="rgba(124,58,237,0.55)" strokeWidth="3" strokeLinecap="round">
-          <animate attributeName="stroke-dasharray" values="16 240;240 16;16 240" dur="4.6s" repeatCount="indefinite" />
-        </line>
-      </g>
-
-      {/* seitliche Systeme (Knoten) */}
-      {[
-        { x: 120, y: 140 },
-        { x: 420, y: 140 },
-        { x: 120, y: 340 },
-        { x: 420, y: 340 },
-      ].map((pos, i) => (
-        <g key={i} transform={`translate(${pos.x} ${pos.y})`} filter={`url(#${uniqueId}-glow-soft)`} opacity="0.9">
-          <rect x="-46" y="-30" width="92" height="60" rx="14" fill="rgba(16,24,42,0.9)" stroke="rgba(90,249,255,0.28)" strokeWidth="1.2" />
-          <circle cx="0" cy="0" r="12" fill={`url(#${uniqueId}-node)`} />
-          <animate attributeName="opacity" values="0.7;1;0.7" dur={`${2.2 + i * 0.25}s`} repeatCount="indefinite" />
-        </g>
-      ))}
-
-      {/* Verbindungslinien horizontal */}
-      {[ 140, 340 ].map((y, idx) => (
-        <line
-          key={idx}
-          x1="160"
-          y1={y}
-          x2="380"
-          y2={y}
-          stroke={`url(#${uniqueId}-path)`}
-          strokeWidth="6"
-          opacity="0.75"
-          filter={`url(#${uniqueId}-glow-soft)`}
-        >
-          <animate attributeName="opacity" values="0.45;1;0.45" dur="2.4s" repeatCount="indefinite" begin={`${idx * 0.2}s`} />
-          <animate attributeName="stroke-width" values="6;9;6" dur="2.4s" repeatCount="indefinite" begin={`${idx * 0.2}s`} />
-        </line>
-      ))}
-
-      {/* Verbindungslinien vertikal */}
-      {[ 200, 340 ].map((x, idx) => (
-        <line
-          key={idx}
-          x1={x}
-          y1="200"
-          x2={x}
-          y2="380"
-          stroke={`url(#${uniqueId}-path)`}
-          strokeWidth="5"
-          opacity="0.7"
-          filter={`url(#${uniqueId}-glow-soft)`}
-        >
-          <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.6s" repeatCount="indefinite" begin={`${idx * 0.25}s`} />
-        </line>
-      ))}
-
-      {/* Datenfluss-Pakete auf Linien */}
-      {[{ y: 140, delay: 0 }, { y: 340, delay: 0.5 }].map((row, rIdx) =>
-        [0, 1, 2].map((i) => (
-          <g key={`${rIdx}-${i}`} filter={`url(#${uniqueId}-glow-soft)`}>
-            <circle r="6" fill={i % 2 === 0 ? "#5AF9FF" : "#8B5CF6"} opacity="0.95">
-              <animate attributeName="cx" values="160;380;160" dur={`${3 + i * 0.5}s`} repeatCount="indefinite" begin={`${row.delay + i * 0.3}s`} />
-              <animate attributeName="cy" values={`${row.y};${row.y};${row.y}`} dur={`${3 + i * 0.5}s`} repeatCount="indefinite" begin={`${row.delay + i * 0.3}s`} />
-            </circle>
-          </g>
-        ))
-      )}
-
-      {/* zentrale Statuspunkte um das Gateway */}
-      {Array.from({ length: 8 }).map((_, i) => {
-        const angle = (i / 8) * Math.PI * 2;
-        const radius = 120;
-        const x = 270 + Math.cos(angle) * radius;
-        const y = 240 + Math.sin(angle) * radius;
-        return (
-          <g key={i} transform={`translate(${x}, ${y})`} opacity="0.8">
-            <circle r="7" fill={i % 2 === 0 ? "#5AF9FF" : "#8B5CF6"} filter={`url(#${uniqueId}-glow-soft)`} />
-            <animate attributeName="opacity" values="0.5;1;0.5" dur="2.1s" repeatCount="indefinite" begin={`${i * 0.14}s`} />
-          </g>
-        );
-      })}
+      
+      {/* System 1 (Links oben) */}
+      <rect x="30" y="30" width="90" height="70" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      <rect x="40" y="40" width="70" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="40" y="55" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      
+      {/* System 2 (Rechts oben) */}
+      <rect x="280" y="30" width="90" height="70" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      <rect x="290" y="40" width="70" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="290" y="55" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      
+      {/* System 3 (Links unten) */}
+      <rect x="30" y="200" width="90" height="70" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      <rect x="40" y="210" width="70" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="40" y="225" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      
+      {/* System 4 (Rechts unten) */}
+      <rect x="280" y="200" width="90" height="70" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      <rect x="290" y="210" width="70" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="290" y="225" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      
+      {/* Zentrales API-Gateway (Mitte) */}
+      <circle cx="200" cy="150" r="35" fill="rgba(168, 85, 247, 0.1)" stroke="rgba(168, 85, 247, 0.3)" strokeWidth="2" />
+      <circle cx="200" cy="150" r="20" fill="rgba(168, 85, 247, 0.15)" />
+      <text x="200" y="155" textAnchor="middle" fontSize="12" fill="rgba(168, 85, 247, 0.6)" fontWeight="600">API</text>
+      
+      {/* Verbindungslinien: Systeme → API-Gateway */}
+      <line x1="120" y1="65" x2="165" y2="135" stroke="url(#api-connection)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="280" y1="65" x2="235" y2="135" stroke="url(#api-connection)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="120" y1="235" x2="165" y2="165" stroke="url(#api-connection)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="280" y1="235" x2="235" y2="165" stroke="url(#api-connection)" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 };
@@ -1377,8 +919,8 @@ export const ProblemFehlerIcon = ({ className = "w-72 h-72" }: { className?: str
         </linearGradient>
         {/* Loss Drop Gradients */}
         <linearGradient id={`${uniqueId}-drop`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#00E1FF" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#00B8D4" stopOpacity="0.5" />
+          <stop offset="0%" stopColor="#C6A8FF" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#8A5CFF" stopOpacity="0.5" />
         </linearGradient>
         <linearGradient id={`${uniqueId}-shadow`} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#000000" stopOpacity="0.4" />
@@ -1973,3 +1515,147 @@ export const BrancheWachstumIcon = ({ className = "w-28 h-28" }: { className?: s
     <path d="M 235 40 L 245 30 L 255 40 M 245 30 L 245 50" stroke="#00F5FF" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" filter="url(#br6glow)" />
   </svg>
 );
+
+// Szenario-Visuals für "Keine Tools. Systeme." Section
+
+// Card 1: Speditionen - Karte + Fahrer + Route
+export const RouteMapDriverVisual = ({ className = "w-full h-full" }: { className?: string }) => {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 400 300"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* Kleine Karte (Map) */}
+      <rect x="20" y="20" width="360" height="180" rx="8" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1.5" />
+      
+      {/* Route-Linie auf Karte */}
+      <path
+        d="M 40 100 Q 120 60, 200 80 T 360 100"
+        fill="none"
+        stroke="rgba(255, 255, 255, 0.25)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeDasharray="6 4"
+      />
+      
+      {/* Start-Punkt */}
+      <circle cx="40" cy="100" r="6" fill="rgba(255, 255, 255, 0.4)" stroke="rgba(255, 255, 255, 0.6)" strokeWidth="1.5" />
+      {/* Ziel-Punkt */}
+      <circle cx="360" cy="100" r="6" fill="rgba(255, 255, 255, 0.4)" stroke="rgba(255, 255, 255, 0.6)" strokeWidth="1.5" />
+      
+      {/* Zwischenpunkte */}
+      <circle cx="200" cy="80" r="4" fill="rgba(255, 255, 255, 0.3)" />
+      
+      {/* Fahrer (unten) */}
+      <g transform="translate(180, 220)">
+        {/* Fahrer-Avatar */}
+        <circle cx="0" cy="0" r="20" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+        <circle cx="0" cy="-5" r="8" fill="rgba(255, 255, 255, 0.2)" />
+        <rect x="-6" y="2" width="12" height="12" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+        
+        {/* Fahrer-Info */}
+        <rect x="30" y="-8" width="80" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+        <rect x="30" y="2" width="60" height="5" rx="2" fill="rgba(255, 255, 255, 0.1)" />
+      </g>
+      
+      {/* Verbindungslinie: Karte → Fahrer */}
+      <line x1="200" y1="200" x2="200" y2="200" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" strokeDasharray="2 2" />
+    </svg>
+  );
+};
+
+// Card 2: Dienstleister - Ticket → Kalender → Haken
+export const ProcessFlowVisual = ({ className = "w-full h-full" }: { className?: string }) => {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 400 300"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* Ticket (Links) */}
+      <rect x="30" y="100" width="100" height="80" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      <rect x="40" y="110" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="40" y="125" width="60" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      <rect x="40" y="135" width="70" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+      <rect x="40" y="145" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.1)" />
+      
+      {/* Pfeil: Ticket → Kalender */}
+      <path d="M 140 140 L 180 140" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <polygon points="175,138 180,140 175,142" fill="rgba(255, 255, 255, 0.3)" />
+      
+      {/* Kalender (Mitte) */}
+      <rect x="190" y="100" width="100" height="80" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      {/* Kalender-Grid */}
+      <g opacity="0.3">
+        {[0, 1, 2].map((row) => (
+          <line key={`h-${row}`} x1="200" y1={115 + row * 15} x2="280" y2={115 + row * 15} stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" />
+        ))}
+        {[0, 1, 2, 3, 4].map((col) => (
+          <line key={`v-${col}`} x1={200 + col * 20} y1="110" x2={200 + col * 20} y2="170" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" />
+        ))}
+      </g>
+      <rect x="200" y="110" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      
+      {/* Pfeil: Kalender → Haken */}
+      <path d="M 300 140 L 340 140" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <polygon points="335,138 340,140 335,142" fill="rgba(255, 255, 255, 0.3)" />
+      
+      {/* Haken (Rechts) */}
+      <circle cx="370" cy="140" r="20" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1.5" />
+      <path d="M 360 140 L 365 145 L 380 130" stroke="rgba(255, 255, 255, 0.6)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+};
+
+// Card 3: Produktionsbetriebe - Maschine + Status + Qualitätscheck
+export const MachineStatusVisual = ({ className = "w-full h-full" }: { className?: string }) => {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 400 300"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* Maschine (Links) */}
+      <rect x="30" y="80" width="120" height="100" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+      {/* Maschinen-Elemente */}
+      <rect x="50" y="100" width="30" height="30" rx="4" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.12)" strokeWidth="1" />
+      <rect x="100" y="100" width="30" height="30" rx="4" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.12)" strokeWidth="1" />
+      <line x1="80" y1="140" x2="100" y2="140" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="90" cy="140" r="4" fill="rgba(255, 255, 255, 0.3)" />
+      
+      {/* Status-Anzeige (Mitte) */}
+      <g transform="translate(180, 100)">
+        {/* Status-Box */}
+        <rect x="0" y="0" width="80" height="60" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+        {/* Status-Bars */}
+        <rect x="10" y="15" width="60" height="4" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+        <rect x="10" y="25" width="45" height="4" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+        <rect x="10" y="35" width="55" height="4" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+        {/* Status-Indikator */}
+        <circle cx="70" cy="30" r="5" fill="rgba(34, 197, 94, 0.4)" stroke="rgba(34, 197, 94, 0.6)" strokeWidth="1" />
+      </g>
+      
+      {/* Qualitätscheck (Rechts) */}
+      <g transform="translate(290, 100)">
+        {/* Check-Box */}
+        <rect x="0" y="0" width="60" height="60" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
+        {/* Checkmark */}
+        <circle cx="30" cy="30" r="15" fill="rgba(34, 197, 94, 0.1)" stroke="rgba(34, 197, 94, 0.4)" strokeWidth="1.5" />
+        <path d="M 22 30 L 28 36 L 38 24" stroke="rgba(34, 197, 94, 0.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        {/* Qualitäts-Text */}
+        <text x="30" y="75" textAnchor="middle" fontSize="10" fill="rgba(255, 255, 255, 0.5)">OK</text>
+      </g>
+      
+      {/* Verbindungslinien */}
+      <line x1="150" y1="130" x2="180" y2="130" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" strokeDasharray="3 3" />
+      <line x1="260" y1="130" x2="290" y2="130" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" strokeDasharray="3 3" />
+    </svg>
+  );
+};

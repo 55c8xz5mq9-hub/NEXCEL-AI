@@ -80,7 +80,7 @@ export default function VerifyEmailClient() {
                   <motion.div
                     className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
                     style={{
-                      background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(0, 225, 255, 0.3))",
+                      background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(198, 168, 255, 0.3))",
                       border: "2px solid rgba(164, 92, 255, 0.5)",
                     }}
                     animate={{ rotate: 360 }}
@@ -121,7 +121,7 @@ export default function VerifyEmailClient() {
                   <motion.div
                     className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
                     style={{
-                      background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(0, 225, 255, 0.3))",
+                      background: "linear-gradient(135deg, rgba(164, 92, 255, 0.3), rgba(198, 168, 255, 0.3))",
                       border: "2px solid rgba(164, 92, 255, 0.5)",
                       boxShadow: "0 0 40px rgba(164, 92, 255, 0.4)",
                     }}
@@ -161,7 +161,7 @@ export default function VerifyEmailClient() {
                     href="/"
                     className="inline-block px-8 py-4 rounded-xl text-white font-semibold text-lg"
                     style={{
-                      background: "linear-gradient(135deg, #A45CFF 0%, #00E1FF 100%)",
+                      background: "linear-gradient(135deg, #A45CFF 0%, #C6A8FF 100%)",
                       boxShadow: "0 8px 24px rgba(164, 92, 255, 0.4)",
                     }}
                     whileHover={{ scale: 1.05, boxShadow: "0 12px 32px rgba(164, 92, 255, 0.5)" }}
@@ -227,7 +227,7 @@ export default function VerifyEmailClient() {
                       href="/kontakt"
                       className="inline-block px-8 py-4 rounded-xl text-white font-semibold"
                       style={{
-                        background: "linear-gradient(135deg, #A45CFF 0%, #00E1FF 100%)",
+                        background: "linear-gradient(135deg, #A45CFF 0%, #C6A8FF 100%)",
                         boxShadow: "0 8px 24px rgba(164, 92, 255, 0.4)",
                       }}
                       whileHover={{ scale: 1.05 }}

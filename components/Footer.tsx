@@ -20,7 +20,7 @@ const footerLinks = {
     { label: "Demo anfordern", href: "/demo-anfordern" },
   ],
   unternehmen: [
-    { label: "Über mich", href: "/ueber-mich" },
+    { label: "Über uns", href: "/ueber-mich" },
     { label: "Projekte", href: "/projekte" },
     { label: "Leistungen", href: "/leistungen" },
     { label: "Kontakt", href: "/kontakt" },
@@ -150,8 +150,8 @@ export default function Footer() {
               <div
                 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight"
                 style={{
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                  letterSpacing: "0.02em",
+                  fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
+                  letterSpacing: "-0.02em",
                 }}
               >
                 <span

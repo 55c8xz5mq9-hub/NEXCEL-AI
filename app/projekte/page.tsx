@@ -417,12 +417,12 @@ const ProjectCard = ({ project, index, isFeatured = false }: { project: typeof p
               </div>
             )}
             <div className="min-w-0">
-              <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#FFFFFF] mb-2 tracking-tight break-words">{project.title}</h3>
-              <p className="text-xl md:text-2xl text-[#A45CFF] font-medium mb-4 break-words">
+              <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 tracking-tight break-words typography-h2 typography-h2-gradient">{project.title}</h3>
+              <p className="text-xl md:text-2xl typography-h2-gradient font-medium mb-4 break-words">
                 {project.subtitle}
               </p>
             </div>
-            <p className="text-lg md:text-xl text-[#E5E7EB] font-light leading-relaxed break-words">
+            <p className="text-lg md:text-xl typography-body leading-relaxed break-words">
               {project.description}
             </p>
             <div className="space-y-3">
@@ -434,7 +434,7 @@ const ProjectCard = ({ project, index, isFeatured = false }: { project: typeof p
               ))}
             </div>
             <div className="mt-8 p-6 rounded-neural min-w-0" style={{ background: "rgba(164, 92, 255, 0.05)", border: "1px solid rgba(164, 92, 255, 0.2)" }}>
-              <p className="text-lg md:text-xl text-[#A45CFF] font-medium italic leading-relaxed break-words">
+              <p className="text-lg md:text-xl typography-h2-gradient font-medium italic leading-relaxed break-words">
                 „{project.quote}"
               </p>
             </div>
@@ -495,10 +495,16 @@ export default function ProjektePage() {
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="space-y-6"
           >
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-[#FFFFFF] tracking-tight break-words">
-              Projekte & <span className="text-[#A45CFF]" style={{ textShadow: "0 0 40px rgba(164, 92, 255, 0.6)" }}>Systeme im Einsatz</span>
-            </h1>
-            <p className="text-xl md:text-2xl lg:text-3xl text-[#E5E7EB] font-light max-w-4xl mx-auto leading-relaxed break-words">
+            <motion.h1 
+              className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight break-words typography-h1 typography-h1-gradient"
+              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Projekte & <span className="typography-h1-gradient">Systeme im Einsatz</span>
+            </motion.h1>
+            <p className="text-xl md:text-2xl lg:text-3xl typography-body max-w-4xl mx-auto leading-relaxed break-words">
               Hier sehen Sie eine Auswahl von Systemen, die wir für reale Unternehmensprozesse konzipiert und entwickelt haben – von KI-gestützter Logistik bis zu individuellen Operating-Systemen.
             </p>
             <p className="text-lg md:text-xl text-[#A45CFF] font-medium break-words">
@@ -538,9 +544,15 @@ export default function ProjektePage() {
               border: "1px solid rgba(164, 92, 255, 0.2)",
             }}
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#FFFFFF] mb-6 tracking-tight break-words">
-              Bereit für Ihr <span className="text-[#A45CFF]" style={{ textShadow: "0 0 20px rgba(164, 92, 255, 0.4)" }}>eigenes System</span>?
-            </h2>
+            <motion.h2 
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 tracking-tight break-words typography-h1 typography-h1-gradient"
+              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Bereit für Ihr <span className="typography-h1-gradient">eigenes System</span>?
+            </motion.h2>
             <p className="text-lg md:text-xl text-[#E5E7EB] font-light leading-relaxed mb-8 max-w-2xl mx-auto break-words">
               Wenn Sie sich vorstellen können, ein ähnliches System für Ihr Unternehmen aufzubauen, lassen Sie uns über Ihre Prozesse sprechen. Wir zeigen Ihnen transparent, was möglich ist.
             </p>

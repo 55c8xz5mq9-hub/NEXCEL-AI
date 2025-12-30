@@ -19,6 +19,14 @@ export default function WhatsAppChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [unreadCount, setUnreadCount] = useState(1);
+  const [isAdminPage, setIsAdminPage] = useState(false);
+
+  useEffect(() => {
+    // Hide on admin pages
+    if (typeof window !== "undefined") {
+      setIsAdminPage(window.location.pathname.startsWith("/admin"));
+    }
+  }, []);
 
   useEffect(() => {
     // Simulate online status (replace with API later)
@@ -27,6 +35,11 @@ export default function WhatsAppChat() {
     }, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Don't render on admin pages
+  if (isAdminPage) {
+    return null;
+  }
 
   const handleDirectWhatsApp = () => {
     window.open("https://wa.me/message/BTSGZLCN6GLFA1", "_blank", "noopener,noreferrer");

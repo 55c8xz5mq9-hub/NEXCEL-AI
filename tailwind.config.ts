@@ -44,7 +44,8 @@ const config: Config = {
         hologram: "0 0 40px rgba(107, 45, 184, 0.2), inset 0 0 20px rgba(139, 109, 184, 0.1)",
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Inter', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['var(--font-body)', '-apple-system', 'BlinkMacSystemFont', 'Inter', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'],
+        headline: ['var(--font-headline)', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'system-ui', 'sans-serif'],
       },
       backdropBlur: {
         xs: "2px",

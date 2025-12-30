@@ -3,6 +3,79 @@
 @tailwind utilities;
 
 /* ============================================
+   TYPOGRAPHY SYSTEM - Premium Business Level
+   ============================================ */
+
+/* Global Headline Font for all H1-H3 */
+h1, h2, h3 {
+  font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Navigation Items - Headline Font */
+nav a,
+nav button,
+.neural-nav-link {
+  font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* CTA Buttons - Headline Font */
+.neural-button-primary,
+.neural-button-secondary,
+.neural-button-hologram,
+button[class*="neural-button"],
+a[class*="neural-button"] {
+  font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Body Text - Body Font */
+p,
+span,
+div,
+li,
+td,
+th,
+label,
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea,
+select {
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Card Titles and Subtitles - Headline Font */
+[class*="card"] h3,
+[class*="Card"] h3,
+h3[class*="title"],
+h3[class*="Title"] {
+  font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Card Descriptions and Body Text - Body Font */
+[class*="card"] p,
+[class*="Card"] p,
+p[class*="description"],
+p[class*="Description"],
+p[class*="subline"],
+p[class*="Subline"] {
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================
    HIGH-END FLOATING ELEMENTS - APPLE iOS 26 / TESLA UI LEVEL
    WhatsApp Chat & Cookie Banner - Always Visible, Responsive, DSGVO-konform
    ============================================ */
@@ -833,10 +906,10 @@ div[class*="content"] {
   cursor: pointer;
   position: relative;
   box-shadow: 
-    0 4px 20px rgba(124, 58, 237, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    0 2px 12px rgba(124, 58, 237, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
   overflow: hidden;
 }
 
@@ -851,11 +924,12 @@ div[class*="content"] {
 }
 
 .neural-button-primary:hover {
+  background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 50%, #C4B5FD 100%);
   box-shadow: 
-    0 6px 30px rgba(124, 58, 237, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+    0 4px 16px rgba(124, 58, 237, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 .neural-button-primary:hover::before {
@@ -871,17 +945,17 @@ div[class*="content"] {
 
 /* Secondary Button - Glassmorphism Style */
 .neural-button-secondary {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
   position: relative;
   box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    0 2px 12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
   overflow: hidden;
 }
 
@@ -896,12 +970,12 @@ div[class*="content"] {
 }
 
 .neural-button-secondary:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
   box-shadow: 
-    0 6px 30px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
 }
 
 .neural-button-secondary:hover::before {
@@ -1069,4 +1143,109 @@ div[class*="content"] {
   .neural-nav-link::before {
     background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, transparent 50%);
   }
+}
+
+/* ============================================
+   CENTRAL TYPOGRAPHY SYSTEM - CONTACT PAGE STANDARD
+   Apple/Tesla-level consistency across all pages
+   ============================================ */
+
+/* H1 Headlines - Gradient Text with Glow - Pure Purple Only */
+.typography-h1 {
+  font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.typography-h1-gradient {
+  background: linear-gradient(to right, #F1E9FF 0%, #C6A8FF 50%, #8A5CFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200%;
+  filter: drop-shadow(0 0 12px rgba(180, 140, 255, 0.15));
+  animation: gradientShift 8s linear infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* H2/H3 Subheadings - Gradient with reduced saturation - Pure Purple Only */
+.typography-h2,
+.typography-h3 {
+  font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.typography-h2-gradient,
+.typography-h3-gradient {
+  background: linear-gradient(to right, rgba(241, 233, 255, 0.95) 0%, rgba(198, 168, 255, 0.9) 50%, rgba(138, 92, 255, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200%;
+  filter: drop-shadow(0 0 15px rgba(180, 140, 255, 0.2));
+  animation: gradientShift 8s linear infinite;
+}
+
+/* Body Text - High readability */
+.typography-body {
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.typography-body-secondary {
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  color: rgba(229, 231, 235, 0.85);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headline Animation - Smooth entrance */
+.typography-animate-headline {
+  animation: headlineEntrance 0.7s cubic-bezier(0.16, 1, 0.36, 1) forwards;
+}
+
+@keyframes headlineEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* Hover Effects for Interactive Text - Pure Purple Only */
+.typography-hover-glow {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.typography-hover-glow:hover {
+  filter: drop-shadow(0 0 30px rgba(180, 140, 255, 0.4));
+  letter-spacing: 0.01em;
 }

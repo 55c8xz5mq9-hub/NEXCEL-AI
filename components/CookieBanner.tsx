@@ -28,6 +28,7 @@ export default function CookieBanner() {
   const { theme } = useTheme();
   const [showModal, setShowModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isAdminPage, setIsAdminPage] = useState(false);
   const [hasConsent, setHasConsent] = useState(false);
   const [consent, setConsent] = useState<CookieConsent>({
     essential: true,
@@ -37,6 +38,16 @@ export default function CookieBanner() {
   });
 
   useEffect(() => {
+    // Hide on admin pages
+    if (typeof window !== "undefined") {
+      setIsAdminPage(window.location.pathname.startsWith("/admin"));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Don't initialize consent on admin pages
+    if (isAdminPage) return;
+    
     const existingConsent = getCookieConsent();
     if (existingConsent) {
       setHasConsent(true);
@@ -45,7 +56,7 @@ export default function CookieBanner() {
       // Show modal after 2 seconds
       setTimeout(() => setShowModal(true), 2000);
     }
-  }, []);
+  }, [isAdminPage]);
 
   const handleEssentialOnly = () => {
     setEssentialOnly();
@@ -69,6 +80,11 @@ export default function CookieBanner() {
   const handleOpenModal = () => {
     setShowModal(true);
   };
+
+  // Don't render on admin pages - must be after all hooks
+  if (isAdminPage) {
+    return null;
+  }
 
   return (
     <>
