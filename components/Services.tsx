@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { memo } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { KIAutomationIcon, SoftwareSystemsIcon, WorkflowDashboardIcon, ApiIntegrationIcon } from "@/components/PremiumIcons";
 
 const services = [
   {
@@ -130,63 +129,134 @@ const ServiceCard = memo(({ service, index }: { service: typeof services[0]; ind
 
         {/* Content */}
         <div className="relative z-10 p-6 md:p-8 flex flex-col flex-1 items-center">
-          {/* 3D Visualization Section - Hyper 3D Neural Network for KI-Automation */}
+          {/* System Diagram Visualizations */}
           {service.title === "KI-Automationen & autonome Agenten" ? (
-            <div className="mb-6 flex justify-center items-center">
-              <div className="relative w-full h-56 md:h-64 flex items-center justify-center" style={{ transform: "scale(0.88)" }}>
-                <KIAutomationIcon className="w-full h-full" />
+            <div className="mb-6 flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
+              <div className="relative w-full h-full flex items-center justify-center">
+                {/* Central Core */}
+                <div className="absolute w-10 h-10 rounded-full border-2 border-purple-400/80 bg-purple-500/10 flex items-center justify-center">
+                  <div className="w-4 h-4 rounded-full bg-purple-300/80" />
+                </div>
+                {/* Agent Nodes around Core */}
+                {[0, 1, 2, 3, 4].map((i) => {
+                  const angle = (i * 360) / 5;
+                  const radius = 40;
+                  const x = Math.cos((angle * Math.PI) / 180) * radius;
+                  const y = Math.sin((angle * Math.PI) / 180) * radius;
+                  return (
+                    <div key={i} className="absolute" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                      <div className="w-6 h-6 rounded-full border border-sky-400/60 bg-sky-500/20 flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-sky-300/80" />
+                      </div>
+                      {/* Connection Line */}
+                      <div 
+                        className="absolute top-1/2 left-1/2 w-px bg-gradient-to-b from-purple-400/40 to-sky-400/40"
+                        style={{
+                          height: `${radius}px`,
+                          transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+                          transformOrigin: 'top center',
+                        }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ) : service.title === "Individuelle Softwaresysteme" ? (
-            <div className="mb-6 flex justify-center items-center">
-              <div className="relative w-full h-56 md:h-64 flex items-center justify-center" style={{ transform: "scale(0.88)" }}>
-                <SoftwareSystemsIcon className="w-full h-full" />
+            <div className="mb-6 flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
+              <div className="relative w-full h-full flex items-center justify-center">
+                {/* Grid of Modules */}
+                <div className="grid grid-cols-3 gap-2">
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="w-6 h-6 rounded-sm border border-purple-400/60 bg-purple-500/20 flex items-center justify-center">
+                      <div className="w-2 h-1 rounded-full bg-purple-300/60" />
+                    </div>
+                  ))}
+                </div>
+                {/* Central Block (larger) */}
+                <div className="absolute w-12 h-12 rounded-lg border-2 border-purple-400/80 bg-purple-500/15 flex items-center justify-center">
+                  <div className="w-6 h-1 rounded-full bg-purple-300/80" />
+                </div>
+                {/* Connection Lines */}
+                {[0, 1, 2, 3, 4, 5].map((i) => {
+                  const positions = [
+                    { x: -20, y: -20 }, { x: 0, y: -20 }, { x: 20, y: -20 },
+                    { x: -20, y: 20 }, { x: 0, y: 20 }, { x: 20, y: 20 },
+                  ];
+                  const pos = positions[i];
+                  return (
+                    <div
+                      key={i}
+                      className="absolute top-1/2 left-1/2 w-px bg-gradient-to-b from-purple-400/30 to-purple-400/30"
+                      style={{
+                        height: `${Math.sqrt(pos.x * pos.x + pos.y * pos.y)}px`,
+                        transform: `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotate(${Math.atan2(pos.y, pos.x) * 180 / Math.PI}deg)`,
+                        transformOrigin: 'top center',
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
           ) : service.title === "Workflow-Systeme & Steuerungs-Dashboards" ? (
-            <div className="mb-6 flex justify-center items-center">
-              <div className="relative w-full h-56 md:h-64 flex items-center justify-center" style={{ transform: "scale(0.88)" }}>
-                <WorkflowDashboardIcon className="w-full h-full" />
+            <div className="mb-6 flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
+              <div className="relative w-full h-full flex items-center justify-center">
+                {/* Central Timeline/Bar */}
+                <div className="absolute w-32 h-2 rounded-full bg-gradient-to-r from-purple-400/40 via-purple-400/60 to-purple-400/40" />
+                {/* Widget Nodes (Columns) */}
+                {[0, 1, 2, 3].map((i) => {
+                  const x = (i - 1.5) * 24;
+                  return (
+                    <div key={i} className="absolute" style={{ transform: `translateX(${x}px)` }}>
+                      <div className="w-8 h-12 rounded-sm border border-sky-400/60 bg-sky-500/20 flex flex-col items-center justify-center gap-1">
+                        <div className="w-4 h-1 rounded-full bg-sky-300/60" />
+                        <div className="w-3 h-1 rounded-full bg-sky-300/40" />
+                      </div>
+                      {/* Connection to Timeline */}
+                      <div 
+                        className="absolute top-0 left-1/2 w-px bg-gradient-to-b from-sky-400/40 to-purple-400/40"
+                        style={{ height: '20px', transform: 'translateX(-50%)' }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ) : service.title === "System-Integrationen & API-Engineering" ? (
-            <div className="mb-6 flex justify-center items-center">
-              <div className="relative w-full h-56 md:h-64 flex items-center justify-center" style={{ transform: "scale(0.88)" }}>
-                <ApiIntegrationIcon className="w-full h-full" />
-              </div>
-            </div>
-          ) : (
-            <div className={`mb-6 flex justify-center items-center transition-colors duration-500 ${
-              theme === "dark" ? "text-[#A45CFF]" : "text-[#7C3AED]"
-            }`}>
-              <div className="relative w-28 h-28 md:w-32 md:h-32 flex items-center justify-center" style={{ transform: "scale(0.88)" }}>
-                {/* Icon Glow Background */}
-                <div
-                  className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{
-                    background: "radial-gradient(circle, rgba(168, 85, 247, 0.3), rgba(139, 92, 246, 0.2), transparent)",
-                    filter: "blur(20px)",
-                    transform: "scale(1.2)",
-                  }}
-                />
-                {/* Icon Container */}
-                <div className="relative z-10 w-full h-full flex items-center justify-center">
-                  <div className="w-16 h-16 md:w-20 md:h-20">
-                    {service.icon}
+            <div className="mb-6 flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
+              <div className="relative w-full h-full flex items-center justify-center gap-4">
+                {/* Left System Blocks */}
+                <div className="flex flex-col gap-2">
+                  <div className="w-8 h-6 rounded-sm border border-purple-400/60 bg-purple-500/20 flex items-center justify-center">
+                    <div className="w-3 h-1 rounded-full bg-purple-300/60" />
+                  </div>
+                  <div className="w-8 h-6 rounded-sm border border-purple-400/50 bg-purple-500/15 flex items-center justify-center">
+                    <div className="w-3 h-1 rounded-full bg-purple-300/50" />
                   </div>
                 </div>
-                {/* Icon Outer Glow */}
-                <div
-                  className="absolute inset-0 rounded-full opacity-30 group-hover:opacity-60 transition-opacity duration-500"
-                  style={{
-                    background: "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)",
-                    filter: "blur(15px)",
-                    transform: "scale(1.3)",
-                  }}
-                />
+                {/* Central Integration Node */}
+                <div className="relative flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full border-2 border-emerald-400/80 bg-emerald-500/15 flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-full border border-emerald-300/60 flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-emerald-300/80" />
+                    </div>
+                  </div>
+                  {/* Connection Lines */}
+                  <div className="absolute left-1/2 top-1/2 w-8 h-px bg-gradient-to-r from-purple-400/40 to-emerald-400/40" style={{ transform: 'translate(-100%, -50%)' }} />
+                  <div className="absolute right-1/2 top-1/2 w-8 h-px bg-gradient-to-l from-emerald-400/40 to-sky-400/40" style={{ transform: 'translate(100%, -50%)' }} />
+                </div>
+                {/* Right System Blocks */}
+                <div className="flex flex-col gap-2">
+                  <div className="w-8 h-6 rounded-sm border border-sky-400/60 bg-sky-500/20 flex items-center justify-center">
+                    <div className="w-3 h-1 rounded-full bg-sky-300/60" />
+                  </div>
+                  <div className="w-8 h-6 rounded-sm border border-sky-400/50 bg-sky-500/15 flex items-center justify-center">
+                    <div className="w-3 h-1 rounded-full bg-sky-300/50" />
+                  </div>
+                </div>
               </div>
             </div>
-          )}
+          ) : null}
 
           {/* Text Content - Flex Grow for Alignment */}
           <div className="text-center flex flex-col flex-1 justify-end w-full">
@@ -230,7 +300,10 @@ ServiceCard.displayName = "ServiceCard";
 export default function Services() {
   const { theme } = useTheme();
   return (
-    <section id="services" className="relative py-12 md:py-16 px-4 sm:px-6 overflow-hidden">
+    <section 
+      id="services" 
+      className="relative pt-[72px] md:pt-[104px] lg:pt-[150px] pb-12 md:pb-16 px-4 sm:px-6 overflow-hidden"
+    >
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div

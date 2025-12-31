@@ -3,15 +3,27 @@
 @tailwind utilities;
 
 /* ============================================
-   TYPOGRAPHY SYSTEM - Premium Business Level
+   TYPOGRAPHY SYSTEM - Future-Premium
    ============================================ */
 
-/* Global Headline Font for all H1-H3 */
-h1, h2, h3 {
+/* Global Headline Font for all H1-H4 - Future-Premium */
+h1, h2, h3, h4 {
   font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-  letter-spacing: -0.02em;
+  line-height: 1.05;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* H1 Headlines - Future-Premium */
+h1 {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* Subheadlines (H2-H4) - Future-Premium */
+h2, h3, h4 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 /* Navigation Items - Headline Font */
@@ -19,59 +31,86 @@ nav a,
 nav button,
 .neural-nav-link {
   font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* CTA Buttons - Headline Font */
+/* CTA Buttons & Labels - Future-Premium */
 .neural-button-primary,
 .neural-button-secondary,
 .neural-button-hologram,
 button[class*="neural-button"],
-a[class*="neural-button"] {
+a[class*="neural-button"],
+label,
+[class*="label"] {
   font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Body Text - Body Font */
+/* Body Text - Future-Premium */
 p,
 span,
 div,
 li,
 td,
 th,
-label,
 input[type="text"],
 input[type="email"],
 input[type="tel"],
 textarea,
 select {
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.55;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Card Titles and Subtitles - Headline Font */
+/* Body Text Medium Weight */
+p[class*="medium"],
+span[class*="medium"],
+div[class*="medium"] {
+  font-weight: 500;
+}
+
+/* Card Titles and Subtitles - Headline Font - Future-Premium */
 [class*="card"] h3,
 [class*="Card"] h3,
 h3[class*="title"],
 h3[class*="Title"] {
   font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
 }
 
-/* Card Descriptions and Body Text - Body Font */
+/* Card Subtitles - Future-Premium */
+[class*="card"] h4,
+[class*="Card"] h4,
+h4[class*="subtitle"],
+h4[class*="Subtitle"],
+p[class*="subtitle"],
+p[class*="Subtitle"] {
+  font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+/* Card Descriptions and Body Text - Body Font - Future-Premium */
 [class*="card"] p,
 [class*="Card"] p,
 p[class*="description"],
-p[class*="Description"],
-p[class*="subline"],
-p[class*="Subline"] {
+p[class*="Description"] {
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.55;
   letter-spacing: -0.01em;
 }
 
@@ -1150,12 +1189,12 @@ div[class*="content"] {
    Apple/Tesla-level consistency across all pages
    ============================================ */
 
-/* H1 Headlines - Gradient Text with Glow - Pure Purple Only */
+/* H1 Headlines - Gradient Text with Glow - Future-Premium */
 .typography-h1 {
   font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
   font-weight: 700;
   letter-spacing: -0.03em;
-  line-height: 1.15;
+  line-height: 1.05;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -1179,13 +1218,13 @@ div[class*="content"] {
   }
 }
 
-/* H2/H3 Subheadings - Gradient with reduced saturation - Pure Purple Only */
+/* H2/H3 Subheadings - Gradient with reduced saturation - Future-Premium */
 .typography-h2,
 .typography-h3 {
   font-family: var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
   font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -1201,12 +1240,12 @@ div[class*="content"] {
   animation: gradientShift 8s linear infinite;
 }
 
-/* Body Text - High readability */
+/* Body Text - High readability - Future-Premium */
 .typography-body {
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
   color: rgba(255, 255, 255, 0.9);
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.55;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -1216,7 +1255,7 @@ div[class*="content"] {
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
   color: rgba(229, 231, 235, 0.85);
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.55;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -1248,4 +1287,26 @@ div[class*="content"] {
 .typography-hover-glow:hover {
   filter: drop-shadow(0 0 30px rgba(180, 140, 255, 0.4));
   letter-spacing: 0.01em;
+}
+
+/* ============================================
+   3D VISUAL ANIMATIONS - Autonome KI-Systeme
+   ============================================ */
+
+@keyframes float-soft {
+  0%, 100% { 
+    transform: translate3d(0, 0, 0); 
+  }
+  50% { 
+    transform: translate3d(0, -6px, 8px); 
+  }
+}
+
+.visual-3d {
+  transform-style: preserve-3d;
+  animation: float-soft 7s ease-in-out infinite;
+}
+
+.group:hover .visual-3d {
+  transform: translate3d(0, -8px, 12px) rotateX(6deg) rotateY(-6deg);
 }

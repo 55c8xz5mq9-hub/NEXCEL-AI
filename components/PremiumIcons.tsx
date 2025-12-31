@@ -1528,41 +1528,57 @@ export const RouteMapDriverVisual = ({ className = "w-full h-full" }: { classNam
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid meet"
     >
-      {/* Kleine Karte (Map) */}
-      <rect x="20" y="20" width="360" height="180" rx="8" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1.5" />
+      <defs>
+        <linearGradient id="route-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="rgba(6, 182, 212, 0.4)" />
+          <stop offset="50%" stopColor="rgba(14, 165, 233, 0.5)" />
+          <stop offset="100%" stopColor="rgba(6, 182, 212, 0.4)" />
+        </linearGradient>
+        <filter id="route-glow-filter">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
       
-      {/* Route-Linie auf Karte */}
+      {/* Kleine Karte (Map) */}
+      <rect x="20" y="20" width="360" height="180" rx="8" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(6, 182, 212, 0.3)" strokeWidth="1.5" />
+      
+      {/* Route-Linie auf Karte - Cyan/Blue */}
       <path
         d="M 40 100 Q 120 60, 200 80 T 360 100"
         fill="none"
-        stroke="rgba(255, 255, 255, 0.25)"
+        stroke="url(#route-glow)"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeDasharray="6 4"
+        filter="url(#route-glow-filter)"
       />
       
-      {/* Start-Punkt */}
-      <circle cx="40" cy="100" r="6" fill="rgba(255, 255, 255, 0.4)" stroke="rgba(255, 255, 255, 0.6)" strokeWidth="1.5" />
-      {/* Ziel-Punkt */}
-      <circle cx="360" cy="100" r="6" fill="rgba(255, 255, 255, 0.4)" stroke="rgba(255, 255, 255, 0.6)" strokeWidth="1.5" />
+      {/* Start-Punkt - Cyan */}
+      <circle cx="40" cy="100" r="6" fill="rgba(6, 182, 212, 0.6)" stroke="rgba(14, 165, 233, 0.8)" strokeWidth="1.5" filter="url(#route-glow-filter)" />
+      {/* Ziel-Punkt - Cyan */}
+      <circle cx="360" cy="100" r="6" fill="rgba(6, 182, 212, 0.6)" stroke="rgba(14, 165, 233, 0.8)" strokeWidth="1.5" filter="url(#route-glow-filter)" />
       
-      {/* Zwischenpunkte */}
-      <circle cx="200" cy="80" r="4" fill="rgba(255, 255, 255, 0.3)" />
+      {/* Zwischenpunkte - Cyan */}
+      <circle cx="200" cy="80" r="4" fill="rgba(6, 182, 212, 0.5)" filter="url(#route-glow-filter)" />
       
-      {/* Fahrer (unten) */}
+      {/* Fahrer (unten) - Cyan Accents */}
       <g transform="translate(180, 220)">
         {/* Fahrer-Avatar */}
-        <circle cx="0" cy="0" r="20" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
-        <circle cx="0" cy="-5" r="8" fill="rgba(255, 255, 255, 0.2)" />
-        <rect x="-6" y="2" width="12" height="12" rx="2" fill="rgba(255, 255, 255, 0.15)" />
+        <circle cx="0" cy="0" r="20" fill="rgba(6, 182, 212, 0.1)" stroke="rgba(14, 165, 233, 0.4)" strokeWidth="1.5" />
+        <circle cx="0" cy="-5" r="8" fill="rgba(6, 182, 212, 0.3)" />
+        <rect x="-6" y="2" width="12" height="12" rx="2" fill="rgba(6, 182, 212, 0.2)" stroke="rgba(14, 165, 233, 0.3)" strokeWidth="0.5" />
         
-        {/* Fahrer-Info */}
-        <rect x="30" y="-8" width="80" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
-        <rect x="30" y="2" width="60" height="5" rx="2" fill="rgba(255, 255, 255, 0.1)" />
+        {/* Fahrer-Info - Cyan Tint */}
+        <rect x="30" y="-8" width="80" height="6" rx="2" fill="rgba(6, 182, 212, 0.25)" />
+        <rect x="30" y="2" width="60" height="5" rx="2" fill="rgba(6, 182, 212, 0.15)" />
       </g>
       
-      {/* Verbindungslinie: Karte → Fahrer */}
-      <line x1="200" y1="200" x2="200" y2="200" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" strokeDasharray="2 2" />
+      {/* Verbindungslinie: Karte → Fahrer - Cyan */}
+      <line x1="200" y1="200" x2="200" y2="200" stroke="rgba(6, 182, 212, 0.2)" strokeWidth="1" strokeDasharray="2 2" />
     </svg>
   );
 };
@@ -1577,37 +1593,52 @@ export const ProcessFlowVisual = ({ className = "w-full h-full" }: { className?:
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid meet"
     >
-      {/* Ticket (Links) */}
-      <rect x="30" y="100" width="100" height="80" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
-      <rect x="40" y="110" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
-      <rect x="40" y="125" width="60" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
-      <rect x="40" y="135" width="70" height="6" rx="2" fill="rgba(255, 255, 255, 0.15)" />
-      <rect x="40" y="145" width="50" height="6" rx="2" fill="rgba(255, 255, 255, 0.1)" />
+      <defs>
+        <linearGradient id="process-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="rgba(168, 85, 247, 0.4)" />
+          <stop offset="50%" stopColor="rgba(139, 92, 246, 0.5)" />
+          <stop offset="100%" stopColor="rgba(168, 85, 247, 0.4)" />
+        </linearGradient>
+        <filter id="process-glow-filter">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
       
-      {/* Pfeil: Ticket → Kalender */}
-      <path d="M 140 140 L 180 140" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="2" fill="none" strokeLinecap="round" />
-      <polygon points="175,138 180,140 175,142" fill="rgba(255, 255, 255, 0.3)" />
+      {/* Ticket (Links) - Purple Accents */}
+      <rect x="30" y="100" width="100" height="80" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(168, 85, 247, 0.4)" strokeWidth="1.5" />
+      <rect x="40" y="110" width="80" height="8" rx="2" fill="rgba(168, 85, 247, 0.3)" />
+      <rect x="40" y="125" width="60" height="6" rx="2" fill="rgba(139, 92, 246, 0.25)" />
+      <rect x="40" y="135" width="70" height="6" rx="2" fill="rgba(139, 92, 246, 0.25)" />
+      <rect x="40" y="145" width="50" height="6" rx="2" fill="rgba(168, 85, 247, 0.2)" />
       
-      {/* Kalender (Mitte) */}
-      <rect x="190" y="100" width="100" height="80" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
-      {/* Kalender-Grid */}
-      <g opacity="0.3">
+      {/* Pfeil: Ticket → Kalender - Purple */}
+      <path d="M 140 140 L 180 140" stroke="rgba(168, 85, 247, 0.5)" strokeWidth="2" fill="none" strokeLinecap="round" filter="url(#process-glow-filter)" />
+      <polygon points="175,138 180,140 175,142" fill="rgba(168, 85, 247, 0.5)" />
+      
+      {/* Kalender (Mitte) - Purple Accents */}
+      <rect x="190" y="100" width="100" height="80" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(168, 85, 247, 0.4)" strokeWidth="1.5" />
+      {/* Kalender-Grid - Purple Tint */}
+      <g opacity="0.4">
         {[0, 1, 2].map((row) => (
-          <line key={`h-${row}`} x1="200" y1={115 + row * 15} x2="280" y2={115 + row * 15} stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" />
+          <line key={`h-${row}`} x1="200" y1={115 + row * 15} x2="280" y2={115 + row * 15} stroke="rgba(168, 85, 247, 0.2)" strokeWidth="1" />
         ))}
         {[0, 1, 2, 3, 4].map((col) => (
-          <line key={`v-${col}`} x1={200 + col * 20} y1="110" x2={200 + col * 20} y2="170" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" />
+          <line key={`v-${col}`} x1={200 + col * 20} y1="110" x2={200 + col * 20} y2="170" stroke="rgba(168, 85, 247, 0.2)" strokeWidth="1" />
         ))}
       </g>
-      <rect x="200" y="110" width="80" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+      <rect x="200" y="110" width="80" height="8" rx="2" fill="rgba(168, 85, 247, 0.3)" />
       
-      {/* Pfeil: Kalender → Haken */}
-      <path d="M 300 140 L 340 140" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="2" fill="none" strokeLinecap="round" />
-      <polygon points="335,138 340,140 335,142" fill="rgba(255, 255, 255, 0.3)" />
+      {/* Pfeil: Kalender → Haken - Purple */}
+      <path d="M 300 140 L 340 140" stroke="rgba(168, 85, 247, 0.5)" strokeWidth="2" fill="none" strokeLinecap="round" filter="url(#process-glow-filter)" />
+      <polygon points="335,138 340,140 335,142" fill="rgba(168, 85, 247, 0.5)" />
       
-      {/* Haken (Rechts) */}
-      <circle cx="370" cy="140" r="20" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1.5" />
-      <path d="M 360 140 L 365 145 L 380 130" stroke="rgba(255, 255, 255, 0.6)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Haken (Rechts) - Purple/Green Mix */}
+      <circle cx="370" cy="140" r="20" fill="rgba(168, 85, 247, 0.15)" stroke="rgba(139, 92, 246, 0.5)" strokeWidth="1.5" />
+      <path d="M 360 140 L 365 145 L 380 130" stroke="rgba(34, 197, 94, 0.8)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" filter="url(#process-glow-filter)" />
     </svg>
   );
 };
@@ -1622,40 +1653,55 @@ export const MachineStatusVisual = ({ className = "w-full h-full" }: { className
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid meet"
     >
-      {/* Maschine (Links) */}
-      <rect x="30" y="80" width="120" height="100" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
-      {/* Maschinen-Elemente */}
-      <rect x="50" y="100" width="30" height="30" rx="4" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.12)" strokeWidth="1" />
-      <rect x="100" y="100" width="30" height="30" rx="4" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.12)" strokeWidth="1" />
-      <line x1="80" y1="140" x2="100" y2="140" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="90" cy="140" r="4" fill="rgba(255, 255, 255, 0.3)" />
+      <defs>
+        <linearGradient id="machine-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="rgba(34, 197, 94, 0.4)" />
+          <stop offset="50%" stopColor="rgba(16, 185, 129, 0.5)" />
+          <stop offset="100%" stopColor="rgba(34, 197, 94, 0.4)" />
+        </linearGradient>
+        <filter id="machine-glow-filter">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
       
-      {/* Status-Anzeige (Mitte) */}
+      {/* Maschine (Links) - Green Accents */}
+      <rect x="30" y="80" width="120" height="100" rx="8" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(34, 197, 94, 0.4)" strokeWidth="1.5" />
+      {/* Maschinen-Elemente - Green Tint */}
+      <rect x="50" y="100" width="30" height="30" rx="4" fill="rgba(34, 197, 94, 0.15)" stroke="rgba(16, 185, 129, 0.3)" strokeWidth="1" />
+      <rect x="100" y="100" width="30" height="30" rx="4" fill="rgba(34, 197, 94, 0.15)" stroke="rgba(16, 185, 129, 0.3)" strokeWidth="1" />
+      <line x1="80" y1="140" x2="100" y2="140" stroke="rgba(34, 197, 94, 0.4)" strokeWidth="2" strokeLinecap="round" filter="url(#machine-glow-filter)" />
+      <circle cx="90" cy="140" r="4" fill="rgba(34, 197, 94, 0.5)" filter="url(#machine-glow-filter)" />
+      
+      {/* Status-Anzeige (Mitte) - Green Accents */}
       <g transform="translate(180, 100)">
         {/* Status-Box */}
-        <rect x="0" y="0" width="80" height="60" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
-        {/* Status-Bars */}
-        <rect x="10" y="15" width="60" height="4" rx="2" fill="rgba(255, 255, 255, 0.2)" />
-        <rect x="10" y="25" width="45" height="4" rx="2" fill="rgba(255, 255, 255, 0.15)" />
-        <rect x="10" y="35" width="55" height="4" rx="2" fill="rgba(255, 255, 255, 0.15)" />
-        {/* Status-Indikator */}
-        <circle cx="70" cy="30" r="5" fill="rgba(34, 197, 94, 0.4)" stroke="rgba(34, 197, 94, 0.6)" strokeWidth="1" />
+        <rect x="0" y="0" width="80" height="60" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(34, 197, 94, 0.4)" strokeWidth="1.5" />
+        {/* Status-Bars - Green Gradient */}
+        <rect x="10" y="15" width="60" height="4" rx="2" fill="rgba(34, 197, 94, 0.4)" />
+        <rect x="10" y="25" width="45" height="4" rx="2" fill="rgba(16, 185, 129, 0.35)" />
+        <rect x="10" y="35" width="55" height="4" rx="2" fill="rgba(34, 197, 94, 0.35)" />
+        {/* Status-Indikator - Enhanced Green */}
+        <circle cx="70" cy="30" r="5" fill="rgba(34, 197, 94, 0.5)" stroke="rgba(16, 185, 129, 0.8)" strokeWidth="1" filter="url(#machine-glow-filter)" />
       </g>
       
-      {/* Qualitätscheck (Rechts) */}
+      {/* Qualitätscheck (Rechts) - Enhanced Green */}
       <g transform="translate(290, 100)">
         {/* Check-Box */}
-        <rect x="0" y="0" width="60" height="60" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
-        {/* Checkmark */}
-        <circle cx="30" cy="30" r="15" fill="rgba(34, 197, 94, 0.1)" stroke="rgba(34, 197, 94, 0.4)" strokeWidth="1.5" />
-        <path d="M 22 30 L 28 36 L 38 24" stroke="rgba(34, 197, 94, 0.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        {/* Qualitäts-Text */}
-        <text x="30" y="75" textAnchor="middle" fontSize="10" fill="rgba(255, 255, 255, 0.5)">OK</text>
+        <rect x="0" y="0" width="60" height="60" rx="6" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(34, 197, 94, 0.4)" strokeWidth="1.5" />
+        {/* Checkmark - Enhanced Green */}
+        <circle cx="30" cy="30" r="15" fill="rgba(34, 197, 94, 0.2)" stroke="rgba(16, 185, 129, 0.6)" strokeWidth="1.5" filter="url(#machine-glow-filter)" />
+        <path d="M 22 30 L 28 36 L 38 24" stroke="rgba(34, 197, 94, 0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" filter="url(#machine-glow-filter)" />
+        {/* Qualitäts-Text - Green */}
+        <text x="30" y="75" textAnchor="middle" fontSize="10" fill="rgba(34, 197, 94, 0.7)">OK</text>
       </g>
       
-      {/* Verbindungslinien */}
-      <line x1="150" y1="130" x2="180" y2="130" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" strokeDasharray="3 3" />
-      <line x1="260" y1="130" x2="290" y2="130" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" strokeDasharray="3 3" />
+      {/* Verbindungslinien - Green */}
+      <line x1="150" y1="130" x2="180" y2="130" stroke="rgba(34, 197, 94, 0.3)" strokeWidth="1.5" strokeDasharray="3 3" filter="url(#machine-glow-filter)" />
+      <line x1="260" y1="130" x2="290" y2="130" stroke="rgba(34, 197, 94, 0.3)" strokeWidth="1.5" strokeDasharray="3 3" filter="url(#machine-glow-filter)" />
     </svg>
   );
 };

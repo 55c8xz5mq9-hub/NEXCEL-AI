@@ -201,13 +201,13 @@ export default function MonolithCard({
             </div>
           )}
 
-          {/* Row 2: Title - Fixed Height, alle Cards identisch */}
+          {/* Row 2: Title - Fixed Height, alle Cards identisch - Future-Premium */}
           <h3
             className="text-xl md:text-2xl font-bold tracking-tight text-center flex items-center justify-center"
             style={{
               color: theme === "dark" ? "#FFFFFF" : "#000000",
               textShadow: theme === "dark" ? "0 0 30px rgba(168, 85, 247, 0.3)" : "none",
-              lineHeight: "1.2",
+              lineHeight: "1.05",
               height: "clamp(28px, 3.5vw, 56px)",
               paddingBottom: "clamp(8px, 1vw, 12px)",
               boxSizing: "border-box",
@@ -220,13 +220,13 @@ export default function MonolithCard({
             {title}
           </h3>
 
-          {/* Row 3: Subtitle - Fixed Height, alle Cards identisch */}
+          {/* Row 3: Subtitle - Fixed Height, alle Cards identisch - Future-Premium */}
           <p
             className="text-xs md:text-sm font-medium text-center flex items-center justify-center"
             style={{
               color: theme === "dark" ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.6)",
               opacity: 0.85,
-              lineHeight: "1.4",
+              lineHeight: "1.55",
               height: "clamp(20px, 2.5vw, 28px)",
               paddingBottom: "clamp(12px, 1.5vw, 16px)",
               boxSizing: "border-box",

@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const ChronexDashboard = () => {
   const stats = [
@@ -475,10 +476,13 @@ const ProjectCard = ({ project, index, isFeatured = false }: { project: typeof p
 };
 
 export default function ProjektePage() {
+  const { theme } = useTheme();
   return (
     <main className="relative min-h-screen overflow-hidden">
       <Navigation />
-      <section className="relative min-h-[60vh] flex items-center justify-center py-32 px-6">
+      <section 
+        className="relative min-h-[60vh] flex items-center justify-center pt-[144px] md:pt-[152px] lg:pt-[168px] pb-32 px-6"
+      >
         <div className="absolute inset-0 z-0 pointer-events-none">
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-20"
@@ -496,13 +500,13 @@ export default function ProjektePage() {
             className="space-y-6"
           >
             <motion.h1 
-              className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight break-words typography-h1 typography-h1-gradient"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight break-words typography-h1 typography-h1-gradient"
               initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              Projekte & <span className="typography-h1-gradient">Systeme im Einsatz</span>
+              <span className="typography-h1-gradient">Projekte & Systeme im Einsatz</span>
             </motion.h1>
             <p className="text-xl md:text-2xl lg:text-3xl typography-body max-w-4xl mx-auto leading-relaxed break-words">
               Hier sehen Sie eine Auswahl von Systemen, die wir für reale Unternehmensprozesse konzipiert und entwickelt haben – von KI-gestützter Logistik bis zu individuellen Operating-Systemen.
@@ -513,7 +517,7 @@ export default function ProjektePage() {
           </motion.div>
         </div>
       </section>
-      <section className="relative py-20 md:py-32 px-6">
+      <section className="relative pt-[60px] md:pt-[52px] lg:pt-[40px] pb-20 md:pb-32 px-6">
         <div className="absolute inset-0 z-0 pointer-events-none">
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-20"
@@ -556,23 +560,127 @@ export default function ProjektePage() {
             <p className="text-lg md:text-xl text-[#E5E7EB] font-light leading-relaxed mb-8 max-w-2xl mx-auto break-words">
               Wenn Sie sich vorstellen können, ein ähnliches System für Ihr Unternehmen aufzubauen, lassen Sie uns über Ihre Prozesse sprechen. Wir zeigen Ihnen transparent, was möglich ist.
             </p>
-            <Link href="/kontakt" prefetch={true}>
+            <Link href="/kontakt" prefetch={true} className="w-full sm:w-auto">
               <motion.button
-                className="neural-button-primary px-8 sm:px-10 py-4 sm:py-5 rounded-neural font-semibold text-sm sm:text-base whitespace-nowrap"
-                style={{
-                  background: "#0C0F1A",
-                  border: "1px solid rgba(164, 92, 255, 0.3)",
-                  boxShadow: "0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
-                }}
-                whileHover={{
-                  scale: 1.02,
-                  y: -1,
-                  borderColor: "rgba(164, 92, 255, 0.6)",
-                  boxShadow: "0 6px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 30px rgba(164, 92, 255, 0.25)",
-                }}
-                whileTap={{ scale: 0.98 }}
+                className="relative px-6 sm:px-8 md:px-10 lg:px-12 py-3 sm:py-4 md:py-5 rounded-[16px] sm:rounded-[18px] lg:rounded-[20px] font-semibold text-xs sm:text-sm md:text-base tracking-wide overflow-hidden group/cta-projekte whitespace-nowrap w-full sm:w-auto"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ scale: 1.06, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                style={{ willChange: "transform" }}
               >
-                Kostenlose Systemanalyse anfragen
+                {/* Base Gradient Background - Apple Intelligence Style */}
+                <div
+                  className="absolute inset-0 rounded-[20px] transition-all duration-500"
+                  style={{
+                    background: theme === "dark"
+                      ? "linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 25%, rgba(99, 102, 241, 0.40) 50%, rgba(139, 92, 246, 0.45) 75%, rgba(168, 85, 247, 0.35) 100%)"
+                      : "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(139, 92, 246, 0.5) 25%, rgba(99, 102, 241, 0.45) 50%, rgba(139, 92, 246, 0.5) 75%, rgba(124, 58, 237, 0.4) 100%)",
+                    backdropFilter: "blur(40px) saturate(200%)",
+                    WebkitBackdropFilter: "blur(40px) saturate(200%)",
+                  }}
+                />
+
+                {/* Glassmorphic Overlay */}
+                <div
+                  className="absolute inset-0 rounded-[20px] transition-all duration-500"
+                  style={{
+                    background: theme === "dark"
+                      ? "linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 30%, rgba(255, 255, 255, 0.08) 60%, rgba(255, 255, 255, 0.04) 100%)"
+                      : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.90) 30%, rgba(255, 255, 255, 0.85) 60%, rgba(255, 255, 255, 0.80) 100%)",
+                    border: theme === "dark"
+                      ? "1px solid rgba(255, 255, 255, 0.25)"
+                      : "1px solid rgba(255, 255, 255, 0.4)",
+                    boxShadow: theme === "dark"
+                      ? "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset, 0 1px 3px rgba(255, 255, 255, 0.1) inset"
+                      : "0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset, 0 1px 3px rgba(255, 255, 255, 0.2) inset",
+                  }}
+                />
+
+                {/* Pulsing Neon Outline - Ultra Subtle */}
+                <motion.div
+                  className="absolute -inset-[2px] rounded-[22px] pointer-events-none -z-10"
+                  animate={{
+                    opacity: [0.5, 0.8, 0.5],
+                    boxShadow: [
+                      "0 0 20px rgba(168, 85, 247, 0.4), 0 0 40px rgba(139, 92, 246, 0.3), 0 0 60px rgba(99, 102, 241, 0.2)",
+                      "0 0 35px rgba(168, 85, 247, 0.6), 0 0 70px rgba(139, 92, 246, 0.5), 0 0 100px rgba(99, 102, 241, 0.4)",
+                      "0 0 20px rgba(168, 85, 247, 0.4), 0 0 40px rgba(139, 92, 246, 0.3), 0 0 60px rgba(99, 102, 241, 0.2)",
+                    ],
+                  }}
+                  transition={{
+                    duration: 3.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  style={{
+                    background: theme === "dark"
+                      ? "linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(139, 92, 246, 0.4), rgba(99, 102, 241, 0.3))"
+                      : "linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(139, 92, 246, 0.45), rgba(99, 102, 241, 0.35))",
+                    filter: "blur(8px)",
+                  }}
+                />
+
+                {/* Horizontal Highlight - Lying Effect - Ultra Refined */}
+                <motion.div
+                  className="absolute top-0 left-0 h-full rounded-[20px] pointer-events-none"
+                  animate={{
+                    opacity: [0.3, 0.5, 0.3],
+                    x: ["-50%", "150%", "-50%"],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                  style={{
+                    width: "40%",
+                    background: theme === "dark"
+                      ? "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.25), transparent)"
+                      : "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.4), transparent)",
+                    filter: "blur(6px)",
+                  }}
+                />
+
+                {/* Radial Glow from Center */}
+                <motion.div
+                  className="absolute inset-0 rounded-[20px] pointer-events-none opacity-0 group-hover/cta-projekte:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: theme === "dark"
+                      ? "radial-gradient(ellipse at center, rgba(168, 85, 247, 0.25), transparent 70%)"
+                      : "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.2), transparent 70%)",
+                    filter: "blur(20px)",
+                  }}
+                />
+
+                {/* Content - Responsive Text */}
+                <span className="relative z-10 flex items-center justify-center gap-1.5 lg:gap-2 xl:gap-2.5" style={{ color: "#FFFFFF" }}>
+                  <span className="font-semibold tracking-wide">Kostenlose Systemanalyse anfragen</span>
+                  <motion.svg
+                    className="w-3.5 h-3.5 lg:w-4 lg:h-4 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                    initial={{ x: 0 }}
+                    whileHover={{ x: 3 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </motion.svg>
+                </span>
+
+                {/* Hover State Enhancement */}
+                <motion.div
+                  className="absolute inset-0 rounded-[20px] pointer-events-none opacity-0 group-hover/cta-projekte:opacity-100 transition-opacity duration-500"
+                  style={{
+                    boxShadow: theme === "dark"
+                      ? "0 12px 48px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.2) inset, 0 0 60px rgba(168, 85, 247, 0.3), 0 0 100px rgba(139, 92, 246, 0.2)"
+                      : "0 12px 48px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(255, 255, 255, 0.4) inset, 0 0 50px rgba(124, 58, 237, 0.25), 0 0 80px rgba(139, 92, 246, 0.15)",
+                  }}
+                />
               </motion.button>
             </Link>
           </motion.div>

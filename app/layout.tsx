@@ -2,20 +2,23 @@ import type { Metadata } from "next";
 import "./globals.css";
 import dynamic from "next/dynamic";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 
-// Headline Font - Elegant, Modern Sans
-const spaceGrotesk = Space_Grotesk({
+// Headline Font - Future-Premium
+// General Sans ist eine kommerzielle Schrift (Fontshare)
+// Plus Jakarta Sans wird als hochwertige Alternative verwendet (ähnliche moderne Sans)
+// Falls General Sans verfügbar ist, kann es hier als localFont eingefügt werden
+const generalSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-headline",
   display: "swap",
 });
 
-// Body Font - High-quality, Readable Sans
+// Body Font - Inter (Future-Premium)
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600"],
   variable: "--font-body",
   display: "swap",
 });
@@ -54,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de" className={`dark ${spaceGrotesk.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="de" className={`dark ${generalSans.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
