@@ -18,6 +18,12 @@ export async function POST(req: NextRequest) {
     let user;
     try {
       user = findUserByEmail(email);
+      console.log("Login attempt for:", email);
+      console.log("User found:", user ? "YES" : "NO");
+      if (user) {
+        console.log("User email:", user.email);
+        console.log("User role:", user.role);
+      }
     } catch (error) {
       console.error("Error finding user:", error);
       return NextResponse.json(
@@ -27,6 +33,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!user) {
+      console.log("User not found for email:", email);
       return NextResponse.json(
         { error: "Ungültige E-Mail-Adresse oder Passwort." },
         { status: 401 }
@@ -45,6 +52,7 @@ export async function POST(req: NextRequest) {
     let isValidPassword;
     try {
       isValidPassword = await bcrypt.compare(password, user.passwordHash);
+      console.log("Password comparison result:", isValidPassword);
     } catch (error) {
       console.error("Error comparing password:", error);
       return NextResponse.json(
@@ -54,6 +62,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!isValidPassword) {
+      console.log("Password mismatch for user:", user.email);
       return NextResponse.json(
         { error: "Ungültige E-Mail-Adresse oder Passwort." },
         { status: 401 }
