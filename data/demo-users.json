@@ -1,0 +1,12 @@
+[
+  {
+    "id": "admin_1767005090605_6w09y6hvh",
+    "email": "celina.siebeneicher@outlook.de",
+    "name": "Celina",
+    "passwordHash": "$2b$10$4rYUgcNlUCAqpaA7ZtQuE.WOWA1qua9UxY6Be3yb7d2iD3sM5L9du",
+    "role": "admin",
+    "createdAt": "2025-12-29T10:44:50.605Z",
+    "expiresAt": "2035-12-29T10:44:50.603Z",
+    "lastLogin": "2025-12-29T10:45:54.800Z"
+  }
+]
