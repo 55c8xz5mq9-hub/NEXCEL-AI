@@ -91,17 +91,45 @@ function ensureDataDir() {
  * Lädt alle Kontakte - funktioniert überall
  */
 export async function getAllContacts(): Promise<any[]> {
-  // Versuche zuerst Vercel KV (Production)
+  // In Serverless: Versuche zuerst API-Storage (funktioniert ohne externe DB)
   if (IS_SERVERLESS) {
     try {
-      const client = await getDBClient();
-      if (client) {
-        const contacts = await client.get("contacts") || [];
-        console.log(`✅ [STANDALONE DB] Loaded ${contacts.length} contacts from Vercel KV`);
-        return Array.isArray(contacts) ? contacts : [];
+      // Versuche interne API-Route (funktioniert immer in Production)
+      const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+      
+      try {
+        const response = await fetch(`${baseUrl}/api/contacts-storage`, {
+          cache: 'no-store',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const contacts = data.contacts || [];
+          console.log(`✅ [STANDALONE DB] Loaded ${contacts.length} contacts from API storage`);
+          return Array.isArray(contacts) 
+            ? contacts.sort((a: any, b: any) => 
+                new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+              )
+            : [];
+        }
+      } catch (apiError) {
+        console.warn("⚠️ [STANDALONE DB] API storage failed, trying database client:", apiError);
+      }
+      
+      // Versuche Datenbank-Client (Vercel KV oder Upstash)
+      try {
+        const client = await getDBClient();
+        if (client) {
+          const contacts = await client.get("contacts") || [];
+          console.log(`✅ [STANDALONE DB] Loaded ${contacts.length} contacts from database`);
+          return Array.isArray(contacts) ? contacts : [];
+        }
+      } catch (error) {
+        console.warn("⚠️ [STANDALONE DB] Database client failed, using JSON:", error);
       }
     } catch (error) {
-      console.warn("⚠️ [STANDALONE DB] Database client failed, using JSON:", error);
+      console.warn("⚠️ [STANDALONE DB] All storage methods failed, using JSON:", error);
     }
   }
 
