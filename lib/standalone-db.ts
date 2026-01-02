@@ -12,40 +12,53 @@ const DATA_DIR = IS_SERVERLESS
   ? "/tmp/data" 
   : path.join(process.cwd(), "data");
 
-// Vercel KV Client (lazy load)
-let kv: any = null;
+// Database Client (lazy load) - unterstützt Vercel KV und Upstash Redis
+let dbClient: any = null;
 
 /**
- * Initialisiert Vercel KV (nur in Production auf Vercel)
+ * Initialisiert Datenbank-Client (Vercel KV oder Upstash Redis)
  */
-async function getKVClient() {
+async function getDBClient() {
   if (!IS_SERVERLESS) {
     return null; // Nicht auf Vercel, verwende JSON
   }
 
-  if (!kv) {
+  if (!dbClient) {
+    // Versuche zuerst Vercel KV
     try {
-      // @ts-ignore - Vercel KV ist automatisch verfügbar wenn installiert
       const { kv: vercelKV } = await import("@vercel/kv");
-      kv = vercelKV;
-      
-      // Teste die Verbindung
+      dbClient = vercelKV;
       try {
-        await kv.ping();
+        await dbClient.ping();
         console.log("✅ [STANDALONE DB] Vercel KV initialized and connected");
-        return kv;
+        return dbClient;
       } catch (pingError) {
-        console.warn("⚠️ [STANDALONE DB] Vercel KV ping failed, using JSON fallback:", pingError);
-        kv = null;
-        return null;
+        console.warn("⚠️ [STANDALONE DB] Vercel KV ping failed, trying Upstash:", pingError);
+        dbClient = null;
       }
     } catch (error) {
-      console.warn("⚠️ [STANDALONE DB] Vercel KV not available, using JSON fallback:", error);
-      return null;
+      console.warn("⚠️ [STANDALONE DB] Vercel KV not available, trying Upstash:", error);
     }
+
+    // Fallback: Versuche Upstash Redis
+    try {
+      if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+        const { Redis } = await import("@upstash/redis");
+        dbClient = new Redis({
+          url: process.env.UPSTASH_REDIS_REST_URL,
+          token: process.env.UPSTASH_REDIS_REST_TOKEN,
+        });
+        console.log("✅ [STANDALONE DB] Upstash Redis initialized");
+        return dbClient;
+      }
+    } catch (error) {
+      console.warn("⚠️ [STANDALONE DB] Upstash Redis not available, using JSON fallback:", error);
+    }
+
+    return null;
   }
 
-  return kv;
+  return dbClient;
 }
 
 /**
@@ -81,9 +94,9 @@ export async function getAllContacts(): Promise<any[]> {
   // Versuche zuerst Vercel KV (Production)
   if (IS_SERVERLESS) {
     try {
-      const kvClient = await getKVClient();
-      if (kvClient) {
-        const contacts = await kvClient.get("contacts") || [];
+      const client = await getDBClient();
+      if (client) {
+        const contacts = await client.get("contacts") || [];
         console.log(`✅ [STANDALONE DB] Loaded ${contacts.length} contacts from Vercel KV`);
         return Array.isArray(contacts) ? contacts : [];
       }
@@ -137,19 +150,19 @@ export async function saveContactStandalone(contact: {
     emailVerified: false,
   };
 
-  // Versuche zuerst Vercel KV (Production)
+  // Versuche zuerst Datenbank-Client (Vercel KV oder Upstash)
   if (IS_SERVERLESS) {
     try {
-      const kvClient = await getKVClient();
-      if (kvClient) {
+      const client = await getDBClient();
+      if (client) {
         const contacts = await getAllContacts();
         contacts.push(newContact);
-        await kvClient.set("contacts", contacts);
-        console.log("✅ [STANDALONE DB] Contact saved to Vercel KV:", newContact.id);
+        await client.set("contacts", contacts);
+        console.log("✅ [STANDALONE DB] Contact saved to database:", newContact.id);
         return newContact;
       }
     } catch (error) {
-      console.warn("⚠️ [STANDALONE DB] Vercel KV failed, using JSON:", error);
+      console.warn("⚠️ [STANDALONE DB] Database client failed, using JSON:", error);
     }
   }
 
@@ -262,22 +275,22 @@ export async function updateContactStandalone(
   id: string,
   updates: Partial<{ read: boolean; archived: boolean }>
 ): Promise<any | null> {
-  // Versuche zuerst Vercel KV
+  // Versuche zuerst Datenbank-Client
   if (IS_SERVERLESS) {
     try {
-      const kvClient = await getKVClient();
-      if (kvClient) {
+      const client = await getDBClient();
+      if (client) {
         const contacts = await getAllContacts();
         const index = contacts.findIndex((c: any) => c.id === id);
         if (index === -1) return null;
         
         contacts[index] = { ...contacts[index], ...updates };
-        await kvClient.set("contacts", contacts);
-        console.log("✅ [STANDALONE DB] Contact updated in Vercel KV:", id);
+        await client.set("contacts", contacts);
+        console.log("✅ [STANDALONE DB] Contact updated in database:", id);
         return contacts[index];
       }
     } catch (error) {
-      console.warn("⚠️ [STANDALONE DB] Vercel KV failed, using JSON:", error);
+      console.warn("⚠️ [STANDALONE DB] Database client failed, using JSON:", error);
     }
   }
 
@@ -311,13 +324,13 @@ export async function deleteContactStandalone(id: string): Promise<boolean> {
   // Versuche zuerst Vercel KV
   if (IS_SERVERLESS) {
     try {
-      const kvClient = await getKVClient();
-      if (kvClient) {
+      const client = await getDBClient();
+      if (client) {
         const contacts = await getAllContacts();
         const filtered = contacts.filter((c: any) => c.id !== id);
         if (filtered.length === contacts.length) return false;
         
-        await kvClient.set("contacts", filtered);
+        await client.set("contacts", filtered);
         console.log("✅ [STANDALONE DB] Contact deleted from Vercel KV:", id);
         return true;
       }
