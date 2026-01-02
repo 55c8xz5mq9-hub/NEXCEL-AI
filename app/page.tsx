@@ -51,40 +51,54 @@ type Project = {
   link: string;
 };
 
-const projects: Project[] = [
-  {
-    title: "Chronex AI",
-    subtitle: "KI-Logistiksystem",
-    description: "Autonome Tourenoptimierung für Speditionen. Reduziert Verwaltungsaufwand um 70%.",
-    dashboard: ChronexDashboard,
-    features: ["Automatische Disposition", "Echtzeit-Tracking", "Routenoptimierung", "24/7 Automation"],
-    link: "/projekte",
-  },
-  {
-    title: "Pflege-CRM",
-    subtitle: "Automatisierte Verwaltung",
-    description: "KI-gestütztes CRM für Pflegedienste. Automatisierte Dokumentation, intelligente Planung.",
-    dashboard: PflegeDashboard,
-    features: ["Automatische Dokumentation", "Intelligente Planung", "DSGVO-konform", "Mobile App"],
-    link: "/projekte",
-  },
-  {
-    title: "Content-OS",
-    subtitle: "Social Media Planning",
-    description: "Zentrale Plattform zum Planen, Schreiben und Veröffentlichen von Social-Media-Content – mit KI-Unterstützung, Vorlagen und Freigabe-Prozessen.",
-    dashboard: ContentOSDashboard,
-    features: ["Content-Kalender", "KI-Textgenerierung", "Freigabe-Workflows", "Multi-Channel Publishing"],
-    link: "/projekte",
-  },
-  {
-    title: "NEXCEL Core",
-    subtitle: "Operations Dashboard",
-    description: "Ein Dashboard, das Kennzahlen, Automationen und Systemzustände bündelt – für schnelle Entscheidungen und klare Übersicht.",
-    dashboard: NEXCELCoreDashboard,
-    features: ["Echtzeit-Monitoring", "KI-Systemsteuerung", "Performance-Analytics", "Alert-Management"],
-    link: "/projekte",
-  },
-];
+// Dynamic imports for dashboard components - defined as functions to avoid SSR issues
+const ChronexDashboard = dynamic(() => import("@/components/ChronexDashboard"), {
+  ssr: false,
+  loading: () => <div className="h-64 bg-white/[0.02] rounded-xl animate-pulse" />
+});
+
+const PflegeDashboard = dynamic(() => import("@/components/PflegeDashboard"), {
+  ssr: false,
+  loading: () => <div className="h-64 bg-white/[0.02] rounded-xl animate-pulse" />
+});
+
+// Projects array - defined as function to ensure client-side only execution
+function getProjects(): Project[] {
+  return [
+    {
+      title: "Chronex AI",
+      subtitle: "KI-Logistiksystem",
+      description: "Autonome Tourenoptimierung für Speditionen. Reduziert Verwaltungsaufwand um 70%.",
+      dashboard: ChronexDashboard,
+      features: ["Automatische Disposition", "Echtzeit-Tracking", "Routenoptimierung", "24/7 Automation"],
+      link: "/projekte",
+    },
+    {
+      title: "Pflege-CRM",
+      subtitle: "Automatisierte Verwaltung",
+      description: "KI-gestütztes CRM für Pflegedienste. Automatisierte Dokumentation, intelligente Planung.",
+      dashboard: PflegeDashboard,
+      features: ["Automatische Dokumentation", "Intelligente Planung", "DSGVO-konform", "Mobile App"],
+      link: "/projekte",
+    },
+    {
+      title: "Content-OS",
+      subtitle: "Social Media Planning",
+      description: "Zentrale Plattform zum Planen, Schreiben und Veröffentlichen von Social-Media-Content – mit KI-Unterstützung, Vorlagen und Freigabe-Prozessen.",
+      dashboard: ContentOSDashboard,
+      features: ["Content-Kalender", "KI-Textgenerierung", "Freigabe-Workflows", "Multi-Channel Publishing"],
+      link: "/projekte",
+    },
+    {
+      title: "NEXCEL Core",
+      subtitle: "Operations Dashboard",
+      description: "Ein Dashboard, das Kennzahlen, Automationen und Systemzustände bündelt – für schnelle Entscheidungen und klare Übersicht.",
+      dashboard: NEXCELCoreDashboard,
+      features: ["Echtzeit-Monitoring", "KI-Systemsteuerung", "Performance-Analytics", "Alert-Management"],
+      link: "/projekte",
+    },
+  ];
+}
 
 const ProjectCard = memo(({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) => {
   const { theme } = useTheme();
@@ -240,6 +254,9 @@ function ProjectsSection() {
   const [isMobile, setIsMobile] = useState(false);
   const [mobileCardIndex, setMobileCardIndex] = useState(0);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  
+  // Get projects array (client-side only)
+  const projects = useMemo(() => getProjects(), []);
   
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -834,16 +851,6 @@ const DashboardPreview = dynamic(() => import("@/components/DashboardPreview"), 
   loading: () => <div className="h-96 bg-white/[0.02] rounded-2xl animate-pulse" />
 });
 
-const ChronexDashboard = dynamic(() => import("@/components/ChronexDashboard"), {
-  ssr: false,
-  loading: () => <div className="h-64 bg-white/[0.02] rounded-xl animate-pulse" />
-});
-
-const PflegeDashboard = dynamic(() => import("@/components/PflegeDashboard"), {
-  ssr: false,
-  loading: () => <div className="h-64 bg-white/[0.02] rounded-xl animate-pulse" />
-});
-
 const MonolithCard = dynamic(() => import("@/components/MonolithCard"), {
   ssr: true,
 });
@@ -1395,6 +1402,108 @@ const ProblemCardMobile = memo(({ item, index, theme }: { item: any; index: numb
 ));
 ProblemCardMobile.displayName = "ProblemCardMobile";
 
+// Manual Problems Slider Component
+type ManualProblem = {
+  id: number;
+  title: string;
+  text: string;
+  imageAlt: string;
+};
+
+function ManualProblemsSlider({ problems }: { problems: ManualProblem[] }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+
+  const lastIndex = problems.length - 1;
+
+  const goNext = () => {
+    setActiveIndex(prev => (prev === lastIndex ? 0 : prev + 1));
+  };
+
+  const goPrev = () => {
+    setActiveIndex(prev => (prev === 0 ? lastIndex : prev - 1));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+
+    if (Math.abs(diff) > 40) {
+      if (diff < 0) goNext();
+      else goPrev();
+    }
+    touchStartX.current = null;
+  };
+
+  return (
+    <div className="md:hidden mt-10 relative">
+      {/* Karten-Viewport */}
+      <div
+        className="relative overflow-hidden rounded-[32px]"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div
+          className="flex transition-transform duration-300 ease-out"
+          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+        >
+          {problems.map(problem => (
+            <div
+              key={problem.id}
+              className="min-w-full px-4"
+            >
+              <div className="rounded-[32px] border border-white/8 bg-gradient-to-b from-[#2d2450]/80 to-[#120f26]/90 p-6 pb-7 text-center shadow-[0_0_40px_rgba(0,0,0,0.6)]">
+                <h3 className="mt-6 text-lg font-semibold text-white">
+                  {problem.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-white/70">
+                  {problem.text}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Pfeile */}
+      <button
+        type="button"
+        onClick={goPrev}
+        className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur hover:bg-white/10 text-white text-xl"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        onClick={goNext}
+        className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur hover:bg-white/10 text-white text-xl"
+      >
+        ›
+      </button>
+
+      {/* Dots */}
+      <div className="mt-5 flex justify-center gap-2">
+        {problems.map((p, index) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => setActiveIndex(index)}
+            className={`h-2.5 rounded-full transition-all ${
+              index === activeIndex
+                ? 'w-6 bg-gradient-to-r from-[#b26dff] to-[#ff5fd2]'
+                : 'w-2.5 bg-white/20'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const { theme } = useTheme();
   
@@ -1412,6 +1521,28 @@ export default function Home() {
       document.body.style.background = bodyBackground;
     }
   }, [bodyBackground]);
+
+  // Manual Problems Data - defined inside component to avoid scope issues
+  const manualProblemsData = useMemo(() => [
+    {
+      id: 1,
+      title: 'Zettelwirtschaft',
+      text: 'Zettel, Excel und WhatsApp regeln den Alltag – nichts ist wirklich im System.',
+      imageAlt: 'Zettelwirtschaft Illustration',
+    },
+    {
+      id: 2,
+      title: 'Personalbindung',
+      text: 'Wissen steckt in Köpfen statt in Systemen. Fällt jemand aus, steht alles still.',
+      imageAlt: 'Personalbindung Illustration',
+    },
+    {
+      id: 3,
+      title: 'Fehler & Verluste',
+      text: 'Medienbrüche und Copy-Paste führen zu Fehlern, Verzögerungen und Mehrarbeit.',
+      imageAlt: 'Fehler und Verluste Illustration',
+    },
+  ], []);
 
   // Memoize data arrays
   const stats = useMemo(() => [
@@ -1635,8 +1766,28 @@ export default function Home() {
             </motion.h2>
           </motion.div>
 
-          {/* Problems Slider - Mobile optimized */}
-          <ProblemsSlider problemItems={problemItems} theme={theme} />
+          {/* Manual Problems Section - Desktop Grid + Mobile Slider */}
+          <section id="manual-processes" className="relative">
+            {/* Desktop / Tablet: Grid */}
+            <div className="hidden md:grid md:grid-cols-3 md:gap-8">
+              {manualProblemsData.map(problem => (
+                <div
+                  key={problem.id}
+                  className="rounded-[32px] border border-white/8 bg-gradient-to-b from-[#2d2450]/80 to-[#120f26]/90 p-8 text-center shadow-[0_0_40px_rgba(0,0,0,0.5)]"
+                >
+                  <h3 className="mt-8 text-xl font-semibold text-white">
+                    {problem.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-white/70">
+                    {problem.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile: Slider */}
+            <ManualProblemsSlider problems={manualProblemsData} />
+          </section>
         </div>
       </section>
 

@@ -27,7 +27,21 @@ export async function GET(request: NextRequest) {
     // Sort by newest first
     filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    return NextResponse.json({ contacts: filtered });
+    // Transform contacts to match AdminDashboard interface
+    const transformedContacts = filtered.map(contact => ({
+      id: contact.id,
+      name: `${contact.vorname} ${contact.nachname}`,
+      email: contact.email,
+      telefon: contact.telefon,
+      unternehmen: contact.unternehmen,
+      betreff: contact.betreff,
+      nachricht: contact.nachricht,
+      createdAt: contact.createdAt,
+      read: contact.read,
+      archived: contact.archived,
+    }));
+
+    return NextResponse.json({ contacts: transformedContacts });
   } catch (error) {
     console.error("Error fetching contacts:", error);
     return NextResponse.json(

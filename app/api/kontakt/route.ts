@@ -4,44 +4,7 @@ export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    // Check required environment variables FIRST
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const FROM_EMAIL = process.env.FROM_EMAIL;
-    const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-    const VERCEL_URL = process.env.VERCEL_URL;
-
-    console.log("🔍 [KONTAKT API] Environment Check:");
-    console.log("  RESEND_API_KEY:", RESEND_API_KEY ? "✅ Set" : "❌ Missing");
-    console.log("  FROM_EMAIL:", FROM_EMAIL ? `✅ Set (${FROM_EMAIL})` : "❌ Missing");
-    console.log("  NEXT_PUBLIC_BASE_URL:", NEXT_PUBLIC_BASE_URL ? `✅ Set (${NEXT_PUBLIC_BASE_URL})` : "❌ Missing");
-    console.log("  VERCEL_URL:", VERCEL_URL ? `✅ Set (${VERCEL_URL})` : "❌ Missing");
-
-    if (!RESEND_API_KEY) {
-      const error = new Error("RESEND_API_KEY is not configured in environment variables");
-      console.error("❌ [KONTAKT API] Environment Check Failed:", error.message);
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      );
-    }
-
-    if (!FROM_EMAIL) {
-      const error = new Error("FROM_EMAIL is not configured in environment variables");
-      console.error("❌ [KONTAKT API] Environment Check Failed:", error.message);
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      );
-    }
-
-    if (!NEXT_PUBLIC_BASE_URL && !VERCEL_URL) {
-      const error = new Error("NEXT_PUBLIC_BASE_URL or VERCEL_URL must be configured in environment variables");
-      console.error("❌ [KONTAKT API] Environment Check Failed:", error.message);
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      );
-    }
+    // No email configuration needed - contacts are stored in database and shown in Admin Dashboard
 
     // Parse request body
     let body;
@@ -88,7 +51,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save to database/CMS (optional - may fail in serverless environments)
+    // Save to database - CRITICAL: This is the primary storage method
     let contact: { id: string; verificationToken?: string } | null = null;
     try {
       const { saveContact } = await import("@/lib/database");
@@ -103,14 +66,13 @@ export async function POST(request: NextRequest) {
       });
       console.log("✅ [KONTAKT API] Contact saved to database:", contact.id);
     } catch (err) {
-      // Database save failed (e.g., read-only filesystem in serverless)
-      // Continue anyway - we'll still send emails
-      console.warn("⚠️ [KONTAKT API] Database Save Failed (continuing anyway):", err instanceof Error ? err.message : String(err));
-      // Generate a temporary ID and token for email verification
-      contact = {
-        id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        verificationToken: `verify_${Date.now()}_${Math.random().toString(36).substr(2, 16)}`,
-      };
+      // Database save failed - this is critical, return error
+      const error = new Error(`Failed to save contact to database: ${err instanceof Error ? err.message : String(err)}`);
+      console.error("❌ [KONTAKT API] Database Save Failed:", error.message);
+      return NextResponse.json(
+        { success: false, error: "Fehler beim Speichern der Anfrage. Bitte versuchen Sie es später erneut." },
+        { status: 500 }
+      );
     }
 
     // Track analytics (non-blocking, optional)
@@ -129,82 +91,13 @@ export async function POST(request: NextRequest) {
       console.warn("⚠️ [KONTAKT API] Analytics tracking failed (non-critical):", err);
     }
 
-    // Ensure verification token exists (generate if not present)
-    if (!contact.verificationToken) {
-      contact.verificationToken = `verify_${Date.now()}_${Math.random().toString(36).substr(2, 16)}`;
-    }
-
-    // Send confirmation email synchronously - must succeed before response
-    try {
-      const { sendConfirmationEmail } = await import("@/lib/email");
-      
-      console.log("📧 [KONTAKT API] Sending confirmation email to:", email);
-      const confirmationResult = await sendConfirmationEmail({
-        vorname: trimmedVorname,
-        nachname: trimmedNachname,
-        email: trimmedEmail,
-        telefon: trimmedTelefon,
-        unternehmen: trimmedUnternehmen,
-        betreff: trimmedBetreff,
-        nachricht: trimmedNachricht,
-      }, contact.verificationToken);
-
-      if (!confirmationResult.success) {
-        const error = new Error(`Failed to send confirmation email: ${confirmationResult.error || "Unknown error"}`);
-        console.error("❌ [KONTAKT API] Email Send Failed:", error.message);
-        return NextResponse.json(
-          { success: false, error: error.message },
-          { status: 500 }
-        );
-      }
-
-      console.log("✅ [KONTAKT API] Confirmation email sent successfully");
-
-      // Mark email as sent (optional - may fail in serverless)
-      try {
-        const { markContactEmailSent } = await import("@/lib/database");
-        markContactEmailSent(contact.id);
-      } catch (err) {
-        console.warn("⚠️ [KONTAKT API] Failed to mark email as sent (non-critical):", err);
-      }
-    } catch (err) {
-      const error = new Error(`Email sending exception: ${err instanceof Error ? err.message : String(err)}`);
-      console.error("❌ [KONTAKT API] Email Send Exception:", error.message);
-      console.error("❌ [KONTAKT API] Full Error:", err);
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      );
-    }
-
-    // Send notification email to admin (CRITICAL - must succeed)
-    // This is the primary way the admin receives contact form submissions
-    try {
-      const { sendAdminNotification } = await import("@/lib/email");
-      const adminResult = await sendAdminNotification({
-        vorname: trimmedVorname,
-        nachname: trimmedNachname,
-        email: trimmedEmail,
-        telefon: trimmedTelefon,
-        unternehmen: trimmedUnternehmen,
-        betreff: trimmedBetreff,
-        nachricht: trimmedNachricht,
-      }, contact.id);
-      
-      if (!adminResult.success) {
-        console.error("❌ [KONTAKT API] Admin notification failed:", adminResult.error);
-        // Don't fail the entire request, but log it
-      } else {
-        console.log("✅ [KONTAKT API] Admin notification sent successfully");
-      }
-    } catch (err) {
-      console.error("❌ [KONTAKT API] Admin notification exception:", err);
-      // Don't fail the entire request, but log it
-    }
+    // Contact is now saved in database and will appear in Admin Dashboard
+    // No email sending - all contacts are managed through the admin interface
+    console.log("✅ [KONTAKT API] Contact saved successfully. Available in Admin Dashboard.");
 
     return NextResponse.json({ 
       success: true,
-      message: "Ihre Anfrage wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigungs-E-Mail.",
+      message: "Ihre Anfrage wurde erfolgreich übermittelt. Wir werden uns schnellstmöglich bei Ihnen melden.",
       contactId: contact.id,
     }, { status: 200 });
   } catch (error) {

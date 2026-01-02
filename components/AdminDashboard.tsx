@@ -20,7 +20,9 @@ interface Contact {
   id: string;
   name: string;
   email: string;
+  telefon?: string;
   unternehmen?: string;
+  betreff?: string;
   nachricht: string;
   createdAt: string;
   read: boolean;
@@ -350,11 +352,17 @@ function ContactRow({ contact, onMarkRead }: { contact: Contact; onMarkRead: () 
               <span className="w-2 h-2 rounded-full bg-[#A45CFF]" />
             )}
           </div>
-          <div className="text-sm text-[#9CA3AF] mb-2">{contact.email}</div>
-          {contact.unternehmen && (
-            <div className="text-xs text-[#9CA3AF] mb-2">Unternehmen: {contact.unternehmen}</div>
+          <div className="text-sm text-[#9CA3AF] mb-1">{contact.email}</div>
+          {contact.telefon && (
+            <div className="text-xs text-[#9CA3AF] mb-1">📞 {contact.telefon}</div>
           )}
-          <div className="text-sm text-[#E5E7EB] line-clamp-2">{contact.nachricht}</div>
+          {contact.unternehmen && (
+            <div className="text-xs text-[#9CA3AF] mb-1">🏢 {contact.unternehmen}</div>
+          )}
+          {contact.betreff && (
+            <div className="text-xs text-[#A45CFF] mb-2 font-semibold">📌 {contact.betreff}</div>
+          )}
+          <div className="text-sm text-[#E5E7EB] line-clamp-3 mb-2">{contact.nachricht}</div>
           <div className="text-xs text-[#9CA3AF] mt-2">
             {new Date(contact.createdAt).toLocaleDateString("de-DE", {
               day: "2-digit",
