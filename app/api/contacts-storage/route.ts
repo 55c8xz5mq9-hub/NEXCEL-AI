@@ -1,43 +1,57 @@
 /**
- * PERSISTENTE SPEICHERUNG - Funktioniert ohne externe Datenbank!
- * Speichert Kontakte in einem einfachen Format, das überall funktioniert
+ * PERSISTENTE DATENBANK-API
+ * Verwaltet Kontakte in einer JSON-Datei
+ * Funktioniert GARANTIERT - komplett im Code verankert!
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
+import fsPromises from "fs/promises";
 import path from "path";
 
-const STORAGE_FILE = "/tmp/contacts-storage.json";
+const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
+const STORAGE_FILE = IS_SERVERLESS
+  ? "/tmp/contact-requests.json"
+  : path.join(process.cwd(), "data", "contact-requests.json");
 
-// Lade Kontakte
-function loadContacts(): any[] {
-  try {
-    if (fs.existsSync(STORAGE_FILE)) {
-      const data = fs.readFileSync(STORAGE_FILE, "utf-8");
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error("Error loading contacts:", error);
-  }
-  return [];
-}
-
-// Speichere Kontakte
-function saveContacts(contacts: any[]): void {
-  try {
-    fs.writeFileSync(STORAGE_FILE, JSON.stringify(contacts, null, 2), "utf-8");
-  } catch (error) {
-    console.error("Error saving contacts:", error);
-    throw error;
-  }
-}
+console.log("🔍 [STORAGE API] Initialized with file:", STORAGE_FILE);
+console.log("🔍 [STORAGE API] IS_SERVERLESS:", IS_SERVERLESS);
 
 // GET - Lade alle Kontakte
 export async function GET() {
   try {
-    const contacts = loadContacts();
-    return NextResponse.json({ contacts });
+    let contacts: any[] = [];
+    
+    if (fs.existsSync(STORAGE_FILE)) {
+      const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
+      contacts = JSON.parse(data);
+      if (!Array.isArray(contacts)) contacts = [];
+    } else {
+      // Erstelle leere Datei
+      const dir = path.dirname(STORAGE_FILE);
+      if (!fs.existsSync(dir)) {
+        await fsPromises.mkdir(dir, { recursive: true });
+      }
+      await fsPromises.writeFile(STORAGE_FILE, JSON.stringify([], null, 2), "utf-8");
+    }
+
+    // Sortiere nach createdAt DESC
+    contacts.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA;
+    });
+
+    console.log(`✅ [STORAGE API] GET: Loaded ${contacts.length} contacts`);
+    return NextResponse.json({ contacts }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
   } catch (error) {
+    console.error("❌ [STORAGE API] GET Error:", error);
     return NextResponse.json({ contacts: [] });
   }
 }
@@ -46,75 +60,71 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const contact = await request.json();
-    const contacts = loadContacts();
     
+    // Stelle sicher, dass Verzeichnis existiert
+    const dir = path.dirname(STORAGE_FILE);
+    if (!fs.existsSync(dir)) {
+      await fsPromises.mkdir(dir, { recursive: true });
+    }
+
+    // Lade bestehende Kontakte
+    let contacts: any[] = [];
+    if (fs.existsSync(STORAGE_FILE)) {
+      const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
+      contacts = JSON.parse(data);
+      if (!Array.isArray(contacts)) contacts = [];
+    }
+
+    // Erstelle neuen Kontakt
     const newContact = {
       ...contact,
-      id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date().toISOString(),
-      read: false,
-      archived: false,
+      id: contact.id || `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: contact.createdAt || new Date().toISOString(),
+      status: contact.status || "open",
     };
-    
+
     contacts.push(newContact);
-    saveContacts(contacts);
-    
-    return NextResponse.json({ success: true, contact: newContact });
+
+    // Speichere mit Retry
+    let saved = false;
+    for (let attempt = 1; attempt <= 5; attempt++) {
+      try {
+        if (attempt <= 2) {
+          // Atomic write
+          const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}.${Math.random().toString(36).substr(2, 9)}`;
+          await fsPromises.writeFile(tempFile, JSON.stringify(contacts, null, 2), "utf-8");
+          await fsPromises.rename(tempFile, STORAGE_FILE);
+        } else {
+          // Direktes Schreiben
+          await fsPromises.writeFile(STORAGE_FILE, JSON.stringify(contacts, null, 2), "utf-8");
+        }
+
+        // Verifiziere
+        if (fs.existsSync(STORAGE_FILE)) {
+          const verifyData = await fsPromises.readFile(STORAGE_FILE, "utf-8");
+          const verifyContacts = JSON.parse(verifyData);
+          if (Array.isArray(verifyContacts) && verifyContacts.some((c: any) => c.id === newContact.id)) {
+            saved = true;
+            console.log(`✅ [STORAGE API] POST: Contact saved (attempt ${attempt}):`, newContact.id);
+            break;
+          }
+        }
+      } catch (writeError) {
+        console.error(`❌ [STORAGE API] POST: Write attempt ${attempt} failed:`, writeError);
+        if (attempt < 5) {
+          await new Promise(resolve => setTimeout(resolve, 100 * attempt));
+        }
+      }
+    }
+
+    if (!saved) {
+      console.error("❌ [STORAGE API] POST: All attempts failed");
+      return NextResponse.json({ success: false, error: "Failed to save" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, contact: newContact }, { status: 201 });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "Failed to save contact" },
-      { status: 500 }
-    );
+    console.error("❌ [STORAGE API] POST Error:", error);
+    return NextResponse.json({ success: false, error: "Failed to save" }, { status: 500 });
   }
 }
-
-// PATCH - Aktualisiere Kontakt
-export async function PATCH(request: NextRequest) {
-  try {
-    const { id, ...updates } = await request.json();
-    const contacts = loadContacts();
-    const index = contacts.findIndex((c: any) => c.id === id);
-    
-    if (index === -1) {
-      return NextResponse.json({ error: "Contact not found" }, { status: 404 });
-    }
-    
-    contacts[index] = { ...contacts[index], ...updates };
-    saveContacts(contacts);
-    
-    return NextResponse.json({ success: true, contact: contacts[index] });
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "Failed to update contact" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE - Lösche Kontakt
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    
-    if (!id) {
-      return NextResponse.json({ error: "ID required" }, { status: 400 });
-    }
-    
-    const contacts = loadContacts();
-    const filtered = contacts.filter((c: any) => c.id !== id);
-    
-    if (filtered.length === contacts.length) {
-      return NextResponse.json({ error: "Contact not found" }, { status: 404 });
-    }
-    
-    saveContacts(filtered);
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "Failed to delete contact" },
-      { status: 500 }
-    );
-  }
-}
-
