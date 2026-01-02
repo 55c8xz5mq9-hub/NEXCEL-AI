@@ -564,19 +564,19 @@ export default function KontaktPage() {
     }
 
     try {
-      const response = await fetch("/api/kontakt", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          vorname: formData.vorname,
-          nachname: formData.nachname,
+          firstName: formData.vorname,
+          lastName: formData.nachname,
           email: formData.email,
-          telefon: formData.telefon,
-          unternehmen: formData.unternehmen,
-          betreff: formData.betreff,
-          nachricht: formData.nachricht,
+          phone: formData.telefon,
+          company: formData.unternehmen,
+          subject: formData.betreff,
+          message: formData.nachricht,
         }),
       });
 
@@ -615,7 +615,7 @@ export default function KontaktPage() {
           setSuccess(false);
         }, 3000);
       } else {
-        // Error: Show error message from API
+        // Error: Show error message from API (aus data.error)
         const errorMessage = data.error || data.message || "Fehler beim Senden. Bitte versuchen Sie es erneut.";
         setErrors({ submit: errorMessage });
         console.error("❌ [KONTAKT FORM] API Error:", {

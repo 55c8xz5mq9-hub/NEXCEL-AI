@@ -64,13 +64,29 @@ export default function AdminDashboard() {
       }
       const [statsRes, contactsRes, demoRes, userRes] = await Promise.all([
         fetch("/api/admin/stats"),
-        fetch("/api/admin/contacts?archived=false"),
+        fetch("/api/admin/contact-requests"),
         fetch("/api/admin/demo-requests?archived=false"),
         fetch("/api/admin/me"),
       ]);
 
       if (statsRes.ok) setStats(await statsRes.json());
-      if (contactsRes.ok) setContacts((await contactsRes.json()).contacts);
+      if (contactsRes.ok) {
+        const data = await contactsRes.json();
+        // Transformiere die neuen ContactRequest-Daten in das alte Format
+        const transformedContacts = (data.contacts || []).map((contact: any) => ({
+          id: contact.id,
+          name: `${contact.firstName} ${contact.lastName}`,
+          email: contact.email,
+          telefon: contact.phone,
+          unternehmen: contact.company,
+          betreff: contact.subject,
+          nachricht: contact.message,
+          createdAt: contact.createdAt,
+          read: contact.status !== "open",
+          archived: contact.status === "archived",
+        }));
+        setContacts(transformedContacts);
+      }
       if (demoRes.ok) setDemoRequests((await demoRes.json()).requests);
       if (userRes.ok) setUser(await userRes.json());
     } catch (error) {

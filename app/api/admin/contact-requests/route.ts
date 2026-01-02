@@ -1,0 +1,46 @@
+/**
+ * GET /api/admin/contact-requests
+ * 
+ * Lädt alle Kontaktanfragen aus der JSON-Datei
+ * Sortiert nach createdAt DESC
+ */
+
+import { NextRequest, NextResponse } from "next/server";
+import { getAllContactRequests } from "@/lib/contactStore";
+import { verifySession } from "@/lib/auth";
+
+export async function GET(request: NextRequest) {
+  try {
+    // Optional: Admin-Auth prüfen (falls vorhanden)
+    try {
+      const session = await verifySession();
+      if (!session || session.role !== "admin") {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    } catch (authError) {
+      // Falls Auth nicht vorhanden, einfach weiter (für Entwicklung)
+      console.warn("⚠️ [CONTACT REQUESTS API] Auth check skipped:", authError);
+    }
+
+    const contacts = await getAllContactRequests();
+
+    // Sortiere nach createdAt DESC (neueste zuerst)
+    contacts.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA;
+    });
+
+    console.log(`✅ [CONTACT REQUESTS API] Loaded ${contacts.length} contact requests`);
+
+    return NextResponse.json({ contacts });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("❌ [CONTACT REQUESTS API] Error fetching contacts:", errorMessage);
+    return NextResponse.json(
+      { error: "Failed to fetch contact requests", contacts: [] },
+      { status: 500 }
+    );
+  }
+}
+
