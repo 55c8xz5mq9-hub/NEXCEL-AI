@@ -302,7 +302,7 @@ export default function Navigation() {
         style={{ willChange: "transform, opacity" }}
       >
         {/* Ultra High-End Navigation Container */}
-        <div className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 pt-4 sm:pt-5 md:pt-6">
+        <div className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 pt-4 sm:pt-5 md:pt-6" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top, 1rem))' }}>
           {/* Main Navigation Bar - Apple Intelligence Style */}
           <motion.div
             className="relative mx-auto max-w-[1600px]"
@@ -374,9 +374,11 @@ export default function Navigation() {
               />
 
               {/* Content Container - Ultra Responsive */}
-              <div className="relative z-10 flex items-center justify-between md:justify-start gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
-                {/* Left Section - Logo (Mobile & Desktop) */}
-                <div className="flex-shrink-0">
+              <div className="relative z-10 flex flex-col md:flex-row items-stretch md:items-center justify-between md:justify-start gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
+                {/* Top Row - Mobile: Logo + Buttons, Desktop: Logo + Search + Nav */}
+                <div className="flex items-center justify-between md:contents gap-2 sm:gap-3">
+                  {/* Left Section - Logo (Mobile & Desktop) */}
+                  <div className="flex-shrink-0">
                   <Link href="/" className="block">
                   <motion.div
                     className="relative flex items-center cursor-pointer group/logo"
@@ -426,10 +428,138 @@ export default function Navigation() {
                     </span>
                   </motion.div>
                   </Link>
+                  </div>
+
+                  {/* Right Section - Theme Toggle + Mobile Menu (Mobile) / Desktop Navigation (Desktop) */}
+                  <div className="flex items-center gap-2 md:hidden flex-shrink-0">
+                    {/* Theme Toggle - Mobile */}
+                    <motion.button
+                      onClick={toggleTheme}
+                      className="relative w-9 h-9 rounded-xl flex items-center justify-center group/theme flex-shrink-0"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                      whileHover={{ scale: 1.15, y: -3, rotate: 15 }}
+                      whileTap={{ scale: 0.85 }}
+                      style={{
+                        background: theme === "dark"
+                          ? "rgba(255, 255, 255, 0.12)"
+                          : "rgba(0, 0, 0, 0.08)",
+                        backdropFilter: "blur(30px)",
+                        WebkitBackdropFilter: "blur(30px)",
+                        border: theme === "dark"
+                          ? "1px solid rgba(255, 255, 255, 0.18)"
+                          : "1px solid rgba(0, 0, 0, 0.12)",
+                        boxShadow: theme === "dark"
+                          ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
+                          : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
+                        willChange: "transform",
+                      }}
+                      aria-label="Toggle theme"
+                    >
+                      <div
+                        className="absolute inset-0 rounded-xl opacity-0 group-hover/theme:opacity-100 transition-opacity duration-300 -z-10"
+                        style={{
+                          background: theme === "dark"
+                            ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
+                            : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
+                          filter: "blur(16px)",
+                        }}
+                      />
+                      <AnimatePresence mode="wait">
+                        {theme === "dark" ? (
+                          <motion.svg
+                            key="sun"
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            initial={{ rotate: -90, opacity: 0 }}
+                            animate={{ rotate: 0, opacity: 1 }}
+                            exit={{ rotate: 90, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                          </motion.svg>
+                        ) : (
+                          <motion.svg
+                            key="moon"
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            initial={{ rotate: 90, opacity: 0 }}
+                            animate={{ rotate: 0, opacity: 1 }}
+                            exit={{ rotate: -90, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                          </motion.svg>
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
+
+                    {/* Mobile Menu Button */}
+                    <motion.button
+                      className="relative w-11 h-11 flex flex-col justify-center items-center gap-1.5 p-2 rounded-xl transition-all duration-300 flex-shrink-0"
+                      style={{
+                        background: theme === "dark"
+                          ? "rgba(255, 255, 255, 0.12)"
+                          : "rgba(0, 0, 0, 0.08)",
+                        backdropFilter: "blur(30px)",
+                        WebkitBackdropFilter: "blur(30px)",
+                        border: theme === "dark"
+                          ? "1px solid rgba(255, 255, 255, 0.18)"
+                          : "1px solid rgba(0, 0, 0, 0.12)",
+                        boxShadow: theme === "dark"
+                          ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset"
+                          : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
+                      }}
+                      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      aria-label="Menu"
+                    >
+                      <motion.span
+                        className="w-5 h-0.5 rounded-full"
+                        style={{
+                          background: theme === "dark" ? "#FFFFFF" : "#000000",
+                        }}
+                        animate={{
+                          rotate: mobileMenuOpen ? 45 : 0,
+                          y: mobileMenuOpen ? 6 : 0,
+                        }}
+                        transition={{ duration: 0.3 }}
+                      />
+                      <motion.span
+                        className="w-5 h-0.5 rounded-full"
+                        style={{
+                          background: theme === "dark" ? "#FFFFFF" : "#000000",
+                        }}
+                        animate={{
+                          opacity: mobileMenuOpen ? 0 : 1,
+                        }}
+                        transition={{ duration: 0.3 }}
+                      />
+                      <motion.span
+                        className="w-5 h-0.5 rounded-full"
+                        style={{
+                          background: theme === "dark" ? "#FFFFFF" : "#000000",
+                        }}
+                        animate={{
+                          rotate: mobileMenuOpen ? -45 : 0,
+                          y: mobileMenuOpen ? -6 : 0,
+                        }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </motion.button>
+                  </div>
                 </div>
 
                 {/* Apple Intelligence Search Bar - Ultra Responsive */}
-                <div className="flex-1 min-w-0 max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px] mx-auto hidden md:block">
+                <div className="flex-1 min-w-0 w-full md:max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px] md:mx-auto -mx-4 md:mx-auto px-4 md:px-0 order-3 md:order-none">
                   <motion.div
                     ref={searchContainerRef}
                     className="relative group/search"
@@ -796,8 +926,8 @@ export default function Navigation() {
                   ))}
                 </div>
 
-                {/* Right Section - Theme Toggle + Mobile Menu (Mobile) / Desktop Navigation (Desktop) */}
-                <div className="flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-6 flex-shrink-0 ml-auto md:ml-0">
+                {/* Right Section - Theme Toggle + Mobile Menu (Desktop Only) */}
+                <div className="hidden md:flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-6 flex-shrink-0">
                   {/* Theme Toggle - Ultra High-End - Responsive */}
                   <motion.button
                     onClick={toggleTheme}

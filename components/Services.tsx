@@ -151,7 +151,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
       onClick={onClick}
       style={{ 
         willChange: "transform, opacity",
-        minHeight: "320px",
+        minHeight: "280px",
         maxWidth: isProcessCard ? "370px" : "none",
         marginLeft: isProcessCard ? "auto" : "0",
         marginRight: isProcessCard ? "auto" : "0",
@@ -244,18 +244,18 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
 
         {/* Content */}
         <div 
-          className={`relative z-10 flex flex-col flex-1 items-center justify-start w-full ${!isProcessCard ? "p-6 md:p-8" : ""}`}
+          className={`relative z-10 flex flex-col flex-1 items-center justify-start w-full ${!isProcessCard ? "p-4 md:p-6 lg:p-8" : ""}`}
           style={isProcessCard ? {
-            paddingTop: "2.25rem",
-            paddingBottom: "1.5rem",
-            paddingLeft: "1rem",
-            paddingRight: "1rem"
+            paddingTop: "1.75rem",
+            paddingBottom: "1.25rem",
+            paddingLeft: "0.875rem",
+            paddingRight: "0.875rem"
           } : undefined}
         >
           {/* Icon - System Diagram Visualizations */}
-          <div className="icon w-full flex justify-center items-center mb-6">
+          <div className="icon w-full flex justify-center items-center mb-4 md:mb-6">
           {service.title === "KI-Automationen & autonome Agenten" ? (
-            <div className="flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105 translate-y-[6px]">
+            <div className="flex justify-center items-center h-24 md:h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105 translate-y-[6px]">
               <div className="relative w-full h-full flex items-center justify-center">
                 {/* Central Core */}
                 <div className="absolute w-10 h-10 rounded-full border-2 border-purple-400/80 bg-purple-500/10 flex items-center justify-center">
@@ -289,7 +289,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
               </div>
             </div>
           ) : service.title === "Individuelle Softwaresysteme" ? (
-            <div className="flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105 translate-y-[6px]">
+            <div className="flex justify-center items-center h-24 md:h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105 translate-y-[6px]">
               <div className="relative w-full h-full flex items-center justify-center">
                 {/* Grid of Modules */}
                 <div className="grid grid-cols-3 gap-2">
@@ -329,7 +329,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
               </div>
             </div>
           ) : service.title === "Workflow-Systeme & Steuerungs-Dashboards" ? (
-            <div className="flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
+            <div className="flex justify-center items-center h-24 md:h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
               <div className="relative w-full h-full flex items-center justify-center">
                 {/* Central Timeline/Bar */}
                 <div className="absolute w-32 h-2 rounded-full bg-gradient-to-r from-purple-400/40 via-purple-400/60 to-purple-400/40" />
@@ -353,7 +353,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
               </div>
             </div>
           ) : service.title === "System-Integrationen & API-Engineering" ? (
-            <div className="flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
+            <div className="flex justify-center items-center h-24 md:h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
               <div className="relative w-full h-full flex items-center justify-center gap-4">
                 {/* Left System Blocks */}
                 <div className="flex flex-col gap-2">
@@ -387,7 +387,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
               </div>
             </div>
           ) : service.title === "Webseiten- & Plattform-Entwicklung" ? (
-            <div className="flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
+            <div className="flex justify-center items-center h-24 md:h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
               <div className="relative w-full h-full flex items-center justify-center gap-4">
                 {/* Browser View - Desktop */}
                 <div className="relative">
@@ -426,7 +426,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
               </div>
             </div>
           ) : service.title === "KI-Beratung & Systemdesign" ? (
-            <div className="flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105 translate-y-[6px]">
+            <div className="flex justify-center items-center h-24 md:h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105 translate-y-[6px]">
               <div className="relative w-full h-full flex items-center justify-center">
                 {/* Central: AI Core / Brain (minimal) */}
                 <div className="absolute w-12 h-12 rounded-full border-2 border-emerald-400/80 bg-emerald-500/15 flex items-center justify-center">
@@ -472,7 +472,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
               </div>
             </div>
           ) : service.title === "Cloud- & Infrastruktursetup" ? (
-            <div className="flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
+            <div className="flex justify-center items-center h-24 md:h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
               <div className="relative w-full h-full flex items-center justify-center">
                 {/* Central Cloud Hub */}
                 <div className="absolute w-16 h-10 rounded-lg border-2 border-cyan-400/80 bg-cyan-500/15 flex items-center justify-center">
@@ -498,7 +498,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
               </div>
             </div>
           ) : service.title === "Prozessautomatisierung & Workflows" ? (
-            <div className="flex justify-center items-center h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
+            <div className="flex justify-center items-center h-24 md:h-32 visual-3d transition-transform duration-500 ease-out will-change-transform group-hover:-translate-y-1 group-hover:scale-105">
               <div className="relative w-full h-full flex items-center justify-center gap-3" style={{ transform: 'scale(0.8)' }}>
                 {/* Left: Glowing Rectangle (Input/Task) */}
                 <div className="relative">
@@ -563,11 +563,11 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
 
           {/* Title */}
           <h3
-            className="title text-center text-lg md:text-xl font-bold tracking-tight leading-tight mb-3"
+            className="title text-center text-base md:text-lg lg:text-xl font-bold tracking-tight leading-tight mb-2 md:mb-3"
             style={{
               color: theme === "dark" ? "#FFFFFF" : "#000000",
               textShadow: theme === "dark" ? "0 0 30px rgba(168, 85, 247, 0.3)" : "none",
-              minHeight: "56px",
+              minHeight: "48px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -578,10 +578,10 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
 
           {/* Text */}
           <p
-            className="text text-center text-sm md:text-base font-light leading-relaxed w-full"
+            className="text text-center text-xs md:text-sm lg:text-base font-light leading-relaxed w-full"
             style={{
               color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
-              minHeight: "110px",
+              minHeight: "90px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -594,7 +594,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
 
       {/* Neon Glow Effects - Behind Card */}
       <div
-        className="absolute inset-0 rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none -z-10"
+        className="absolute inset-0 rounded-[28px] opacity-60 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 pointer-events-none -z-10"
         style={{
           background: `radial-gradient(circle, ${colors.glow}, ${colors.light}, ${colors.dark}, transparent)`,
           filter: "blur(60px)",
@@ -604,7 +604,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
       
       {/* Additional Neon Layers */}
       <div
-        className="absolute -inset-2 rounded-[28px] opacity-0 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none -z-20 neon-rotate"
+        className="absolute -inset-2 rounded-[28px] opacity-40 md:opacity-0 md:group-hover:opacity-60 transition-opacity duration-700 pointer-events-none -z-20 neon-rotate"
         style={{
           background: `conic-gradient(from 0deg, ${colors.glow}, ${colors.light}, ${colors.dark}, ${colors.glow})`,
           filter: "blur(40px)",
@@ -801,11 +801,11 @@ export default function Services() {
         {/* High-End Slider */}
         <div className="relative">
           <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-          {/* Left Navigation Button - Outside Cards */}
+          {/* Left Navigation Button - Outside Cards (Hidden on Mobile) */}
           <button
             onClick={isMobile ? prevMobileCard : prevSlide}
             disabled={isMobile ? mobileCardIndex === 0 : clampedIndex === 0}
-            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+            className={`hidden md:flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
               (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
@@ -853,6 +853,8 @@ export default function Services() {
                 scrollSnapType: 'x mandatory',
                 WebkitOverflowScrolling: 'touch',
                 scrollBehavior: 'smooth',
+                paddingLeft: '4%',
+                paddingRight: '4%',
               }}
             >
               <div className="flex gap-4">
@@ -863,7 +865,7 @@ export default function Services() {
                     className="flex-shrink-0"
                     style={{ 
                       scrollSnapAlign: 'center',
-                      width: 'calc(100vw - 8rem)', // Full width minus container padding (4rem) and arrows (4rem)
+                      width: '92%',
                       maxWidth: '400px',
                     }}
                   >
@@ -900,11 +902,11 @@ export default function Services() {
             </motion.div>
           </div>
 
-          {/* Right Navigation Button - Outside Cards */}
+          {/* Right Navigation Button - Outside Cards (Hidden on Mobile) */}
           <button
             onClick={isMobile ? nextMobileCard : nextSlide}
             disabled={isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1}
-            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+            className={`hidden md:flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
               (isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
@@ -941,8 +943,8 @@ export default function Services() {
 
           </div>
 
-          {/* Mobile: Dots Pager - One dot per card (8 dots) */}
-          <div className="flex md:hidden justify-center gap-2 mt-6 px-4 flex-wrap">
+          {/* Mobile: Dots Pager - One dot per card (8 dots) - NEXCEL Style */}
+          <div className="flex md:hidden justify-center gap-2 mt-6 px-4">
             {services.map((_, index) => {
               const isActive = index === mobileCardIndex;
               
@@ -952,10 +954,13 @@ export default function Services() {
                   onClick={() => goToMobileCard(index)}
                   className={`h-2 rounded-full transition-all duration-300 ${
                     isActive
-                      ? "w-6 bg-purple-400" 
-                      : "w-2 bg-white/30 active:bg-white/50"
+                      ? "w-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 shadow-lg shadow-purple-500/50" 
+                      : "w-2 bg-white/20 active:bg-white/40"
                   }`}
                   aria-label={`Go to card ${index + 1}`}
+                  style={{
+                    boxShadow: isActive ? "0 0 12px rgba(168, 85, 247, 0.4)" : "none",
+                  }}
                 />
               );
             })}
