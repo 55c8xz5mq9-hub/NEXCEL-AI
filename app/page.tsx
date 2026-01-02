@@ -4,7 +4,7 @@ import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, memo, useEffect, useCallback, useState, useRef } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import dynamic from "next/dynamic";
@@ -86,22 +86,23 @@ const projects: Project[] = [
   },
 ];
 
-const ProjectCard = memo(({ project, index }: { project: Project; index: number }) => {
+const ProjectCard = memo(({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) => {
   const { theme } = useTheme();
   
   return (
     <motion.div
-      className="group relative h-full flex flex-col"
+      className="group relative h-full flex flex-col cursor-pointer"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: index * 0.1 }}
-      whileHover={{ scale: 1.0 }}
+      whileHover={{ scale: 1.02, y: -4 }}
+      onClick={onClick}
       style={{ willChange: "transform, opacity" }}
     >
-      {/* Main Card Container - Ultra High-End Apple Design */}
+      {/* Main Card Container - Ultra High-End Apple Design - Compact */}
       <div
-        className="relative rounded-[28px] overflow-hidden isolation-isolate h-full flex flex-col"
+        className="relative rounded-[28px] overflow-hidden isolation-isolate h-full flex flex-col max-h-[540px] md:max-h-[600px]"
         style={{
           background: theme === "dark"
             ? "linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 30%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.03) 100%)"
@@ -163,11 +164,12 @@ const ProjectCard = memo(({ project, index }: { project: Project; index: number 
           }}
         />
 
-        {/* Content */}
-        <div className="relative z-10 p-4 md:p-10 lg:p-12 flex flex-col flex-1">
-          <div className="mb-2 md:mb-6">
+        {/* Content - Compact Layout */}
+        <div className="relative z-10 p-4 md:p-6 lg:p-8 flex flex-col flex-1 text-center">
+          {/* Title & Subtitle */}
+          <div className="mb-3 md:mb-4">
             <h3
-              className="text-lg md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 tracking-tight"
+              className="text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-1.5 tracking-tight"
               style={{
                 color: theme === "dark" ? "#FFFFFF" : "#000000",
                 textShadow: theme === "dark" ? "0 0 30px rgba(168, 85, 247, 0.3)" : "none",
@@ -176,7 +178,7 @@ const ProjectCard = memo(({ project, index }: { project: Project; index: number 
               {project.title}
             </h3>
             <p
-              className="text-xs md:text-base font-semibold"
+              className="text-xs md:text-sm font-semibold"
               style={{
                 color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
               }}
@@ -185,24 +187,21 @@ const ProjectCard = memo(({ project, index }: { project: Project; index: number 
             </p>
           </div>
 
-          <p
-            className="text-xs md:text-sm lg:text-base font-light leading-snug md:leading-relaxed mb-3 md:mb-6 line-clamp-3 md:line-clamp-none"
-            style={{
-              color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
-            }}
-          >
-            {project.description}
-          </p>
-
-          <div className="mb-3 md:mb-6" style={{ minHeight: "200px", height: "200px", maxHeight: "200px" }}>
-            <project.dashboard />
+          {/* Dashboard Image - Main Focus */}
+          <div className="mb-3 md:mb-4 flex-1 min-h-0">
+            <div className="w-full h-full rounded-xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
+              <div className="w-full h-full">
+                <project.dashboard />
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-1.5 md:gap-2 mb-3 md:mb-6">
-            {project.features.map((feature, i) => (
+          {/* Feature Tags - Compact */}
+          <div className="flex flex-wrap justify-center gap-1.5 md:gap-2">
+            {project.features.slice(0, 4).map((feature, i) => (
               <span
                 key={i}
-                className={`px-2 md:px-3 py-0.5 md:py-1.5 rounded-lg text-[10px] md:text-xs font-medium transition-colors duration-500 ${
+                className={`px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg text-[10px] md:text-xs font-medium transition-colors duration-500 ${
                   theme === "dark"
                     ? "bg-white/[0.05] text-white/70 border border-white/[0.1]"
                     : "bg-[#0C0F1A]/5 text-[#1B2030]/70 border border-[#0C0F1A]/10"
@@ -211,22 +210,6 @@ const ProjectCard = memo(({ project, index }: { project: Project; index: number 
                 {feature}
               </span>
             ))}
-          </div>
-
-          <div className="mt-auto">
-            <Link href={project.link}>
-              <motion.button
-                className={`w-full py-2 md:py-3 rounded-xl font-medium text-xs md:text-sm transition-colors duration-500 ${
-                  theme === "dark"
-                    ? "bg-white/[0.05] text-white border border-white/[0.1] hover:bg-white/[0.1]"
-                    : "bg-[#0C0F1A]/5 text-[#0C0F1A] border border-[#0C0F1A]/10 hover:bg-[#0C0F1A]/10"
-                }`}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-              >
-                Mehr erfahren →
-              </motion.button>
-            </Link>
           </div>
         </div>
       </div>
@@ -256,6 +239,7 @@ function ProjectsSection() {
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileCardIndex, setMobileCardIndex] = useState(0);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -273,6 +257,40 @@ function ProjectsSection() {
   
   // Clamp currentIndex to valid range
   const clampedIndex = Math.max(0, Math.min(maxSlides - 1, currentIndex));
+
+  const handleCardClick = (project: Project) => {
+    setSelectedProject(project);
+  };
+
+  const closeModal = useCallback(() => {
+    setSelectedProject(null);
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'unset';
+    }
+  }, []);
+
+  // Disable body scroll when modal is open
+  useEffect(() => {
+    if (selectedProject) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedProject]);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedProject) {
+        closeModal();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [selectedProject, closeModal]);
 
   // Desktop navigation functions
   const nextSlide = () => {
@@ -466,7 +484,7 @@ function ProjectsSection() {
               className="flex-1 overflow-hidden rounded-3xl"
               style={{ pointerEvents: "auto", zIndex: 1 }}
             >
-              {/* Mobile: Horizontal Scroll with Snap */}
+              {/* Mobile: Horizontal Scroll with Snap - No visible neighbors */}
               <div 
                 ref={mobileScrollRef}
                 className="md:hidden overflow-x-auto scrollbar-hide"
@@ -474,11 +492,9 @@ function ProjectsSection() {
                   scrollSnapType: 'x mandatory',
                   WebkitOverflowScrolling: 'touch',
                   scrollBehavior: 'smooth',
-                  paddingLeft: '4%',
-                  paddingRight: '4%',
                 }}
               >
-                <div className="flex gap-4">
+                <div className="flex">
                   {projects.map((project, index) => (
                     <div
                       key={index}
@@ -486,20 +502,20 @@ function ProjectsSection() {
                       className="flex-shrink-0"
                       style={{ 
                         scrollSnapAlign: 'center',
-                        width: '92%',
-                        maxWidth: '400px',
+                        width: '100%',
                       }}
                     >
                       <ProjectCard 
                         project={project} 
                         index={index}
+                        onClick={() => handleCardClick(project)}
                       />
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Desktop: Motion-based Slider - 1 card per view */}
+              {/* Desktop: Motion-based Slider - 1 card per view, no visible neighbors */}
               <motion.div
                 className="hidden md:flex"
                 animate={{ x: `-${clampedIndex * 100}%` }}
@@ -511,13 +527,14 @@ function ProjectsSection() {
                   const slideProjects = projects.slice(startIndex, endIndex);
                   
                   return (
-                    <div key={slideIndex} className="min-w-full px-2 flex justify-center">
+                    <div key={slideIndex} className="min-w-full flex justify-center">
                       <div className="w-full max-w-2xl">
                         {slideProjects.map((project, cardIndex) => (
                           <ProjectCard 
                             key={startIndex + cardIndex} 
                             project={project} 
                             index={startIndex + cardIndex}
+                            onClick={() => handleCardClick(project)}
                           />
                         ))}
                       </div>
@@ -643,6 +660,170 @@ function ProjectsSection() {
           </div>
         </div>
       </div>
+
+      {/* High-End Detail Modal */}
+      <AnimatePresence mode="wait">
+        {selectedProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-start justify-center pt-24"
+            onClick={closeModal}
+          >
+            {/* Dark Overlay Backdrop */}
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+            
+            {/* Close Button - Fixed position, highest z-index */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.nativeEvent.stopImmediatePropagation();
+                closeModal();
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              className="fixed top-28 right-6 z-[100000] w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border-2 border-white/30 flex items-center justify-center hover:bg-white/20 active:bg-white/30 hover:scale-110 transition-all duration-300 cursor-pointer shadow-lg"
+              aria-label="Modal schließen"
+              style={{ pointerEvents: 'auto' }}
+            >
+              <svg 
+                className="w-6 h-6 text-white pointer-events-none" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth={2.5}
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Centered Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+              className="relative z-10 w-full max-w-xl max-h-[70vh] mx-4 mt-14"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div 
+                className="relative rounded-2xl overflow-y-auto max-h-[70vh] border border-white/20 bg-white/5 p-6 shadow-2xl"
+                style={{
+                  background: theme === "dark"
+                    ? "linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 30%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.03) 100%)"
+                    : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)",
+                  backdropFilter: "blur(40px) saturate(200%)",
+                  WebkitBackdropFilter: "blur(40px) saturate(200%)",
+                  border: theme === "dark"
+                    ? "1px solid rgba(255, 255, 255, 0.20)"
+                    : "1px solid rgba(0, 0, 0, 0.12)",
+                  boxShadow: theme === "dark"
+                    ? "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.12) inset, 0 0 40px rgba(168, 85, 247, 0.2)"
+                    : "0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
+                }}
+              >
+                {/* Neon Background Effect */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)",
+                    filter: "blur(60px)",
+                  }}
+                />
+
+                {/* Content */}
+                <div className="relative z-10">
+                  <h3 
+                    className="text-2xl md:text-3xl font-bold mb-2" 
+                    style={{ color: theme === "dark" ? "#FFFFFF" : "#000000" }}
+                  >
+                    {selectedProject.title}
+                  </h3>
+                  <p 
+                    className="text-base md:text-lg font-semibold mb-4" 
+                    style={{ color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)" }}
+                  >
+                    {selectedProject.subtitle}
+                  </p>
+                  
+                  {/* Dashboard Image - Larger */}
+                  <div className="mb-6 rounded-xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
+                    <div className="w-full h-full">
+                      <selectedProject.dashboard />
+                    </div>
+                  </div>
+                  
+                  {/* Description */}
+                  <p 
+                    className="text-base md:text-lg mb-6 leading-relaxed" 
+                    style={{ color: theme === "dark" ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.8)" }}
+                  >
+                    {selectedProject.description}
+                  </p>
+                  
+                  {/* Features List */}
+                  <div className="space-y-3">
+                    <h4 
+                      className="text-lg font-semibold mb-3" 
+                      style={{ color: theme === "dark" ? "#FFFFFF" : "#000000" }}
+                    >
+                      Features & Funktionen:
+                    </h4>
+                    {selectedProject.features.map((feature, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="flex items-start gap-2.5 p-3 rounded-xl"
+                        style={{
+                          background: theme === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)",
+                        }}
+                      >
+                        <div 
+                          className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                          style={{
+                            background: "rgba(168, 85, 247, 0.6)",
+                            boxShadow: "0 0 10px rgba(168, 85, 247, 0.6)",
+                          }}
+                        />
+                        <p 
+                          className="text-base" 
+                          style={{ color: theme === "dark" ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.8)" }}
+                        >
+                          {feature}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Link Button */}
+                  <div className="mt-6">
+                    <Link href={selectedProject.link} onClick={closeModal}>
+                      <motion.button
+                        className={`w-full py-3 rounded-xl font-medium text-sm transition-colors duration-500 ${
+                          theme === "dark"
+                            ? "bg-white/[0.1] text-white border border-white/[0.2] hover:bg-white/[0.15]"
+                            : "bg-[#0C0F1A]/10 text-[#0C0F1A] border border-[#0C0F1A]/20 hover:bg-[#0C0F1A]/15"
+                        }`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        Mehr erfahren →
+                      </motion.button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
