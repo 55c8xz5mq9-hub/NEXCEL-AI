@@ -46,8 +46,16 @@ export interface AnalyticsEvent {
 }
 
 function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+      console.log("✅ [DATABASE] Created data directory:", DATA_DIR);
+    }
+    // Ensure directory is writable
+    fs.accessSync(DATA_DIR, fs.constants.W_OK);
+  } catch (error) {
+    console.error("❌ [DATABASE] Failed to ensure data directory:", error);
+    throw new Error(`Cannot access data directory: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -71,24 +79,55 @@ export function getContacts(): ContactSubmission[] {
 }
 
 export function saveContact(contact: Omit<ContactSubmission, "id" | "createdAt" | "read" | "archived" | "emailSent" | "emailSentAt" | "emailVerified" | "verificationToken" | "verificationTokenExpiresAt">): ContactSubmission {
-  const contacts = getContacts();
-  const verificationToken = `verify_${Date.now()}_${Math.random().toString(36).substr(2, 16)}`;
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 Stunden gültig
-  
-  const newContact: ContactSubmission = {
-    ...contact,
-    id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    createdAt: new Date().toISOString(),
-    read: false,
-    archived: false,
-    emailSent: false,
-    emailVerified: false,
-    verificationToken,
-    verificationTokenExpiresAt: expiresAt.toISOString(),
-  };
-  contacts.push(newContact);
-  fs.writeFileSync(getFilePath("contacts.json"), JSON.stringify(contacts, null, 2), "utf-8");
-  return newContact;
+  try {
+    const contacts = getContacts();
+    const verificationToken = `verify_${Date.now()}_${Math.random().toString(36).substr(2, 16)}`;
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 Stunden gültig
+    
+    const newContact: ContactSubmission = {
+      ...contact,
+      id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date().toISOString(),
+      read: false,
+      archived: false,
+      emailSent: false,
+      emailVerified: false,
+      verificationToken,
+      verificationTokenExpiresAt: expiresAt.toISOString(),
+    };
+    contacts.push(newContact);
+    
+    // Ensure data directory exists
+    ensureDataDir();
+    const filePath = getFilePath("contacts.json");
+    
+    // Try to write file with error handling
+    try {
+      // Use atomic write: write to temp file first, then rename
+      const tempPath = `${filePath}.tmp`;
+      fs.writeFileSync(tempPath, JSON.stringify(contacts, null, 2), "utf-8");
+      fs.renameSync(tempPath, filePath);
+      console.log("✅ [DATABASE] Contact saved successfully to:", filePath);
+    } catch (writeError) {
+      // If write fails, try to create directory again and retry
+      console.warn("⚠️ [DATABASE] First write attempt failed, retrying...", writeError);
+      try {
+        ensureDataDir();
+        const tempPath = `${filePath}.tmp`;
+        fs.writeFileSync(tempPath, JSON.stringify(contacts, null, 2), "utf-8");
+        fs.renameSync(tempPath, filePath);
+        console.log("✅ [DATABASE] Contact saved successfully on retry");
+      } catch (retryError) {
+        console.error("❌ [DATABASE] Failed to save contact after retry:", retryError);
+        throw new Error(`Failed to write contact file: ${retryError instanceof Error ? retryError.message : String(retryError)}`);
+      }
+    }
+    
+    return newContact;
+  } catch (error) {
+    console.error("❌ [DATABASE] Failed to save contact:", error);
+    throw new Error(`Failed to save contact: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
 export function verifyContactEmail(token: string): ContactSubmission | null {

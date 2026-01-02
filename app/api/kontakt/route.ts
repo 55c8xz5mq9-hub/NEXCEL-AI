@@ -65,12 +65,25 @@ export async function POST(request: NextRequest) {
         nachricht: trimmedNachricht,
       });
       console.log("✅ [KONTAKT API] Contact saved to database:", contact.id);
+      console.log("✅ [KONTAKT API] Contact details:", {
+        name: `${trimmedVorname} ${trimmedNachname}`,
+        email: trimmedEmail,
+        unternehmen: trimmedUnternehmen,
+      });
     } catch (err) {
-      // Database save failed - this is critical, return error
-      const error = new Error(`Failed to save contact to database: ${err instanceof Error ? err.message : String(err)}`);
-      console.error("❌ [KONTAKT API] Database Save Failed:", error.message);
+      // Database save failed - log detailed error
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.error("❌ [KONTAKT API] Database Save Failed:");
+      console.error("  Error:", errorMessage);
+      console.error("  Stack:", err instanceof Error ? err.stack : "No stack");
+      console.error("  Full Error:", err);
+      
+      // Return user-friendly error message
       return NextResponse.json(
-        { success: false, error: "Fehler beim Speichern der Anfrage. Bitte versuchen Sie es später erneut." },
+        { 
+          success: false, 
+          error: "Fehler beim Speichern der Anfrage. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt." 
+        },
         { status: 500 }
       );
     }
