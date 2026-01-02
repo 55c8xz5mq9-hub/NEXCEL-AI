@@ -1,42 +1,15 @@
 import fs from "fs";
 import path from "path";
 
-// Prüfe ob eine Datenbank-URL vorhanden ist (Prisma/PostgreSQL)
-// DEAKTIVIERT: Verwende immer JSON-Datenbank für sofortige Funktionalität
-const HAS_DATABASE = false; // Immer false - verwende JSON-Datenbank
-
-// In Serverless-Umgebungen (z.B. Vercel) ist das Dateisystem read-only
-// Verwende /tmp für temporäre Speicherung oder prüfe ob wir in einer Serverless-Umgebung sind
-const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.AWS_LAMBDA_FUNCTION_NAME || !!process.env.VERCEL_ENV;
+// STANDALONE: Keine externe Abhängigkeit - funktioniert überall!
+// Verwendet automatisch Vercel KV in Production, JSON lokal
+const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+const HAS_DATABASE = false; // Nicht mehr nötig - standalone Lösung
 const DATA_DIR = IS_SERVERLESS 
   ? "/tmp/data" // Serverless: verwende /tmp (temporär, aber funktioniert)
   : path.join(process.cwd(), "data");
 
-// Lazy load Prisma Client (nur wenn DATABASE_URL vorhanden)
-let prismaClient: any = null;
-async function getPrismaClient() {
-  if (!HAS_DATABASE) return null;
-  
-  if (!prismaClient) {
-    try {
-      // Versuche zuerst den lokalen Prisma Client
-      try {
-        const { prisma } = await import("@/lib/prisma");
-        prismaClient = prisma;
-      } catch {
-        // Fallback: Direkter Import von @prisma/client
-        const { PrismaClient } = await import("@prisma/client");
-        prismaClient = new PrismaClient({
-          log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
-        });
-      }
-    } catch (error) {
-      console.error("❌ [DATABASE] Failed to load Prisma Client:", error);
-      return null;
-    }
-  }
-  return prismaClient;
-}
+// Prisma Client wird nicht mehr verwendet - standalone Lösung
 
 export interface ContactSubmission {
   id: string;
@@ -110,92 +83,33 @@ function getFilePath(filename: string): string {
   return path.join(DATA_DIR, filename);
 }
 
-// Contacts - JSON-Datenbank (primäre Lösung - funktioniert sofort)
+// Contacts - STANDALONE: Funktioniert überall ohne Konfiguration!
 export async function getContacts(): Promise<ContactSubmission[]> {
-  // JSON-Datenbank - funktioniert sofort, keine Prisma-Abhängigkeit
   try {
-    const file = getFilePath("contacts.json");
-    if (!fs.existsSync(file)) {
-      return [];
-    }
-    const data = fs.readFileSync(file, "utf-8");
-    const contacts = JSON.parse(data);
-    // Sortiere nach neuestem zuerst
-    return contacts.sort((a: ContactSubmission, b: ContactSubmission) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    const { getAllContacts } = await import("@/lib/standalone-db");
+    return await getAllContacts();
   } catch (error) {
-    console.error("❌ [DATABASE] Error reading contacts:", error);
-    // In Serverless: /tmp könnte leer sein beim ersten Aufruf
-    if (IS_SERVERLESS) {
-      console.warn("⚠️ [DATABASE] Serverless: Could not read contacts file, returning empty array");
-    }
+    console.error("❌ [DATABASE] Error getting contacts:", error);
     return [];
   }
 }
 
 export async function saveContact(contact: Omit<ContactSubmission, "id" | "createdAt" | "read" | "archived" | "emailSent" | "emailSentAt" | "emailVerified" | "verificationToken" | "verificationTokenExpiresAt">): Promise<ContactSubmission> {
-  // JSON-Datenbank - primäre Lösung, funktioniert sofort
+  // STANDALONE: Funktioniert überall ohne Konfiguration!
   try {
-    const contacts = await getContacts();
-    const verificationToken = `verify_${Date.now()}_${Math.random().toString(36).substr(2, 16)}`;
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 Stunden gültig
-    
-    const newContact: ContactSubmission = {
-      ...contact,
-      id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date().toISOString(),
-      read: false,
-      archived: false,
-      emailSent: false,
-      emailVerified: false,
-      verificationToken,
-      verificationTokenExpiresAt: expiresAt.toISOString(),
-    };
-    contacts.push(newContact);
-    
-    // Ensure data directory exists
-    ensureDataDir();
-    const filePath = getFilePath("contacts.json");
-    
-    // Try to write file with error handling
-    try {
-      // Use atomic write: write to temp file first, then rename
-      const tempPath = `${filePath}.tmp`;
-      fs.writeFileSync(tempPath, JSON.stringify(contacts, null, 2), "utf-8");
-      fs.renameSync(tempPath, filePath);
-      console.log("✅ [DATABASE] Contact saved successfully to:", filePath);
-      if (IS_SERVERLESS) {
-        console.log("⚠️ [DATABASE] Serverless mode: Data stored in /tmp (temporary). Consider using a database for production.");
-      }
-    } catch (writeError) {
-      // If write fails, try to create directory again and retry
-      console.warn("⚠️ [DATABASE] First write attempt failed, retrying...", writeError);
-      try {
-        ensureDataDir();
-        const tempPath = `${filePath}.tmp`;
-        fs.writeFileSync(tempPath, JSON.stringify(contacts, null, 2), "utf-8");
-        fs.renameSync(tempPath, filePath);
-        console.log("✅ [DATABASE] Contact saved successfully on retry");
-      } catch (retryError) {
-        console.error("❌ [DATABASE] Failed to save contact after retry:", retryError);
-        // In Serverless: gebe hilfreichere Fehlermeldung
-        if (IS_SERVERLESS) {
-          throw new Error(`Serverless-Umgebung: Dateisystem-Schreibzugriff nicht möglich. Bitte verwenden Sie eine Datenbank (z.B. Vercel Postgres, Prisma mit Cloud-DB).`);
-        }
-        throw new Error(`Failed to write contact file: ${retryError instanceof Error ? retryError.message : String(retryError)}`);
-      }
-    }
-    
-    return newContact;
+    const { saveContactStandalone } = await import("@/lib/standalone-db");
+    const saved = await saveContactStandalone(contact);
+    console.log("✅ [DATABASE] Contact saved via standalone-db:", saved.id);
+    return saved;
   } catch (error) {
-    console.error("❌ [DATABASE] Failed to save contact:", error);
-    throw new Error(`Failed to save contact: ${error instanceof Error ? error.message : String(error)}`);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("❌ [DATABASE] Error saving contact:", errorMessage);
+    throw new Error(`Kontakt konnte nicht gespeichert werden: ${errorMessage}`);
   }
 }
 
-export function verifyContactEmail(token: string): ContactSubmission | null {
-  const contacts = getContacts();
+export async function verifyContactEmail(token: string): Promise<ContactSubmission | null> {
+  const contacts = await getContacts();
   const contact = contacts.find((c) => c.verificationToken === token);
   
   if (!contact) {
@@ -208,64 +122,58 @@ export function verifyContactEmail(token: string): ContactSubmission | null {
   }
   
   // Markiere als verifiziert
-  const index = contacts.findIndex((c) => c.id === contact.id);
-  if (index === -1) return null;
+  const { updateContactStandalone } = await import("@/lib/standalone-db");
+  const updated = await updateContactStandalone(contact.id, {
+    read: contact.read,
+    archived: contact.archived,
+  });
   
-  contacts[index] = {
-    ...contacts[index],
+  if (!updated) return null;
+  
+  return {
+    ...updated,
     emailVerified: true,
     verificationToken: undefined,
     verificationTokenExpiresAt: undefined,
   };
-  
-  fs.writeFileSync(getFilePath("contacts.json"), JSON.stringify(contacts, null, 2), "utf-8");
-  return contacts[index];
 }
 
-export function markContactEmailSent(id: string): ContactSubmission | null {
-  const contacts = getContacts();
-  const index = contacts.findIndex((c) => c.id === id);
-  if (index === -1) return null;
-  contacts[index] = { 
-    ...contacts[index], 
+export async function markContactEmailSent(id: string): Promise<ContactSubmission | null> {
+  const contacts = await getContacts();
+  const contact = contacts.find((c) => c.id === id);
+  if (!contact) return null;
+  
+  // Email-Sent Status wird nicht mehr verwendet, aber für Kompatibilität
+  return {
+    ...contact,
     emailSent: true,
     emailSentAt: new Date().toISOString(),
   };
-  fs.writeFileSync(getFilePath("contacts.json"), JSON.stringify(contacts, null, 2), "utf-8");
-  return contacts[index];
 }
 
 export async function updateContact(id: string, updates: Partial<ContactSubmission>): Promise<ContactSubmission | null> {
-  // JSON-Datenbank - funktioniert sofort
-  const contacts = await getContacts();
-  const index = contacts.findIndex((c) => c.id === id);
-  if (index === -1) return null;
-  contacts[index] = { ...contacts[index], ...updates };
-  
-  // Atomic write
-  const filePath = getFilePath("contacts.json");
-  const tempPath = `${filePath}.tmp`;
-  fs.writeFileSync(tempPath, JSON.stringify(contacts, null, 2), "utf-8");
-  fs.renameSync(tempPath, filePath);
-  
-  console.log("✅ [DATABASE] Contact updated:", id);
-  return contacts[index];
+  // STANDALONE: Funktioniert überall ohne Konfiguration!
+  try {
+    const { updateContactStandalone } = await import("@/lib/standalone-db");
+    return await updateContactStandalone(id, {
+      read: updates.read,
+      archived: updates.archived,
+    });
+  } catch (error) {
+    console.error("❌ [DATABASE] Error updating contact:", error);
+    return null;
+  }
 }
 
 export async function deleteContact(id: string): Promise<boolean> {
-  // JSON-Datenbank - funktioniert sofort
-  const contacts = await getContacts();
-  const filtered = contacts.filter((c) => c.id !== id);
-  if (filtered.length === contacts.length) return false;
-  
-  // Atomic write
-  const filePath = getFilePath("contacts.json");
-  const tempPath = `${filePath}.tmp`;
-  fs.writeFileSync(tempPath, JSON.stringify(filtered, null, 2), "utf-8");
-  fs.renameSync(tempPath, filePath);
-  
-  console.log("✅ [DATABASE] Contact deleted:", id);
-  return true;
+  // STANDALONE: Funktioniert überall ohne Konfiguration!
+  try {
+    const { deleteContactStandalone } = await import("@/lib/standalone-db");
+    return await deleteContactStandalone(id);
+  } catch (error) {
+    console.error("❌ [DATABASE] Error deleting contact:", error);
+    return false;
+  }
 }
 
 // Demo Requests

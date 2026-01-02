@@ -103,38 +103,71 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save to database - CRITICAL: This is the primary storage method
+    // Save to database - HIGH-END: Robuste Speicherung mit mehreren Retry-Versuchen
     // Keine E-Mails mehr - alle Anfragen werden nur in der DB gespeichert
     let contact: { id: string } | null = null;
-    try {
-      const { saveContact } = await import("@/lib/database");
-      contact = await saveContact({
-        vorname: trimmedVorname,
-        nachname: trimmedNachname,
-        email: trimmedEmail,
-        telefon: trimmedTelefon,
-        unternehmen: trimmedUnternehmen,
-        betreff: trimmedBetreff,
-        nachricht: trimmedNachricht,
-      });
-      console.log("✅ [KONTAKT API] Contact saved to database:", contact.id);
-      console.log("✅ [KONTAKT API] Contact details:", {
-        name: `${trimmedVorname} ${trimmedNachname}`,
-        email: trimmedEmail,
-        unternehmen: trimmedUnternehmen,
-        betreff: trimmedBetreff,
-      });
-    } catch (err) {
-      // Database save failed - log detailed error
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      const errorStack = err instanceof Error ? err.stack : "No stack";
-      
-      console.error("❌ [KONTAKT API] Database Save Failed:");
-      console.error("  Error:", errorMessage);
-      console.error("  Stack:", errorStack);
-      console.error("  Full Error:", err);
-      
-      // Return user-friendly error message with detailed logging
+    let saveAttempts = 0;
+    const maxAttempts = 3;
+    
+    while (saveAttempts < maxAttempts && !contact) {
+      try {
+        saveAttempts++;
+        const { saveContact } = await import("@/lib/database");
+        
+        contact = await saveContact({
+          vorname: trimmedVorname,
+          nachname: trimmedNachname,
+          email: trimmedEmail,
+          telefon: trimmedTelefon,
+          unternehmen: trimmedUnternehmen,
+          betreff: trimmedBetreff,
+          nachricht: trimmedNachricht,
+        });
+        
+        console.log(`✅ [KONTAKT API] Contact saved to database (attempt ${saveAttempts}):`, contact.id);
+        console.log("✅ [KONTAKT API] Contact details:", {
+          name: `${trimmedVorname} ${trimmedNachname}`,
+          email: trimmedEmail,
+          unternehmen: trimmedUnternehmen,
+          betreff: trimmedBetreff,
+        });
+        break; // Erfolg - verlasse Schleife
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        const errorStack = err instanceof Error ? err.stack : "No stack";
+        
+        console.error(`❌ [KONTAKT API] Database Save Failed (attempt ${saveAttempts}/${maxAttempts}):`);
+        console.error("  Error:", errorMessage);
+        console.error("  Stack:", errorStack);
+        
+        // Wenn letzter Versuch fehlgeschlagen ist
+        if (saveAttempts >= maxAttempts) {
+          console.error("❌ [KONTAKT API] All save attempts failed. Contact data:", {
+            vorname: trimmedVorname,
+            nachname: trimmedNachname,
+            email: trimmedEmail,
+            unternehmen: trimmedUnternehmen,
+            betreff: trimmedBetreff,
+          });
+          
+          // Return user-friendly error message
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: "Fehler beim Speichern der Anfrage. Bitte versuchen Sie es später erneut." 
+            },
+            { status: 500 }
+          );
+        }
+        
+        // Warte kurz vor Retry
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+    }
+    
+    // Sicherheitscheck: Falls contact immer noch null ist
+    if (!contact) {
+      console.error("❌ [KONTAKT API] CRITICAL: Contact is null after all attempts");
       return NextResponse.json(
         { 
           success: false, 
