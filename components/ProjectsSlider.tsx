@@ -365,7 +365,7 @@ export default function ProjectsSlider() {
     <section 
       className="relative px-4 sm:px-6 overflow-hidden" 
       style={{ 
-        paddingTop: "clamp(80px, 15vw, 140px)",
+        paddingTop: "clamp(60px, 12vw, 120px)",
         paddingBottom: "clamp(60px, 12vw, 120px)",
         background: theme === "dark" 
           ? "linear-gradient(180deg, #0C0F1A 0%, #111622 100%)"
@@ -374,7 +374,7 @@ export default function ProjectsSlider() {
     >
       <div className="relative z-10 max-w-7xl mx-auto">
         <motion.div
-          className="text-center mb-12 md:mb-16"
+          className="text-center mb-8 md:mb-12 lg:mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -383,7 +383,7 @@ export default function ProjectsSlider() {
         >
           <motion.h2 
             className="font-bold tracking-tight typography-h1 typography-h1-gradient"
-            style={{ fontSize: "clamp(28px, 4.5vw, 56px)", lineHeight: "1.05", marginBottom: "clamp(16px, 3vw, 32px)" }}
+            style={{ fontSize: "clamp(28px, 4.5vw, 56px)", lineHeight: "1.05", marginBottom: "clamp(12px, 2.5vw, 24px)" }}
             initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true }}
@@ -503,8 +503,8 @@ export default function ProjectsSlider() {
                   const slideProjects = projects.slice(startIndex, endIndex);
                   
                   return (
-                    <div key={slideIndex} className="min-w-full px-2">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-stretch">
+                    <div key={slideIndex} className="min-w-full px-2 flex justify-center">
+                      <div className="w-full max-w-2xl">
                         {slideProjects.map((project, cardIndex) => (
                           <ProjectCard 
                             key={startIndex + cardIndex} 
@@ -598,20 +598,29 @@ export default function ProjectsSlider() {
             })}
           </div>
 
-          {/* Desktop: Slider Indicators */}
+          {/* Desktop: Slider Indicators - One dot per project */}
           <div className="hidden md:flex justify-center gap-2 mt-8">
-            {Array.from({ length: maxSlides }).map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => goToSlide(index)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  index === clampedIndex 
-                    ? "w-8 bg-purple-400" 
-                    : "w-2 bg-white/30 hover:bg-white/50"
-                }`}
-              />
-            ))}
+            {projects.map((_, index) => {
+              const projectSlideIndex = Math.floor(index / cardsPerSlide);
+              const isActive = projectSlideIndex === clampedIndex;
+              
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => goToSlide(projectSlideIndex)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    isActive
+                      ? "w-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 shadow-lg shadow-purple-500/50" 
+                      : "w-2 bg-white/30 hover:bg-white/50"
+                  }`}
+                  aria-label={`Go to project ${index + 1}`}
+                  style={{
+                    boxShadow: isActive ? "0 0 12px rgba(168, 85, 247, 0.4)" : "none",
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
 
