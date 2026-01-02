@@ -374,9 +374,10 @@ export default function Navigation() {
               />
 
               {/* Content Container - Ultra Responsive */}
-              <div className="relative z-10 flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
-                {/* Logo - Ultra High-End - Responsive */}
-                <Link href="/" className="flex-shrink-0">
+              <div className="relative z-10 flex items-center justify-between md:justify-start gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
+                {/* Left Section - Logo (Mobile & Desktop) */}
+                <div className="flex-shrink-0">
+                  <Link href="/" className="block">
                   <motion.div
                     className="relative flex items-center cursor-pointer group/logo"
                     initial={{ opacity: 0, x: -20 }}
@@ -424,7 +425,8 @@ export default function Navigation() {
                       AI
                     </span>
                   </motion.div>
-                </Link>
+                  </Link>
+                </div>
 
                 {/* Apple Intelligence Search Bar - Ultra Responsive */}
                 <div className="flex-1 min-w-0 max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px] mx-auto hidden md:block">
@@ -794,10 +796,12 @@ export default function Navigation() {
                   ))}
                 </div>
 
-                {/* Theme Toggle - Ultra High-End - Responsive */}
-                <motion.button
-                  onClick={toggleTheme}
-                  className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/theme flex-shrink-0"
+                {/* Right Section - Theme Toggle + Mobile Menu (Mobile) / Desktop Navigation (Desktop) */}
+                <div className="flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-6 flex-shrink-0">
+                  {/* Theme Toggle - Ultra High-End - Responsive */}
+                  <motion.button
+                    onClick={toggleTheme}
+                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/theme flex-shrink-0"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -863,9 +867,9 @@ export default function Navigation() {
                       </motion.svg>
                     )}
                   </AnimatePresence>
-                </motion.button>
+                  </motion.button>
 
-                {/* Demo Button - Apple Intelligence Ultra High-End - Responsive */}
+                  {/* Demo Button - Apple Intelligence Ultra High-End - Responsive */}
                 <Link href="/demo-anfordern" prefetch={true} className="hidden lg:block flex-shrink-0">
                   <motion.button
                     className="ai-demo-button relative px-3 lg:px-4 xl:px-5 2xl:px-6 py-2 lg:py-2.5 xl:py-3 rounded-[16px] lg:rounded-[18px] xl:rounded-[20px] font-semibold text-xs lg:text-xs xl:text-sm tracking-wide overflow-hidden group/demo whitespace-nowrap"
@@ -988,11 +992,11 @@ export default function Navigation() {
                       }}
                     />
                   </motion.button>
-                </Link>
+                  </Link>
 
-                {/* Mobile Menu Button */}
-                <motion.button
-                  className="md:hidden relative w-11 h-11 flex flex-col justify-center items-center gap-1.5 p-2 rounded-xl transition-all duration-300 flex-shrink-0"
+                  {/* Mobile Menu Button */}
+                  <motion.button
+                    className="md:hidden relative w-11 h-11 flex flex-col justify-center items-center gap-1.5 p-2 rounded-xl transition-all duration-300 flex-shrink-0"
                   style={{
                     background: theme === "dark"
                       ? "rgba(255, 255, 255, 0.12)"
@@ -1037,7 +1041,8 @@ export default function Navigation() {
                     }}
                     transition={{ duration: 0.3 }}
                   />
-                </motion.button>
+                  </motion.button>
+                </div>
               </div>
             </div>
           </motion.div>

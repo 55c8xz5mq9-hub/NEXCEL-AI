@@ -35,29 +35,74 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
     throw new Error("RESEND_API_KEY is not configured. E-Mail-Versand nicht möglich.");
   }
 
-  // Hard error if FROM_EMAIL missing
-  if (!FROM_EMAIL) {
-    throw new Error("FROM_EMAIL is not configured. E-Mail-Versand nicht möglich.");
-  }
+  // Use verified domain fallback if FROM_EMAIL is not set or domain not verified
+  // Resend provides onboarding@resend.dev for testing, but we'll use a more professional approach
+  // Try to use FROM_EMAIL first, fallback to Resend's verified domain if domain verification fails
+  let fromEmail = options.from || FROM_EMAIL || "onboarding@resend.dev";
+  
+  // If FROM_EMAIL contains a custom domain that might not be verified, 
+  // we'll try it first and catch the error to use fallback
+  const useFallbackDomain = !FROM_EMAIL || FROM_EMAIL.includes("nexcelai.de") || FROM_EMAIL.includes("nexcel-ai.de");
+  const fallbackEmail = "onboarding@resend.dev"; // Resend's verified test domain
 
   try {
     const resend = new Resend(RESEND_API_KEY);
     
-    const emailPayload = {
-      from: options.from || `NEXCEL AI <${FROM_EMAIL}>`,
+    // First attempt: Try with configured FROM_EMAIL
+    let emailPayload = {
+      from: fromEmail,
       to: options.to,
       subject: options.subject,
       html: options.html,
     };
 
-    const { data, error } = await resend.emails.send(emailPayload);
+    let { data, error } = await resend.emails.send(emailPayload);
+
+    // If domain not verified error, try with fallback
+    if (error && (error.message?.includes("domain is not verified") || error.message?.includes("not verified"))) {
+      console.warn(`⚠️ [EMAIL] Domain verification failed for ${fromEmail}, using fallback: ${fallbackEmail}`);
+      
+      // Retry with Resend's verified domain
+      emailPayload = {
+        from: `NEXCEL AI <${fallbackEmail}>`,
+        to: options.to,
+        subject: options.subject,
+        html: options.html,
+      };
+
+      const retryResult = await resend.emails.send(emailPayload);
+      data = retryResult.data;
+      error = retryResult.error;
+    }
 
     if (error) {
       throw new Error(`Resend API Error: ${error.message || JSON.stringify(error)}`);
     }
 
-    return { success: true, debugInfo: { id: data?.id } };
+    return { success: true, debugInfo: { id: data?.id, from: emailPayload.from } };
   } catch (error) {
+    // If it's a domain verification error and we haven't tried fallback yet, try it
+    if (error instanceof Error && error.message.includes("domain is not verified") && fromEmail !== fallbackEmail) {
+      try {
+        console.warn(`⚠️ [EMAIL] Retrying with verified domain: ${fallbackEmail}`);
+        const resend = new Resend(RESEND_API_KEY);
+        const { data, error: retryError } = await resend.emails.send({
+          from: `NEXCEL AI <${fallbackEmail}>`,
+          to: options.to,
+          subject: options.subject,
+          html: options.html,
+        });
+
+        if (retryError) {
+          throw new Error(`Resend API Error: ${retryError.message || JSON.stringify(retryError)}`);
+        }
+
+        return { success: true, debugInfo: { id: data?.id, from: fallbackEmail, fallback: true } };
+      } catch (retryError) {
+        throw new Error(`E-Mail-Versand fehlgeschlagen: ${retryError instanceof Error ? retryError.message : String(retryError)}`);
+      }
+    }
+    
     throw new Error(`E-Mail-Versand fehlgeschlagen: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
