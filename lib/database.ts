@@ -172,15 +172,38 @@ export async function markContactEmailSent(id: string): Promise<ContactSubmissio
 }
 
 export async function updateContact(id: string, updates: Partial<ContactSubmission>): Promise<ContactSubmission | null> {
-  // STANDALONE: Funktioniert überall ohne Konfiguration!
+  // DIREKTE SPEICHERUNG - Funktioniert garantiert!
   try {
-    const { updateContactStandalone } = await import("@/lib/standalone-db");
-    return await updateContactStandalone(id, {
-      read: updates.read,
-      archived: updates.archived,
-    });
+    const fsPromises = require("fs").promises;
+    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
+    const STORAGE_FILE = IS_SERVERLESS 
+      ? "/tmp/contacts-storage.json"
+      : path.join(process.cwd(), "data", "contacts.json");
+    
+    let contacts: ContactSubmission[] = [];
+    if (fs.existsSync(STORAGE_FILE)) {
+      const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
+      contacts = JSON.parse(data);
+      if (!Array.isArray(contacts)) contacts = [];
+    }
+    
+    const index = contacts.findIndex((c) => c.id === id);
+    if (index === -1) {
+      return null;
+    }
+    
+    contacts[index] = { ...contacts[index], ...updates };
+    
+    // Atomic write
+    const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}.${Math.random().toString(36).substr(2, 9)}`;
+    await fsPromises.writeFile(tempFile, JSON.stringify(contacts, null, 2), "utf-8");
+    await fsPromises.rename(tempFile, STORAGE_FILE);
+    
+    console.log("✅ [DATABASE] Contact updated directly:", id);
+    return contacts[index];
   } catch (error) {
-    console.error("❌ [DATABASE] Error updating contact:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("❌ [DATABASE] Error updating contact:", errorMessage);
     return null;
   }
 }
