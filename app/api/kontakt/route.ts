@@ -57,15 +57,23 @@ export async function POST(request: NextRequest) {
     }
     const { vorname, nachname, email, telefon, unternehmen, betreff, nachricht } = body;
 
-    // Validation
-    if (!vorname || !nachname || !email || !telefon || !unternehmen || !betreff || !nachricht) {
+    // Validation - trim all string fields
+    const trimmedVorname = typeof vorname === 'string' ? vorname.trim() : '';
+    const trimmedNachname = typeof nachname === 'string' ? nachname.trim() : '';
+    const trimmedEmail = typeof email === 'string' ? email.trim() : '';
+    const trimmedTelefon = typeof telefon === 'string' ? telefon.trim() : '';
+    const trimmedUnternehmen = typeof unternehmen === 'string' ? unternehmen.trim() : '';
+    const trimmedBetreff = typeof betreff === 'string' ? betreff.trim() : '';
+    const trimmedNachricht = typeof nachricht === 'string' ? nachricht.trim() : '';
+
+    if (!trimmedVorname || !trimmedNachname || !trimmedEmail || !trimmedTelefon || !trimmedUnternehmen || !trimmedBetreff || !trimmedNachricht) {
       return NextResponse.json(
         { success: false, error: "Alle Pflichtfelder müssen ausgefüllt sein" },
         { status: 400 }
       );
     }
 
-    if (nachricht.length < 20) {
+    if (trimmedNachricht.length < 20) {
       return NextResponse.json(
         { success: false, error: "Nachricht muss mindestens 20 Zeichen lang sein" },
         { status: 400 }
@@ -73,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(trimmedEmail)) {
       return NextResponse.json(
         { success: false, error: "Ungültige E-Mail-Adresse" },
         { status: 400 }
@@ -85,13 +93,13 @@ export async function POST(request: NextRequest) {
     try {
       const { saveContact } = await import("@/lib/database");
       contact = saveContact({
-        vorname,
-        nachname,
-        email,
-        telefon,
-        unternehmen,
-        betreff,
-        nachricht,
+        vorname: trimmedVorname,
+        nachname: trimmedNachname,
+        email: trimmedEmail,
+        telefon: trimmedTelefon,
+        unternehmen: trimmedUnternehmen,
+        betreff: trimmedBetreff,
+        nachricht: trimmedNachricht,
       });
       console.log("✅ [KONTAKT API] Contact saved:", contact.id);
     } catch (err) {
@@ -136,13 +144,13 @@ export async function POST(request: NextRequest) {
       
       console.log("📧 [KONTAKT API] Sending confirmation email to:", email);
       const confirmationResult = await sendConfirmationEmail({
-        vorname,
-        nachname,
-        email,
-        telefon,
-        unternehmen,
-        betreff,
-        nachricht,
+        vorname: trimmedVorname,
+        nachname: trimmedNachname,
+        email: trimmedEmail,
+        telefon: trimmedTelefon,
+        unternehmen: trimmedUnternehmen,
+        betreff: trimmedBetreff,
+        nachricht: trimmedNachricht,
       }, contact.verificationToken);
 
       if (!confirmationResult.success) {
@@ -177,13 +185,13 @@ export async function POST(request: NextRequest) {
     try {
       const { sendAdminNotification } = await import("@/lib/email");
       sendAdminNotification({
-        vorname,
-        nachname,
-        email,
-        telefon,
-        unternehmen,
-        betreff,
-        nachricht,
+        vorname: trimmedVorname,
+        nachname: trimmedNachname,
+        email: trimmedEmail,
+        telefon: trimmedTelefon,
+        unternehmen: trimmedUnternehmen,
+        betreff: trimmedBetreff,
+        nachricht: trimmedNachricht,
       }, contact.id).catch((error) => {
         console.error(`⚠️ [KONTAKT API] Admin notification failed (non-critical):`, error);
       });

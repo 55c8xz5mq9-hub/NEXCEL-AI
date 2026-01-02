@@ -289,14 +289,13 @@ const PremiumCheckbox = ({
 // Premium Submit Button with Ripple Effect
 const PremiumSubmitButton = ({
   isLoading,
-  onClick,
 }: {
   isLoading: boolean;
-  onClick: () => void;
 }) => {
   const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Only add ripple effect, don't prevent default submit behavior
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -305,7 +304,7 @@ const PremiumSubmitButton = ({
     setTimeout(() => {
       setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
     }, 600);
-    onClick();
+    // Don't call e.preventDefault() - let the form submit normally
   };
 
   return (
@@ -583,8 +582,10 @@ export default function KontaktPage() {
 
       const data = await response.json();
       
-      if (response.ok) {
+      if (response.ok && data.success) {
+        // Success: Show success animation and reset form
         setSuccess(true);
+        setErrors({});
         setTimeout(() => {
           setFormData({
             vorname: "",
@@ -596,15 +597,25 @@ export default function KontaktPage() {
             nachricht: "",
             datenschutz: false,
           });
-        }, 2000);
+          setSuccess(false);
+        }, 3000);
       } else {
-        const errorMessage = data.error || "Fehler beim Senden. Bitte versuchen Sie es erneut.";
+        // Error: Show error message
+        const errorMessage = data.error || data.message || "Fehler beim Senden. Bitte versuchen Sie es erneut.";
         setErrors({ submit: errorMessage });
-        console.error("API Error:", data);
+        console.error("❌ [KONTAKT FORM] API Error:", {
+          status: response.status,
+          statusText: response.statusText,
+          data: data,
+        });
       }
     } catch (error) {
-      console.error("Fetch Error:", error);
-      setErrors({ submit: error instanceof Error ? error.message : "Fehler beim Senden. Bitte versuchen Sie es erneut." });
+      // Network or parsing error
+      const errorMessage = error instanceof Error 
+        ? `Netzwerkfehler: ${error.message}` 
+        : "Fehler beim Senden. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.";
+      setErrors({ submit: errorMessage });
+      console.error("❌ [KONTAKT FORM] Fetch Error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -875,25 +886,27 @@ export default function KontaktPage() {
                       />
 
                       {errors.submit && (
-                        <motion.p
+                        <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="text-[#EF4444] text-sm flex items-center gap-2"
+                          exit={{ opacity: 0, y: -10 }}
+                          className="rounded-xl p-4 bg-red-500/10 border border-red-500/30"
                         >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              fillRule="evenodd"
-                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          {errors.submit}
-                        </motion.p>
+                          <p className="text-[#EF4444] text-sm flex items-start gap-2">
+                            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                              <path
+                                fillRule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            <span className="flex-1">{errors.submit}</span>
+                          </p>
+                        </motion.div>
                       )}
 
                       <PremiumSubmitButton
                         isLoading={isLoading}
-                        onClick={() => {}}
                       />
                     </motion.form>
                   )}
