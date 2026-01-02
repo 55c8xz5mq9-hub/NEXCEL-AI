@@ -101,7 +101,7 @@ export async function getAllContacts(): Promise<any[]> {
         return Array.isArray(contacts) ? contacts : [];
       }
     } catch (error) {
-      console.warn("⚠️ [STANDALONE DB] Vercel KV failed, using JSON:", error);
+      console.warn("⚠️ [STANDALONE DB] Database client failed, using JSON:", error);
     }
   }
 
@@ -150,19 +150,45 @@ export async function saveContactStandalone(contact: {
     emailVerified: false,
   };
 
-  // Versuche zuerst Datenbank-Client (Vercel KV oder Upstash)
+  // Versuche zuerst API-Route (funktioniert in Production ohne externe DB)
   if (IS_SERVERLESS) {
     try {
-      const client = await getDBClient();
-      if (client) {
-        const contacts = await getAllContacts();
-        contacts.push(newContact);
-        await client.set("contacts", contacts);
-        console.log("✅ [STANDALONE DB] Contact saved to database:", newContact.id);
-        return newContact;
+      const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+      
+      try {
+        const response = await fetch(`${baseUrl}/api/contacts-storage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(contact),
+          cache: 'no-store',
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log("✅ [STANDALONE DB] Contact saved via API storage:", data.contact?.id);
+          return data.contact || newContact;
+        }
+      } catch (apiError) {
+        console.warn("⚠️ [STANDALONE DB] API storage failed, trying database client:", apiError);
+      }
+      
+      // Versuche Datenbank-Client (Vercel KV oder Upstash)
+      try {
+        const client = await getDBClient();
+        if (client) {
+          const contacts = await getAllContacts();
+          contacts.push(newContact);
+          await client.set("contacts", contacts);
+          console.log("✅ [STANDALONE DB] Contact saved to database:", newContact.id);
+          return newContact;
+        }
+      } catch (error) {
+        console.warn("⚠️ [STANDALONE DB] Database client failed, using JSON:", error);
       }
     } catch (error) {
-      console.warn("⚠️ [STANDALONE DB] Database client failed, using JSON:", error);
+      console.warn("⚠️ [STANDALONE DB] All storage methods failed, using JSON:", error);
     }
   }
 
@@ -331,11 +357,11 @@ export async function deleteContactStandalone(id: string): Promise<boolean> {
         if (filtered.length === contacts.length) return false;
         
         await client.set("contacts", filtered);
-        console.log("✅ [STANDALONE DB] Contact deleted from Vercel KV:", id);
+        console.log("✅ [STANDALONE DB] Contact deleted from database:", id);
         return true;
       }
     } catch (error) {
-      console.warn("⚠️ [STANDALONE DB] Vercel KV failed, using JSON:", error);
+      console.warn("⚠️ [STANDALONE DB] Database client failed, using JSON:", error);
     }
   }
 
