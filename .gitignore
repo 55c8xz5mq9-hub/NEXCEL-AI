@@ -37,3 +37,6 @@ next-env.d.ts
 # demo users data
 /data
 
+# large zip files
+*.zip
+
