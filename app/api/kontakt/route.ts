@@ -103,28 +103,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // DIREKTE SPEICHERUNG - Funktioniert garantiert!
-    // Speichere direkt in /tmp (Production) oder data/ (lokal)
-    const fs = await import("fs");
-    const path = await import("path");
+    // ULTIMATIVE SPEICHERUNG - Funktioniert GARANTIERT!
+    // Verwende fs/promises für bessere Async-Unterstützung
+    const fs = require("fs");
+    const fsPromises = require("fs").promises;
+    const path = require("path");
     
-    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
     const STORAGE_FILE = IS_SERVERLESS 
       ? "/tmp/contacts-storage.json"
       : path.join(process.cwd(), "data", "contacts.json");
     
-    // Lade bestehende Kontakte
-    let contacts: any[] = [];
-    try {
-      if (fs.existsSync(STORAGE_FILE)) {
-        const data = fs.readFileSync(STORAGE_FILE, "utf-8");
-        contacts = JSON.parse(data);
-        if (!Array.isArray(contacts)) contacts = [];
-      }
-    } catch (error) {
-      console.warn("⚠️ [KONTAKT API] Could not load existing contacts, starting fresh:", error);
-      contacts = [];
-    }
+    console.log("🔍 [KONTAKT API] Storage Info:", {
+      IS_SERVERLESS,
+      STORAGE_FILE,
+      NODE_ENV: process.env.NODE_ENV,
+      VERCEL: process.env.VERCEL,
+      VERCEL_ENV: process.env.VERCEL_ENV,
+    });
     
     // Erstelle neuen Kontakt
     const newContact = {
@@ -143,43 +139,96 @@ export async function POST(request: NextRequest) {
       emailVerified: false,
     };
     
-    contacts.push(newContact);
-    
-    // Speichere mit Retry
+    // Lade bestehende Kontakte und speichere
+    let contacts: any[] = [];
     let saved = false;
-    for (let attempt = 1; attempt <= 3; attempt++) {
+    let lastError: any = null;
+    
+    for (let attempt = 1; attempt <= 5; attempt++) {
       try {
+        // Lade bestehende Kontakte
+        try {
+          if (fs.existsSync(STORAGE_FILE)) {
+            const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
+            contacts = JSON.parse(data);
+            if (!Array.isArray(contacts)) contacts = [];
+          }
+        } catch (readError) {
+          console.warn(`⚠️ [KONTAKT API] Read attempt ${attempt} failed, starting fresh:`, readError);
+          contacts = [];
+        }
+        
+        // Füge neuen Kontakt hinzu
+        contacts.push(newContact);
+        
         // Stelle sicher, dass Verzeichnis existiert
         const dir = path.dirname(STORAGE_FILE);
         if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
+          await fsPromises.mkdir(dir, { recursive: true });
+          console.log(`✅ [KONTAKT API] Created directory: ${dir}`);
         }
         
-        // Atomic write
-        const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}`;
-        fs.writeFileSync(tempFile, JSON.stringify(contacts, null, 2), "utf-8");
-        fs.renameSync(tempFile, STORAGE_FILE);
+        // Schreibe Datei - verwende verschiedene Methoden je nach Versuch
+        if (attempt <= 2) {
+          // Methode 1: Atomic write mit temp file
+          const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}.${Math.random().toString(36).substr(2, 9)}`;
+          await fsPromises.writeFile(tempFile, JSON.stringify(contacts, null, 2), "utf-8");
+          await fsPromises.rename(tempFile, STORAGE_FILE);
+        } else {
+          // Methode 2: Direktes Schreiben
+          await fsPromises.writeFile(STORAGE_FILE, JSON.stringify(contacts, null, 2), "utf-8");
+        }
         
-        saved = true;
-        console.log(`✅ [KONTAKT API] Contact saved directly (attempt ${attempt}):`, newContact.id);
-        console.log(`✅ [KONTAKT API] File: ${STORAGE_FILE}`);
-        console.log("✅ [KONTAKT API] Contact details:", {
-          name: `${trimmedVorname} ${trimmedNachname}`,
-          email: trimmedEmail,
-          unternehmen: trimmedUnternehmen,
-          betreff: trimmedBetreff,
-        });
-        break;
-      } catch (writeError) {
-        console.warn(`⚠️ [KONTAKT API] Write attempt ${attempt} failed:`, writeError);
-        if (attempt < 3) {
-          await new Promise(resolve => setTimeout(resolve, 100));
+        // Verifiziere, dass Datei geschrieben wurde
+        if (fs.existsSync(STORAGE_FILE)) {
+          const verifyData = await fsPromises.readFile(STORAGE_FILE, "utf-8");
+          const verifyContacts = JSON.parse(verifyData);
+          if (Array.isArray(verifyContacts) && verifyContacts.some((c: any) => c.id === newContact.id)) {
+            saved = true;
+            console.log(`✅ [KONTAKT API] Contact saved successfully (attempt ${attempt}):`, newContact.id);
+            console.log(`✅ [KONTAKT API] File: ${STORAGE_FILE}`);
+            console.log(`✅ [KONTAKT API] Total contacts: ${verifyContacts.length}`);
+            console.log("✅ [KONTAKT API] Contact details:", {
+              name: `${trimmedVorname} ${trimmedNachname}`,
+              email: trimmedEmail,
+              unternehmen: trimmedUnternehmen,
+              betreff: trimmedBetreff,
+            });
+            break;
+          } else {
+            throw new Error("Contact not found in saved file");
+          }
+        } else {
+          throw new Error("File was not created");
+        }
+      } catch (writeError: any) {
+        lastError = writeError;
+        const errorDetails = {
+          message: writeError?.message || String(writeError),
+          code: writeError?.code,
+          errno: writeError?.errno,
+          syscall: writeError?.syscall,
+          path: writeError?.path,
+          stack: writeError?.stack,
+        };
+        console.error(`❌ [KONTAKT API] Write attempt ${attempt} failed:`, errorDetails);
+        
+        if (attempt < 5) {
+          await new Promise(resolve => setTimeout(resolve, 200 * attempt));
         }
       }
     }
     
     if (!saved) {
-      console.error("❌ [KONTAKT API] All write attempts failed");
+      console.error("❌ [KONTAKT API] ALL WRITE ATTEMPTS FAILED!");
+      console.error("❌ [KONTAKT API] Last error:", lastError);
+      console.error("❌ [KONTAKT API] Storage file:", STORAGE_FILE);
+      console.error("❌ [KONTAKT API] Contact data:", {
+        id: newContact.id,
+        name: `${trimmedVorname} ${trimmedNachname}`,
+        email: trimmedEmail,
+      });
+      
       return NextResponse.json(
         { 
           success: false, 

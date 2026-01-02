@@ -86,26 +86,30 @@ function getFilePath(filename: string): string {
 // Contacts - DIREKTE SPEICHERUNG - Funktioniert garantiert!
 export async function getContacts(): Promise<ContactSubmission[]> {
   try {
-    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
     const STORAGE_FILE = IS_SERVERLESS 
       ? "/tmp/contacts-storage.json"
       : path.join(process.cwd(), "data", "contacts.json");
     
     if (!fs.existsSync(STORAGE_FILE)) {
+      console.log(`ℹ️ [DATABASE] Storage file does not exist yet: ${STORAGE_FILE}`);
       return [];
     }
     
-    const data = fs.readFileSync(STORAGE_FILE, "utf-8");
+    const fsPromises = require("fs").promises;
+    const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
     const contacts = JSON.parse(data);
     
     if (!Array.isArray(contacts)) {
+      console.warn(`⚠️ [DATABASE] Invalid data format in ${STORAGE_FILE}`);
       return [];
     }
     
     console.log(`✅ [DATABASE] Loaded ${contacts.length} contacts directly from ${STORAGE_FILE}`);
     return contacts as ContactSubmission[];
   } catch (error) {
-    console.error("❌ [DATABASE] Error getting contacts:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("❌ [DATABASE] Error getting contacts:", errorMessage);
     return [];
   }
 }
@@ -184,14 +188,15 @@ export async function updateContact(id: string, updates: Partial<ContactSubmissi
 export async function deleteContact(id: string): Promise<boolean> {
   // DIREKTE SPEICHERUNG - Funktioniert garantiert!
   try {
-    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+    const fsPromises = require("fs").promises;
+    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
     const STORAGE_FILE = IS_SERVERLESS 
       ? "/tmp/contacts-storage.json"
       : path.join(process.cwd(), "data", "contacts.json");
     
     let contacts: ContactSubmission[] = [];
     if (fs.existsSync(STORAGE_FILE)) {
-      const data = fs.readFileSync(STORAGE_FILE, "utf-8");
+      const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
       contacts = JSON.parse(data);
       if (!Array.isArray(contacts)) contacts = [];
     }
@@ -202,14 +207,15 @@ export async function deleteContact(id: string): Promise<boolean> {
     }
     
     // Atomic write
-    const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}`;
-    fs.writeFileSync(tempFile, JSON.stringify(filtered, null, 2), "utf-8");
-    fs.renameSync(tempFile, STORAGE_FILE);
+    const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}.${Math.random().toString(36).substr(2, 9)}`;
+    await fsPromises.writeFile(tempFile, JSON.stringify(filtered, null, 2), "utf-8");
+    await fsPromises.rename(tempFile, STORAGE_FILE);
     
     console.log("✅ [DATABASE] Contact deleted directly:", id);
     return true;
   } catch (error) {
-    console.error("❌ [DATABASE] Error deleting contact:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("❌ [DATABASE] Error deleting contact:", errorMessage);
     return false;
   }
 }
