@@ -100,9 +100,9 @@ const ProjectCard = memo(({ project, index, onClick }: { project: Project; index
       onClick={onClick}
       style={{ willChange: "transform, opacity" }}
     >
-      {/* Main Card Container - Ultra High-End Apple Design - Compact */}
+      {/* Main Card Container - Ultra High-End Apple Design - Compact Mobile */}
       <div
-        className="relative rounded-[28px] overflow-hidden isolation-isolate h-full flex flex-col max-h-[540px] md:max-h-[600px]"
+        className="relative rounded-[28px] overflow-hidden isolation-isolate h-full flex flex-col max-h-[520px] md:max-h-[600px]"
         style={{
           background: theme === "dark"
             ? "linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 30%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.03) 100%)"
@@ -164,12 +164,12 @@ const ProjectCard = memo(({ project, index, onClick }: { project: Project; index
           }}
         />
 
-        {/* Content - Compact Layout */}
-        <div className="relative z-10 p-4 md:p-6 lg:p-8 flex flex-col flex-1 text-center">
-          {/* Title & Subtitle */}
-          <div className="mb-3 md:mb-4">
+        {/* Content - Compact Layout - Mobile Optimized */}
+        <div className="relative z-10 px-5 py-6 md:p-6 lg:p-8 flex flex-col justify-between max-h-[520px] md:max-h-none h-auto md:h-full gap-4 md:gap-0 text-center">
+          {/* Title & Subtitle - Compact on Mobile */}
+          <div className="mb-0 md:mb-3 md:mb-4">
             <h3
-              className="text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-1.5 tracking-tight"
+              className="text-lg md:text-2xl lg:text-3xl font-bold mb-0.5 md:mb-1.5 tracking-tight"
               style={{
                 color: theme === "dark" ? "#FFFFFF" : "#000000",
                 textShadow: theme === "dark" ? "0 0 30px rgba(168, 85, 247, 0.3)" : "none",
@@ -178,7 +178,7 @@ const ProjectCard = memo(({ project, index, onClick }: { project: Project; index
               {project.title}
             </h3>
             <p
-              className="text-xs md:text-sm font-semibold"
+              className="text-[11px] md:text-sm font-semibold"
               style={{
                 color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
               }}
@@ -187,8 +187,8 @@ const ProjectCard = memo(({ project, index, onClick }: { project: Project; index
             </p>
           </div>
 
-          {/* Dashboard Image - Main Focus */}
-          <div className="mb-3 md:mb-4 flex-1 min-h-0">
+          {/* Dashboard Image - Main Focus - Mobile Optimized */}
+          <div className="mb-0 md:mb-3 md:mb-4 flex-1 min-h-0">
             <div className="w-full h-full rounded-xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
               <div className="w-full h-full">
                 <project.dashboard />
@@ -196,12 +196,12 @@ const ProjectCard = memo(({ project, index, onClick }: { project: Project; index
             </div>
           </div>
 
-          {/* Feature Tags - Compact */}
+          {/* Feature Tags - Compact - Mobile Optimized */}
           <div className="flex flex-wrap justify-center gap-1.5 md:gap-2">
             {project.features.slice(0, 4).map((feature, i) => (
               <span
                 key={i}
-                className={`px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg text-[10px] md:text-xs font-medium transition-colors duration-500 ${
+                className={`px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg text-[9px] md:text-xs font-medium transition-colors duration-500 ${
                   theme === "dark"
                     ? "bg-white/[0.05] text-white/70 border border-white/[0.1]"
                     : "bg-[#0C0F1A]/5 text-[#1B2030]/70 border border-[#0C0F1A]/10"
@@ -324,7 +324,7 @@ function ProjectsSection() {
     setMobileCardIndex(Math.max(0, Math.min(projects.length - 1, index)));
   };
 
-  // Sync mobile scroll position with card index
+  // Sync mobile scroll position with card index - Ensure arrows work correctly
   useEffect(() => {
     if (isMobile && mobileScrollRef.current) {
       const container = mobileScrollRef.current;
@@ -332,9 +332,9 @@ function ProjectsSection() {
       if (cardElement) {
         const containerRect = container.getBoundingClientRect();
         const cardRect = cardElement.getBoundingClientRect();
-        const scrollLeft = cardRect.left - containerRect.left + container.scrollLeft;
+        const scrollLeft = cardRect.left - containerRect.left + container.scrollLeft - (containerRect.width - cardRect.width) / 2;
         container.scrollTo({
-          left: scrollLeft - (containerRect.width - cardRect.width) / 2,
+          left: Math.max(0, scrollLeft),
           behavior: 'smooth'
         });
       }
@@ -438,7 +438,7 @@ function ProjectsSection() {
                 }
               }}
               disabled={isMobile ? mobileCardIndex === 0 : clampedIndex === 0}
-              className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group md:static ${
+              className={`flex flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
                 (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
                   ? "opacity-30 cursor-not-allowed" 
                   : "cursor-pointer hover:scale-105 active:scale-95"
@@ -478,13 +478,13 @@ function ProjectsSection() {
               </svg>
             </button>
 
-            {/* Slider Container */}
+            {/* Slider Container - Mobile: Only one card visible */}
             <div 
               ref={sliderRef}
               className="flex-1 overflow-hidden rounded-3xl"
               style={{ pointerEvents: "auto", zIndex: 1 }}
             >
-              {/* Mobile: Horizontal Scroll with Snap - No visible neighbors */}
+              {/* Mobile: Horizontal Scroll with Snap - Only one card visible, no neighbors */}
               <div 
                 ref={mobileScrollRef}
                 className="md:hidden overflow-x-auto scrollbar-hide"
@@ -499,17 +499,18 @@ function ProjectsSection() {
                     <div
                       key={index}
                       data-card-index={index}
-                      className="flex-shrink-0"
+                      className="flex-shrink-0 w-full flex justify-center"
                       style={{ 
                         scrollSnapAlign: 'center',
-                        width: '100%',
                       }}
                     >
-                      <ProjectCard 
-                        project={project} 
-                        index={index}
-                        onClick={() => handleCardClick(project)}
-                      />
+                      <div className="w-full max-w-[95%]">
+                        <ProjectCard 
+                          project={project} 
+                          index={index}
+                          onClick={() => handleCardClick(project)}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -569,7 +570,7 @@ function ProjectsSection() {
                 }
               }}
               disabled={isMobile ? mobileCardIndex === projects.length - 1 : clampedIndex === maxSlides - 1}
-              className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group md:static ${
+              className={`flex flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
                 (isMobile ? mobileCardIndex === projects.length - 1 : clampedIndex === maxSlides - 1)
                   ? "opacity-30 cursor-not-allowed" 
                   : "cursor-pointer hover:scale-105 active:scale-95"
@@ -1041,6 +1042,359 @@ const ProblemCard = memo(({ item, index, theme }: { item: any; index: number; th
 ));
 ProblemCard.displayName = "ProblemCard";
 
+// Problems Slider Component - Mobile optimized
+function ProblemsSlider({ problemItems, theme }: { problemItems: any[]; theme: "dark" | "light" }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Navigation functions
+  const nextSlide = () => {
+    setActiveIndex((prev) => Math.min(prev + 1, problemItems.length - 1));
+  };
+
+  const prevSlide = () => {
+    setActiveIndex((prev) => Math.max(prev - 1, 0));
+  };
+
+  const goToSlide = (index: number) => {
+    setActiveIndex(Math.max(0, Math.min(index, problemItems.length - 1)));
+  };
+
+  // Touch handlers for swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    
+    const distance = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (distance > minSwipeDistance) {
+      // Swipe left - next
+      nextSlide();
+    } else if (distance < -minSwipeDistance) {
+      // Swipe right - prev
+      prevSlide();
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
+  // Sync scroll position with activeIndex
+  useEffect(() => {
+    if (isMobile && sliderRef.current) {
+      const container = sliderRef.current;
+      const cardElement = container.querySelector(`[data-card-index="${activeIndex}"]`) as HTMLElement;
+      if (cardElement) {
+        const containerRect = container.getBoundingClientRect();
+        const cardRect = cardElement.getBoundingClientRect();
+        const scrollLeft = cardRect.left - containerRect.left + container.scrollLeft - (containerRect.width - cardRect.width) / 2;
+        container.scrollTo({
+          left: Math.max(0, scrollLeft),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [activeIndex, isMobile]);
+
+  return (
+    <div className="relative">
+      {/* Desktop: Grid Layout */}
+      <div className="hidden md:grid grid-cols-3 gap-6 md:gap-8 items-stretch">
+        {problemItems.map((item, index) => (
+          <ProblemCard key={index} item={item} index={index} theme={theme} />
+        ))}
+      </div>
+
+      {/* Mobile: Slider */}
+      <div className="md:hidden relative">
+        <div className="flex items-center gap-3">
+          {/* Left Arrow */}
+          <button
+            type="button"
+            onClick={prevSlide}
+            disabled={activeIndex === 0}
+            className={`flex-shrink-0 w-10 h-10 rounded-full items-center justify-center transition-all duration-300 ${
+              activeIndex === 0
+                ? "opacity-30 cursor-not-allowed"
+                : "cursor-pointer hover:scale-105 active:scale-95"
+            }`}
+            style={{
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              border: "1px solid rgba(194, 107, 255, 0.3)",
+              boxShadow: activeIndex === 0
+                ? "none"
+                : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
+              pointerEvents: "auto",
+              zIndex: 50,
+            }}
+          >
+            <svg 
+              className="w-5 h-5 text-white pointer-events-none" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* Slider Container */}
+          <div 
+            ref={sliderRef}
+            className="flex-1 overflow-x-auto scrollbar-hide"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            style={{
+              scrollSnapType: 'x mandatory',
+              WebkitOverflowScrolling: 'touch',
+              scrollBehavior: 'smooth',
+            }}
+          >
+            <div className="flex">
+              {problemItems.map((item, index) => (
+                <div
+                  key={index}
+                  data-card-index={index}
+                  className="flex-shrink-0 w-full flex justify-center"
+                  style={{ scrollSnapAlign: 'center' }}
+                >
+                  <div className="w-full max-w-[95%]">
+                    <ProblemCardMobile item={item} index={index} theme={theme} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Arrow */}
+          <button
+            type="button"
+            onClick={nextSlide}
+            disabled={activeIndex === problemItems.length - 1}
+            className={`flex-shrink-0 w-10 h-10 rounded-full items-center justify-center transition-all duration-300 ${
+              activeIndex === problemItems.length - 1
+                ? "opacity-30 cursor-not-allowed"
+                : "cursor-pointer hover:scale-105 active:scale-95"
+            }`}
+            style={{
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              border: "1px solid rgba(194, 107, 255, 0.3)",
+              boxShadow: activeIndex === problemItems.length - 1
+                ? "none"
+                : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
+              pointerEvents: "auto",
+              zIndex: 50,
+            }}
+          >
+            <svg 
+              className="w-5 h-5 text-white pointer-events-none" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Pagination Dots */}
+        <div className="flex justify-center gap-2 mt-6">
+          {problemItems.map((_, index) => {
+            const isActive = index === activeIndex;
+            return (
+              <button
+                key={index}
+                type="button"
+                onClick={() => goToSlide(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  isActive
+                    ? "w-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 shadow-lg shadow-purple-500/50"
+                    : "w-2 bg-white/20 active:bg-white/40"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+                style={{
+                  boxShadow: isActive ? "0 0 12px rgba(168, 85, 247, 0.4)" : "none",
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Mobile-optimized Problem Card
+const ProblemCardMobile = memo(({ item, index, theme }: { item: any; index: number; theme: "dark" | "light" }) => (
+  <motion.div
+    className="group relative h-full flex flex-col"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: index * 0.05 }}
+    style={{ willChange: "transform, opacity" }}
+  >
+    {/* Main Card Container - Compact Mobile Design */}
+    <div
+      className="relative rounded-[28px] overflow-hidden isolation-isolate h-full flex flex-col max-h-[480px]"
+      style={{
+        background: theme === "dark"
+          ? "linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 30%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.03) 100%)"
+          : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)",
+        backdropFilter: "blur(40px) saturate(200%)",
+        WebkitBackdropFilter: "blur(40px) saturate(200%)",
+        border: theme === "dark"
+          ? "1px solid rgba(255, 255, 255, 0.25)"
+          : "1px solid rgba(0, 0, 0, 0.12)",
+        boxShadow: theme === "dark"
+          ? "0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset, 0 2px 4px rgba(0, 0, 0, 0.4) inset, 0 -2px 2px rgba(255, 255, 255, 0.08) inset"
+          : "0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.08) inset",
+      }}
+    >
+      {/* Glowing Edge Accents */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px] opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), rgba(168, 85, 247, 0.6), rgba(139, 92, 246, 0.6), rgba(255, 255, 255, 0.8), transparent)",
+          boxShadow: "0 0 20px rgba(168, 85, 247, 0.4), 0 0 40px rgba(139, 92, 246, 0.3)",
+        }}
+      />
+
+      {/* Base Color Layer */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          background: theme === "dark"
+            ? "linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(139, 92, 246, 0.08) 25%, transparent 50%, rgba(99, 102, 241, 0.08) 75%, rgba(168, 85, 247, 0.12) 100%)"
+            : "linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(139, 92, 246, 0.06) 100%)",
+        }}
+      />
+
+      {/* Radial Glow Layer */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[200%] h-[200%] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          background: theme === "dark"
+            ? "radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(139, 92, 246, 0.10) 30%, transparent 70%)"
+            : "radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Content - Compact Mobile Layout */}
+      <div className="relative z-10 px-5 py-6 flex flex-col gap-4 text-center">
+        {/* Icon Section - Smaller on Mobile */}
+        <div className="flex justify-center items-center">
+          <div className="relative w-32 h-32 flex items-center justify-center">
+            {/* Icon Glow Background */}
+            <div
+              className="absolute inset-0 rounded-full opacity-30"
+              style={{
+                background: "radial-gradient(circle, rgba(168, 85, 247, 0.3), rgba(139, 92, 246, 0.2), transparent)",
+                filter: "blur(15px)",
+                transform: "scale(1.2)",
+              }}
+            />
+            {/* Icon Container */}
+            <div className="relative z-10 w-full h-full flex items-center justify-center">
+              <item.visual />
+            </div>
+          </div>
+        </div>
+
+        {/* Text Content - Compact */}
+        <div className="flex flex-col gap-2">
+          <h3
+            className="text-lg font-bold tracking-tight"
+            style={{
+              color: theme === "dark" ? "#FFFFFF" : "#000000",
+              textShadow: theme === "dark" ? "0 0 30px rgba(168, 85, 247, 0.3)" : "none",
+            }}
+          >
+            {item.title}
+          </h3>
+          {item.subtitle && (
+            <p
+              className="text-xs font-semibold"
+              style={{
+                color: theme === "dark" ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.6)",
+              }}
+            >
+              {item.subtitle}
+            </p>
+          )}
+        </div>
+
+        {/* Bullet Points - Compact */}
+        {item.bullets && (
+          <div className="flex flex-col gap-2 mt-2">
+            {item.bullets.slice(0, 4).map((bullet: string, i: number) => (
+              <div
+                key={i}
+                className="flex items-start gap-2 text-left"
+              >
+                <div 
+                  className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
+                  style={{
+                    background: "rgba(168, 85, 247, 0.6)",
+                    boxShadow: "0 0 8px rgba(168, 85, 247, 0.6)",
+                  }}
+                />
+                <p
+                  className="text-xs font-light leading-relaxed flex-1"
+                  style={{
+                    color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
+                  }}
+                >
+                  {bullet}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* Hover Glow Enhancement */}
+    <div
+      className="absolute inset-0 rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none -z-10"
+      style={{
+        background: theme === "dark"
+          ? "radial-gradient(circle, rgba(168, 85, 247, 0.25), transparent 70%)"
+          : "radial-gradient(circle, rgba(124, 58, 237, 0.18), transparent 70%)",
+        filter: "blur(50px)",
+        transform: "scale(1.15)",
+      }}
+    />
+  </motion.div>
+));
+ProblemCardMobile.displayName = "ProblemCardMobile";
+
 export default function Home() {
   const { theme } = useTheme();
   
@@ -1111,17 +1465,38 @@ export default function Home() {
   const problemItems = useMemo(() => [
     {
       title: "Zettelwirtschaft",
+      subtitle: "Chaos statt System",
       text: "Zettel, Excel, WhatsApp koordinieren den Alltag.",
+      bullets: [
+        "Mehrfache Dateneingabe",
+        "Fehleranfällige Übertragung",
+        "Keine zentrale Übersicht",
+        "Zeitverlust durch Suche"
+      ],
       visual: ProblemZettelwirtschaftIcon,
     },
     {
       title: "Personalbindung",
+      subtitle: "Wachstum blockiert",
       text: "Disponenten und Organisation blockieren Wachstum.",
+      bullets: [
+        "Abhängigkeit von Schlüsselpersonen",
+        "Hohe Personalkosten",
+        "Schwierige Skalierung",
+        "Fehlende Automatisierung"
+      ],
       visual: ProblemPersonalbindungIcon,
     },
     {
       title: "Fehler & Verluste",
+      subtitle: "Kosten durch Ineffizienz",
       text: "Fehler und Zeitverlust sind Standard.",
+      bullets: [
+        "Manuelle Fehlerquellen",
+        "Verzögerte Reaktionen",
+        "Doppelte Arbeit",
+        "Kosten durch Nacharbeit"
+      ],
       visual: ProblemFehlerIcon,
     },
   ], []);
@@ -1260,11 +1635,8 @@ export default function Home() {
             </motion.h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
-            {problemItems.map((item, index) => (
-              <ProblemCard key={index} item={item} index={index} theme={theme} />
-            ))}
-          </div>
+          {/* Problems Slider - Mobile optimized */}
+          <ProblemsSlider problemItems={problemItems} theme={theme} />
         </div>
       </section>
 
