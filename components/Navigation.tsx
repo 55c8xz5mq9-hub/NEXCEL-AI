@@ -558,8 +558,8 @@ export default function Navigation() {
                   </div>
                 </div>
 
-                {/* Apple Intelligence Search Bar - Ultra Responsive */}
-                <div className="flex-1 min-w-0 w-full md:max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px] md:mx-auto -mx-4 md:mx-auto px-4 md:px-0 order-3 md:order-none">
+                {/* Apple Intelligence Search Bar - Ultra Responsive - Desktop Only */}
+                <div className="hidden md:flex flex-1 min-w-0 md:max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px] md:mx-auto md:px-0 md:order-none">
                   <motion.div
                     ref={searchContainerRef}
                     className="relative group/search"

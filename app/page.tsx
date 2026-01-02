@@ -164,10 +164,10 @@ const ProjectCard = memo(({ project, index }: { project: Project; index: number 
         />
 
         {/* Content */}
-        <div className="relative z-10 p-6 md:p-10 lg:p-12 flex flex-col flex-1">
-          <div className="mb-4 md:mb-6">
+        <div className="relative z-10 p-4 md:p-10 lg:p-12 flex flex-col flex-1">
+          <div className="mb-2 md:mb-6">
             <h3
-              className="text-xl md:text-2xl lg:text-3xl font-bold mb-2 tracking-tight"
+              className="text-lg md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 tracking-tight"
               style={{
                 color: theme === "dark" ? "#FFFFFF" : "#000000",
                 textShadow: theme === "dark" ? "0 0 30px rgba(168, 85, 247, 0.3)" : "none",
@@ -176,7 +176,7 @@ const ProjectCard = memo(({ project, index }: { project: Project; index: number 
               {project.title}
             </h3>
             <p
-              className="text-sm md:text-base font-semibold"
+              className="text-xs md:text-base font-semibold"
               style={{
                 color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
               }}
@@ -186,7 +186,7 @@ const ProjectCard = memo(({ project, index }: { project: Project; index: number 
           </div>
 
           <p
-            className="text-xs md:text-sm lg:text-base font-light leading-relaxed mb-4 md:mb-6"
+            className="text-xs md:text-sm lg:text-base font-light leading-snug md:leading-relaxed mb-3 md:mb-6 line-clamp-3 md:line-clamp-none"
             style={{
               color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
             }}
@@ -194,15 +194,15 @@ const ProjectCard = memo(({ project, index }: { project: Project; index: number 
             {project.description}
           </p>
 
-          <div className="mb-4 md:mb-6" style={{ minHeight: "300px", height: "300px" }}>
+          <div className="mb-3 md:mb-6" style={{ minHeight: "200px", height: "200px", maxHeight: "200px" }}>
             <project.dashboard />
           </div>
 
-          <div className="flex flex-wrap gap-2 mb-4 md:mb-6">
+          <div className="flex flex-wrap gap-1.5 md:gap-2 mb-3 md:mb-6">
             {project.features.map((feature, i) => (
               <span
                 key={i}
-                className={`px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-xs font-medium transition-colors duration-500 ${
+                className={`px-2 md:px-3 py-0.5 md:py-1.5 rounded-lg text-[10px] md:text-xs font-medium transition-colors duration-500 ${
                   theme === "dark"
                     ? "bg-white/[0.05] text-white/70 border border-white/[0.1]"
                     : "bg-[#0C0F1A]/5 text-[#1B2030]/70 border border-[#0C0F1A]/10"
@@ -395,7 +395,7 @@ function ProjectsSection() {
         {/* High-End Slider */}
         <div className="relative" style={{ pointerEvents: "auto" }}>
           <div className="flex items-center gap-2 sm:gap-4 md:gap-6" style={{ position: "relative", zIndex: 10 }}>
-            {/* Left Navigation Button - Outside Cards */}
+            {/* Left Navigation Button - Outside Cards, Vertically Centered on Mobile */}
             <button
               type="button"
               onClick={(e) => {
@@ -420,7 +420,7 @@ function ProjectsSection() {
                 }
               }}
               disabled={isMobile ? mobileCardIndex === 0 : clampedIndex === 0}
-              className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+              className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group md:static ${
                 (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
                   ? "opacity-30 cursor-not-allowed" 
                   : "cursor-pointer hover:scale-105 active:scale-95"
@@ -436,6 +436,7 @@ function ProjectsSection() {
                 pointerEvents: "auto",
                 zIndex: 50,
                 position: "relative",
+                alignSelf: "center",
               }}
               onMouseEnter={(e) => {
                 if (!(isMobile ? mobileCardIndex === 0 : clampedIndex === 0)) {
@@ -526,7 +527,7 @@ function ProjectsSection() {
               </motion.div>
             </div>
 
-            {/* Right Navigation Button - Outside Cards */}
+            {/* Right Navigation Button - Outside Cards, Vertically Centered on Mobile */}
             <button
               type="button"
               onClick={(e) => {
@@ -551,7 +552,7 @@ function ProjectsSection() {
                 }
               }}
               disabled={isMobile ? mobileCardIndex === projects.length - 1 : clampedIndex === maxSlides - 1}
-              className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+              className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group md:static ${
                 (isMobile ? mobileCardIndex === projects.length - 1 : clampedIndex === maxSlides - 1)
                   ? "opacity-30 cursor-not-allowed" 
                   : "cursor-pointer hover:scale-105 active:scale-95"
@@ -567,6 +568,7 @@ function ProjectsSection() {
                 pointerEvents: "auto",
                 zIndex: 50,
                 position: "relative",
+                alignSelf: "center",
               }}
               onMouseEnter={(e) => {
                 if (!(isMobile ? mobileCardIndex === projects.length - 1 : clampedIndex === maxSlides - 1)) {
