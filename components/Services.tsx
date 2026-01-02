@@ -620,8 +620,23 @@ export default function Services() {
   const [selectedService, setSelectedService] = useState<typeof services[0] | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileCardIndex, setMobileCardIndex] = useState(0);
   
-  const maxSlides = Math.ceil(services.length / 4);
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Desktop: 4 cards per slide, Mobile: 1 card per slide
+  const cardsPerSlide = isMobile ? 1 : 4;
+  const maxSlides = Math.ceil(services.length / cardsPerSlide);
   
   // Clamp currentIndex to valid range
   const clampedIndex = Math.max(0, Math.min(maxSlides - 1, currentIndex));
@@ -681,6 +696,74 @@ export default function Services() {
     setCurrentIndex(Math.max(0, Math.min(maxSlides - 1, index)));
   };
 
+  // Mobile navigation functions
+  const nextMobileCard = () => {
+    setMobileCardIndex((prev) => Math.min(services.length - 1, prev + 1));
+  };
+
+  const prevMobileCard = () => {
+    setMobileCardIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const goToMobileCard = (index: number) => {
+    setMobileCardIndex(Math.max(0, Math.min(services.length - 1, index)));
+  };
+
+  // Sync mobile scroll position with card index
+  useEffect(() => {
+    if (isMobile && mobileScrollRef.current) {
+      const container = mobileScrollRef.current;
+      const cardElement = container.querySelector(`[data-card-index="${mobileCardIndex}"]`) as HTMLElement;
+      if (cardElement) {
+        const containerRect = container.getBoundingClientRect();
+        const cardRect = cardElement.getBoundingClientRect();
+        const scrollLeft = cardRect.left - containerRect.left + container.scrollLeft;
+        container.scrollTo({
+          left: scrollLeft - (containerRect.width - cardRect.width) / 2,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [mobileCardIndex, isMobile]);
+  
+  // Update mobile card index based on scroll position
+  useEffect(() => {
+    if (!isMobile || !mobileScrollRef.current) return;
+    
+    const handleScroll = () => {
+      if (mobileScrollRef.current) {
+        const container = mobileScrollRef.current;
+        const containerRect = container.getBoundingClientRect();
+        const containerCenter = containerRect.left + containerRect.width / 2;
+        
+        // Find which card is closest to center
+        let closestIndex = 0;
+        let closestDistance = Infinity;
+        
+        services.forEach((_, index) => {
+          const cardElement = container.querySelector(`[data-card-index="${index}"]`) as HTMLElement;
+          if (cardElement) {
+            const cardRect = cardElement.getBoundingClientRect();
+            const cardCenter = cardRect.left + cardRect.width / 2;
+            const distance = Math.abs(cardCenter - containerCenter);
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestIndex = index;
+            }
+          }
+        });
+        
+        if (closestIndex !== mobileCardIndex) {
+          setMobileCardIndex(closestIndex);
+        }
+      }
+    };
+    
+    const scrollContainer = mobileScrollRef.current;
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+  }, [isMobile, services, mobileCardIndex]);
+
   const neonColors = {
     purple: { glow: "rgba(168, 85, 247, 0.4)", light: "rgba(192, 132, 252, 0.3)" },
     pink: { glow: "rgba(236, 72, 153, 0.4)", light: "rgba(244, 114, 182, 0.3)" },
@@ -717,15 +800,15 @@ export default function Services() {
 
         {/* High-End Slider */}
         <div className="relative">
-          <div className="flex items-center gap-4 md:gap-6">
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
           {/* Left Navigation Button - Outside Cards */}
           <button
-            onClick={prevSlide}
-            disabled={clampedIndex === 0}
-            className={`hidden sm:flex flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
-              clampedIndex === 0 
+            onClick={isMobile ? prevMobileCard : prevSlide}
+            disabled={isMobile ? mobileCardIndex === 0 : clampedIndex === 0}
+            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+              (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
                 ? "opacity-30 cursor-not-allowed" 
-                : "cursor-pointer hover:scale-105"
+                : "cursor-pointer hover:scale-105 active:scale-95"
             }`}
             style={{
               background: "rgba(255, 255, 255, 0.1)",
@@ -762,8 +845,41 @@ export default function Services() {
             ref={sliderRef}
             className="flex-1 overflow-hidden rounded-3xl"
           >
+            {/* Mobile: Horizontal Scroll with Snap */}
+            <div 
+              ref={mobileScrollRef}
+              className="md:hidden overflow-x-auto scrollbar-hide"
+              style={{
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch',
+                scrollBehavior: 'smooth',
+              }}
+            >
+              <div className="flex gap-4">
+                {services.map((service, index) => (
+                  <div
+                    key={index}
+                    data-card-index={index}
+                    className="flex-shrink-0"
+                    style={{ 
+                      scrollSnapAlign: 'center',
+                      width: 'calc(100vw - 8rem)', // Full width minus container padding (4rem) and arrows (4rem)
+                      maxWidth: '400px',
+                    }}
+                  >
+                    <ServiceCard 
+                      service={service} 
+                      index={index} 
+                      onClick={() => handleCardClick(service)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop: Motion-based Slider */}
             <motion.div
-              className="flex"
+              className="hidden md:flex"
               animate={{ x: `-${clampedIndex * 100}%` }}
               transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             >
@@ -786,12 +902,12 @@ export default function Services() {
 
           {/* Right Navigation Button - Outside Cards */}
           <button
-            onClick={nextSlide}
-            disabled={clampedIndex === maxSlides - 1}
-            className={`hidden sm:flex flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
-              clampedIndex === maxSlides - 1 
+            onClick={isMobile ? nextMobileCard : nextSlide}
+            disabled={isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1}
+            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+              (isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)
                 ? "opacity-30 cursor-not-allowed" 
-                : "cursor-pointer hover:scale-105"
+                : "cursor-pointer hover:scale-105 active:scale-95"
             }`}
             style={{
               background: "rgba(255, 255, 255, 0.1)",
@@ -825,19 +941,24 @@ export default function Services() {
 
           </div>
 
-          {/* Mobile: Compact Dots Pager (only on small screens ≤ 640px) */}
-          <div className="flex sm:hidden justify-center gap-2 mt-6">
-            {Array.from({ length: maxSlides }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  index === clampedIndex 
-                    ? "w-8 bg-purple-400" 
-                    : "w-2 bg-white/30 hover:bg-white/50"
-                }`}
-              />
-            ))}
+          {/* Mobile: Dots Pager - One dot per card (8 dots) */}
+          <div className="flex md:hidden justify-center gap-2 mt-6 px-4 flex-wrap">
+            {services.map((_, index) => {
+              const isActive = index === mobileCardIndex;
+              
+              return (
+                <button
+                  key={index}
+                  onClick={() => goToMobileCard(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    isActive
+                      ? "w-6 bg-purple-400" 
+                      : "w-2 bg-white/30 active:bg-white/50"
+                  }`}
+                  aria-label={`Go to card ${index + 1}`}
+                />
+              );
+            })}
           </div>
 
           {/* Desktop: Slider Indicators */}

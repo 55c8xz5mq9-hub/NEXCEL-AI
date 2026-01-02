@@ -797,7 +797,7 @@ export default function Navigation() {
                 </div>
 
                 {/* Right Section - Theme Toggle + Mobile Menu (Mobile) / Desktop Navigation (Desktop) */}
-                <div className="flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-6 flex-shrink-0">
+                <div className="flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-6 flex-shrink-0 ml-auto md:ml-0">
                   {/* Theme Toggle - Ultra High-End - Responsive */}
                   <motion.button
                     onClick={toggleTheme}
