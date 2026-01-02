@@ -15,6 +15,11 @@ const Services = dynamic(() => import("@/components/Services"), {
   loading: () => <div className="h-96 bg-transparent" />
 });
 
+const ProjectsSlider = dynamic(() => import("@/components/ProjectsSlider"), {
+  ssr: true,
+  loading: () => <div className="h-96 bg-transparent" />
+});
+
 const DashboardPreview = dynamic(() => import("@/components/DashboardPreview"), {
   ssr: false,
   loading: () => <div className="h-96 bg-white/[0.02] rounded-2xl animate-pulse" />
@@ -1048,8 +1053,11 @@ export default function Home() {
         <Services />
       </div>
 
-      {/* PROJEKTE SECTION - Clean Minimal */}
-      <section className="relative px-4 sm:px-6 overflow-hidden" style={{ 
+      {/* PROJEKTE SECTION - Slider */}
+      <ProjectsSlider />
+      
+      {/* OLD PROJEKTE SECTION - REMOVED */}
+      {/* <section className="relative px-4 sm:px-6 overflow-hidden" style={{ 
         paddingTop: "clamp(80px, 15vw, 140px)",
         paddingBottom: "clamp(60px, 12vw, 120px)",
         background: theme === "dark" 

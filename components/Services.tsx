@@ -799,13 +799,34 @@ export default function Services() {
         </motion.div>
 
         {/* High-End Slider */}
-        <div className="relative">
-          <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-          {/* Left Navigation Button - Outside Cards (Hidden on Mobile) */}
+        <div className="relative" style={{ pointerEvents: "auto" }}>
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-6" style={{ position: "relative", zIndex: 10 }}>
+          {/* Left Navigation Button - Outside Cards */}
           <button
-            onClick={isMobile ? prevMobileCard : prevSlide}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (isMobile) {
+                prevMobileCard();
+              } else {
+                prevSlide();
+              }
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (isMobile) {
+                prevMobileCard();
+              } else {
+                prevSlide();
+              }
+            }}
             disabled={isMobile ? mobileCardIndex === 0 : clampedIndex === 0}
-            className={`hidden md:flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
               (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
@@ -815,26 +836,30 @@ export default function Services() {
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
               border: "1px solid rgba(194, 107, 255, 0.3)",
-              boxShadow: clampedIndex === 0 
+              boxShadow: (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
                 ? "none"
                 : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
+              pointerEvents: "auto",
+              zIndex: 50,
+              position: "relative",
             }}
             onMouseEnter={(e) => {
-              if (clampedIndex !== 0) {
+              if (!(isMobile ? mobileCardIndex === 0 : clampedIndex === 0)) {
                 e.currentTarget.style.boxShadow = "0 0 30px rgba(194, 107, 255, 0.4), 0 0 60px rgba(194, 107, 255, 0.2)";
               }
             }}
             onMouseLeave={(e) => {
-              if (clampedIndex !== 0) {
+              if (!(isMobile ? mobileCardIndex === 0 : clampedIndex === 0)) {
                 e.currentTarget.style.boxShadow = "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)";
               }
             }}
           >
             <svg 
-              className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:scale-110 transition-transform" 
+              className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:scale-110 transition-transform pointer-events-none" 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
+              style={{ pointerEvents: "none" }}
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -902,11 +927,32 @@ export default function Services() {
             </motion.div>
           </div>
 
-          {/* Right Navigation Button - Outside Cards (Hidden on Mobile) */}
+          {/* Right Navigation Button - Outside Cards */}
           <button
-            onClick={isMobile ? nextMobileCard : nextSlide}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (isMobile) {
+                nextMobileCard();
+              } else {
+                nextSlide();
+              }
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (isMobile) {
+                nextMobileCard();
+              } else {
+                nextSlide();
+              }
+            }}
             disabled={isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1}
-            className={`hidden md:flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
               (isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
@@ -916,26 +962,30 @@ export default function Services() {
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
               border: "1px solid rgba(194, 107, 255, 0.3)",
-              boxShadow: clampedIndex === maxSlides - 1 
+              boxShadow: (isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)
                 ? "none"
                 : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
+              pointerEvents: "auto",
+              zIndex: 50,
+              position: "relative",
             }}
             onMouseEnter={(e) => {
-              if (clampedIndex !== maxSlides - 1) {
+              if (!(isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)) {
                 e.currentTarget.style.boxShadow = "0 0 30px rgba(194, 107, 255, 0.4), 0 0 60px rgba(194, 107, 255, 0.2)";
               }
             }}
             onMouseLeave={(e) => {
-              if (clampedIndex !== maxSlides - 1) {
+              if (!(isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)) {
                 e.currentTarget.style.boxShadow = "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)";
               }
             }}
           >
             <svg 
-              className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:scale-110 transition-transform" 
+              className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:scale-110 transition-transform pointer-events-none" 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
+              style={{ pointerEvents: "none" }}
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
