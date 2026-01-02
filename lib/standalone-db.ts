@@ -27,10 +27,19 @@ async function getKVClient() {
       // @ts-ignore - Vercel KV ist automatisch verfügbar wenn installiert
       const { kv: vercelKV } = await import("@vercel/kv");
       kv = vercelKV;
-      console.log("✅ [STANDALONE DB] Vercel KV initialized");
-      return kv;
+      
+      // Teste die Verbindung
+      try {
+        await kv.ping();
+        console.log("✅ [STANDALONE DB] Vercel KV initialized and connected");
+        return kv;
+      } catch (pingError) {
+        console.warn("⚠️ [STANDALONE DB] Vercel KV ping failed, using JSON fallback:", pingError);
+        kv = null;
+        return null;
+      }
     } catch (error) {
-      console.warn("⚠️ [STANDALONE DB] Vercel KV not available, using JSON fallback");
+      console.warn("⚠️ [STANDALONE DB] Vercel KV not available, using JSON fallback:", error);
       return null;
     }
   }
@@ -45,12 +54,22 @@ function ensureDataDir() {
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
+      console.log("✅ [STANDALONE DB] Created data directory:", DATA_DIR);
     }
+    
+    // Prüfe Schreibrechte (nur lokal, nicht in Serverless)
     if (!IS_SERVERLESS) {
-      fs.accessSync(DATA_DIR, fs.constants.W_OK);
+      try {
+        fs.accessSync(DATA_DIR, fs.constants.W_OK);
+      } catch (accessError) {
+        console.error("❌ [STANDALONE DB] Data directory not writable:", DATA_DIR);
+        throw new Error(`Data directory is not writable: ${accessError instanceof Error ? accessError.message : String(accessError)}`);
+      }
     }
   } catch (error) {
-    console.error("❌ [STANDALONE DB] Failed to ensure data directory:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("❌ [STANDALONE DB] Failed to ensure data directory:", errorMessage);
+    throw new Error(`Cannot access data directory: ${errorMessage}`);
   }
 }
 
@@ -133,23 +152,105 @@ export async function saveContactStandalone(contact: {
     }
   }
 
-  // Fallback: JSON-Datei
+  // Fallback: JSON-Datei (lokal) oder /tmp (Serverless)
   try {
+    // In Serverless: /tmp ist immer verfügbar
+    if (IS_SERVERLESS) {
+      // Stelle sicher, dass /tmp/data existiert
+      if (!fs.existsSync("/tmp/data")) {
+        try {
+          fs.mkdirSync("/tmp/data", { recursive: true });
+          console.log("✅ [STANDALONE DB] Created /tmp/data directory");
+        } catch (e) {
+          console.warn("⚠️ [STANDALONE DB] Could not create /tmp/data:", e);
+        }
+      }
+    } else {
+      // Lokal: Stelle sicher, dass Verzeichnis existiert
+      try {
+        ensureDataDir();
+      } catch (dirError) {
+        console.warn("⚠️ [STANDALONE DB] ensureDataDir failed, trying anyway:", dirError);
+      }
+    }
+    
+    // Lade bestehende Kontakte
     const contacts = await getAllContacts();
     contacts.push(newContact);
     
-    ensureDataDir();
     const filePath = path.join(DATA_DIR, "contacts.json");
-    const tempPath = `${filePath}.tmp.${Date.now()}`;
     
-    fs.writeFileSync(tempPath, JSON.stringify(contacts, null, 2), "utf-8");
-    fs.renameSync(tempPath, filePath);
+    // Mehrere Versuche mit Retry
+    let writeSuccess = false;
+    let lastError: Error | null = null;
     
-    console.log("✅ [STANDALONE DB] Contact saved to JSON:", newContact.id);
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const tempPath = `${filePath}.tmp.${Date.now()}`;
+        const jsonData = JSON.stringify(contacts, null, 2);
+        
+        // Schreibe zuerst in temp-Datei
+        fs.writeFileSync(tempPath, jsonData, "utf-8");
+        
+        // Prüfe ob temp-Datei existiert
+        if (!fs.existsSync(tempPath)) {
+          throw new Error("Temp file was not created");
+        }
+        
+        // Rename (atomic)
+        fs.renameSync(tempPath, filePath);
+        
+        // Prüfe ob finale Datei existiert
+        if (!fs.existsSync(filePath)) {
+          throw new Error("Final file was not created");
+        }
+        
+        writeSuccess = true;
+        console.log(`✅ [STANDALONE DB] Contact saved to JSON (attempt ${attempt}):`, newContact.id);
+        console.log(`✅ [STANDALONE DB] File path: ${filePath}`);
+        break;
+      } catch (writeError: unknown) {
+        lastError = writeError instanceof Error ? writeError : new Error(String(writeError));
+        console.warn(`⚠️ [STANDALONE DB] Write attempt ${attempt} failed:`, lastError.message);
+        console.warn(`⚠️ [STANDALONE DB] File path: ${filePath}, IS_SERVERLESS: ${IS_SERVERLESS}`);
+        
+        if (attempt < 3) {
+          // Warte kurz und versuche Verzeichnis neu zu erstellen
+          await new Promise(resolve => setTimeout(resolve, 100));
+          try {
+            if (IS_SERVERLESS) {
+              fs.mkdirSync("/tmp/data", { recursive: true });
+            } else {
+              ensureDataDir();
+            }
+          } catch (e) {
+            // Ignoriere
+          }
+        }
+      }
+    }
+    
+    if (!writeSuccess) {
+      const errorMsg = lastError?.message || "Unknown error";
+      console.error("❌ [STANDALONE DB] All write attempts failed:", errorMsg);
+      console.error("❌ [STANDALONE DB] Environment:", {
+        IS_SERVERLESS,
+        DATA_DIR,
+        filePath,
+        cwd: process.cwd(),
+      });
+      throw new Error(`Speichern fehlgeschlagen: ${errorMsg}`);
+    }
+    
     return newContact;
   } catch (error) {
-    console.error("❌ [STANDALONE DB] Error saving contact:", error);
-    throw new Error(`Failed to save contact: ${error instanceof Error ? error.message : String(error)}`);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("❌ [STANDALONE DB] CRITICAL Error saving contact:", errorMessage);
+    console.error("  Contact data:", JSON.stringify(contact, null, 2));
+    console.error("  DATA_DIR:", DATA_DIR);
+    console.error("  IS_SERVERLESS:", IS_SERVERLESS);
+    console.error("  process.cwd():", process.cwd());
+    throw new Error(`Kontakt konnte nicht gespeichert werden: ${errorMessage}`);
   }
 }
 
