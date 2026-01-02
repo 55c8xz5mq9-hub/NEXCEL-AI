@@ -6,7 +6,8 @@
 import fs from "fs";
 import path from "path";
 
-const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+// Prüfe ob wir in Production auf Vercel sind
+const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
 const DATA_DIR = IS_SERVERLESS 
   ? "/tmp/data" 
   : path.join(process.cwd(), "data");
