@@ -2,22 +2,30 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
+/**
+ * POST /api/kontakt
+ * 
+ * Speichert Kontaktanfragen in der Datenbank (keine E-Mails mehr).
+ * Flow: Formular → API → Datenbank → Admin-Dashboard
+ * 
+ * @param request - NextRequest mit Formulardaten
+ * @returns NextResponse mit success/error Status
+ */
 export async function POST(request: NextRequest) {
   try {
-    // No email configuration needed - contacts are stored in database and shown in Admin Dashboard
-
     // Parse request body
     let body;
     try {
       body = await request.json();
     } catch (err) {
-      const error = new Error(`Invalid JSON in request body: ${err instanceof Error ? err.message : String(err)}`);
-      console.error("❌ [KONTAKT API] JSON Parse Error:", error.message);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.error("❌ [KONTAKT API] JSON Parse Error:", errorMessage);
       return NextResponse.json(
-        { success: false, error: error.message },
+        { success: false, error: "Ungültige Anfrage. Bitte versuchen Sie es erneut." },
         { status: 400 }
       );
     }
+
     const { vorname, nachname, email, telefon, unternehmen, betreff, nachricht } = body;
 
     // Validation - trim all string fields
@@ -29,9 +37,61 @@ export async function POST(request: NextRequest) {
     const trimmedBetreff = typeof betreff === 'string' ? betreff.trim() : '';
     const trimmedNachricht = typeof nachricht === 'string' ? nachricht.trim() : '';
 
-    if (!trimmedVorname || !trimmedNachname || !trimmedEmail || !trimmedTelefon || !trimmedUnternehmen || !trimmedBetreff || !trimmedNachricht) {
+    // Pflichtfelder prüfen
+    if (!trimmedVorname) {
       return NextResponse.json(
-        { success: false, error: "Alle Pflichtfelder müssen ausgefüllt sein" },
+        { success: false, error: "Vorname ist erforderlich" },
+        { status: 400 }
+      );
+    }
+
+    if (!trimmedNachname) {
+      return NextResponse.json(
+        { success: false, error: "Nachname ist erforderlich" },
+        { status: 400 }
+      );
+    }
+
+    if (!trimmedEmail) {
+      return NextResponse.json(
+        { success: false, error: "E-Mail ist erforderlich" },
+        { status: 400 }
+      );
+    }
+
+    // E-Mail-Format prüfen
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      return NextResponse.json(
+        { success: false, error: "Ungültige E-Mail-Adresse" },
+        { status: 400 }
+      );
+    }
+
+    if (!trimmedTelefon) {
+      return NextResponse.json(
+        { success: false, error: "Telefonnummer ist erforderlich" },
+        { status: 400 }
+      );
+    }
+
+    if (!trimmedUnternehmen) {
+      return NextResponse.json(
+        { success: false, error: "Unternehmen ist erforderlich" },
+        { status: 400 }
+      );
+    }
+
+    if (!trimmedBetreff) {
+      return NextResponse.json(
+        { success: false, error: "Betreff ist erforderlich" },
+        { status: 400 }
+      );
+    }
+
+    if (!trimmedNachricht) {
+      return NextResponse.json(
+        { success: false, error: "Nachricht ist erforderlich" },
         { status: 400 }
       );
     }
@@ -43,16 +103,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmedEmail)) {
-      return NextResponse.json(
-        { success: false, error: "Ungültige E-Mail-Adresse" },
-        { status: 400 }
-      );
-    }
-
     // Save to database - CRITICAL: This is the primary storage method
-    let contact: { id: string; verificationToken?: string } | null = null;
+    // Keine E-Mails mehr - alle Anfragen werden nur in der DB gespeichert
+    let contact: { id: string } | null = null;
     try {
       const { saveContact } = await import("@/lib/database");
       contact = saveContact({
@@ -69,20 +122,23 @@ export async function POST(request: NextRequest) {
         name: `${trimmedVorname} ${trimmedNachname}`,
         email: trimmedEmail,
         unternehmen: trimmedUnternehmen,
+        betreff: trimmedBetreff,
       });
     } catch (err) {
       // Database save failed - log detailed error
       const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorStack = err instanceof Error ? err.stack : "No stack";
+      
       console.error("❌ [KONTAKT API] Database Save Failed:");
       console.error("  Error:", errorMessage);
-      console.error("  Stack:", err instanceof Error ? err.stack : "No stack");
+      console.error("  Stack:", errorStack);
       console.error("  Full Error:", err);
       
-      // Return user-friendly error message
+      // Return user-friendly error message with detailed logging
       return NextResponse.json(
         { 
           success: false, 
-          error: "Fehler beim Speichern der Anfrage. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt." 
+          error: "Fehler beim Speichern der Anfrage. Bitte versuchen Sie es später erneut." 
         },
         { status: 500 }
       );
@@ -110,22 +166,26 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ 
       success: true,
+      id: contact.id,
       message: "Ihre Anfrage wurde erfolgreich übermittelt. Wir werden uns schnellstmöglich bei Ihnen melden.",
-      contactId: contact.id,
-    }, { status: 200 });
+    }, { status: 201 });
   } catch (error) {
+    // Unhandled exception - log everything
+    const errorType = error instanceof Error ? error.constructor.name : typeof error;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : "No stack trace";
+    
     console.error("❌ [KONTAKT API] Unhandled Exception:");
-    console.error("  Error Type:", error instanceof Error ? error.constructor.name : typeof error);
-    console.error("  Error Message:", error instanceof Error ? error.message : String(error));
-    console.error("  Error Stack:", error instanceof Error ? error.stack : "No stack trace");
+    console.error("  Error Type:", errorType);
+    console.error("  Error Message:", errorMessage);
+    console.error("  Error Stack:", errorStack);
     console.error("  Full Error Object:", error);
     
-    const errorMessage = error instanceof Error 
-      ? error.message 
-      : `Server-Fehler beim Verarbeiten der Anfrage: ${String(error)}`;
-    
     return NextResponse.json(
-      { success: false, error: errorMessage },
+      { 
+        success: false, 
+        error: "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut." 
+      },
       { status: 500 }
     );
   }

@@ -40,3 +40,5 @@ next-env.d.ts
 # large zip files
 *.zip
 
+
+/lib/generated/prisma

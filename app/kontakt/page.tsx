@@ -580,12 +580,27 @@ export default function KontaktPage() {
         }),
       });
 
-      const data = await response.json();
+      // Parse response
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error("❌ [KONTAKT FORM] JSON Parse Error:", parseError);
+        setErrors({ 
+          submit: "Ungültige Antwort vom Server. Bitte versuchen Sie es erneut." 
+        });
+        setIsLoading(false);
+        return;
+      }
       
+      // Check if request was successful (status 201 or 200)
       if (response.ok && data.success) {
         // Success: Show success animation and reset form
         setSuccess(true);
         setErrors({});
+        console.log("✅ [KONTAKT FORM] Contact saved successfully:", data.id);
+        
+        // Reset form after 3 seconds
         setTimeout(() => {
           setFormData({
             vorname: "",
@@ -600,7 +615,7 @@ export default function KontaktPage() {
           setSuccess(false);
         }, 3000);
       } else {
-        // Error: Show error message
+        // Error: Show error message from API
         const errorMessage = data.error || data.message || "Fehler beim Senden. Bitte versuchen Sie es erneut.";
         setErrors({ submit: errorMessage });
         console.error("❌ [KONTAKT FORM] API Error:", {
