@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     let contact: { id: string } | null = null;
     try {
       const { saveContact } = await import("@/lib/database");
-      contact = saveContact({
+      contact = await saveContact({
         vorname: trimmedVorname,
         nachname: trimmedNachname,
         email: trimmedEmail,

@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const contacts = getContacts();
+    const contacts = await getContacts();
     const { searchParams } = new URL(request.url);
     const archived = searchParams.get("archived") === "true";
     const unread = searchParams.get("unread") === "true";
@@ -65,7 +65,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    const updated = updateContact(id, updates);
+    const updated = await updateContact(id, updates);
     if (!updated) {
       return NextResponse.json({ error: "Contact not found" }, { status: 404 });
     }
@@ -94,7 +94,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    const deleted = deleteContact(id);
+    const deleted = await deleteContact(id);
     if (!deleted) {
       return NextResponse.json({ error: "Contact not found" }, { status: 404 });
     }

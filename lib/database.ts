@@ -1,7 +1,42 @@
 import fs from "fs";
 import path from "path";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+// Prüfe ob eine Datenbank-URL vorhanden ist (Prisma/PostgreSQL)
+// DEAKTIVIERT: Verwende immer JSON-Datenbank für sofortige Funktionalität
+const HAS_DATABASE = false; // Immer false - verwende JSON-Datenbank
+
+// In Serverless-Umgebungen (z.B. Vercel) ist das Dateisystem read-only
+// Verwende /tmp für temporäre Speicherung oder prüfe ob wir in einer Serverless-Umgebung sind
+const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.AWS_LAMBDA_FUNCTION_NAME || !!process.env.VERCEL_ENV;
+const DATA_DIR = IS_SERVERLESS 
+  ? "/tmp/data" // Serverless: verwende /tmp (temporär, aber funktioniert)
+  : path.join(process.cwd(), "data");
+
+// Lazy load Prisma Client (nur wenn DATABASE_URL vorhanden)
+let prismaClient: any = null;
+async function getPrismaClient() {
+  if (!HAS_DATABASE) return null;
+  
+  if (!prismaClient) {
+    try {
+      // Versuche zuerst den lokalen Prisma Client
+      try {
+        const { prisma } = await import("@/lib/prisma");
+        prismaClient = prisma;
+      } catch {
+        // Fallback: Direkter Import von @prisma/client
+        const { PrismaClient } = await import("@prisma/client");
+        prismaClient = new PrismaClient({
+          log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+        });
+      }
+    } catch (error) {
+      console.error("❌ [DATABASE] Failed to load Prisma Client:", error);
+      return null;
+    }
+  }
+  return prismaClient;
+}
 
 export interface ContactSubmission {
   id: string;
@@ -47,6 +82,17 @@ export interface AnalyticsEvent {
 
 function ensureDataDir() {
   try {
+    // In Serverless-Umgebungen: /tmp ist immer verfügbar
+    if (IS_SERVERLESS) {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+        console.log("✅ [DATABASE] Created data directory (Serverless):", DATA_DIR);
+      }
+      // In Serverless: /tmp ist immer beschreibbar
+      return;
+    }
+    
+    // Lokale Entwicklung: normale Verzeichnisprüfung
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
       console.log("✅ [DATABASE] Created data directory:", DATA_DIR);
@@ -64,23 +110,34 @@ function getFilePath(filename: string): string {
   return path.join(DATA_DIR, filename);
 }
 
-// Contacts
-export function getContacts(): ContactSubmission[] {
-  const file = getFilePath("contacts.json");
-  if (!fs.existsSync(file)) {
-    return [];
-  }
+// Contacts - JSON-Datenbank (primäre Lösung - funktioniert sofort)
+export async function getContacts(): Promise<ContactSubmission[]> {
+  // JSON-Datenbank - funktioniert sofort, keine Prisma-Abhängigkeit
   try {
+    const file = getFilePath("contacts.json");
+    if (!fs.existsSync(file)) {
+      return [];
+    }
     const data = fs.readFileSync(file, "utf-8");
-    return JSON.parse(data);
-  } catch {
+    const contacts = JSON.parse(data);
+    // Sortiere nach neuestem zuerst
+    return contacts.sort((a: ContactSubmission, b: ContactSubmission) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  } catch (error) {
+    console.error("❌ [DATABASE] Error reading contacts:", error);
+    // In Serverless: /tmp könnte leer sein beim ersten Aufruf
+    if (IS_SERVERLESS) {
+      console.warn("⚠️ [DATABASE] Serverless: Could not read contacts file, returning empty array");
+    }
     return [];
   }
 }
 
-export function saveContact(contact: Omit<ContactSubmission, "id" | "createdAt" | "read" | "archived" | "emailSent" | "emailSentAt" | "emailVerified" | "verificationToken" | "verificationTokenExpiresAt">): ContactSubmission {
+export async function saveContact(contact: Omit<ContactSubmission, "id" | "createdAt" | "read" | "archived" | "emailSent" | "emailSentAt" | "emailVerified" | "verificationToken" | "verificationTokenExpiresAt">): Promise<ContactSubmission> {
+  // JSON-Datenbank - primäre Lösung, funktioniert sofort
   try {
-    const contacts = getContacts();
+    const contacts = await getContacts();
     const verificationToken = `verify_${Date.now()}_${Math.random().toString(36).substr(2, 16)}`;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 Stunden gültig
     
@@ -108,6 +165,9 @@ export function saveContact(contact: Omit<ContactSubmission, "id" | "createdAt" 
       fs.writeFileSync(tempPath, JSON.stringify(contacts, null, 2), "utf-8");
       fs.renameSync(tempPath, filePath);
       console.log("✅ [DATABASE] Contact saved successfully to:", filePath);
+      if (IS_SERVERLESS) {
+        console.log("⚠️ [DATABASE] Serverless mode: Data stored in /tmp (temporary). Consider using a database for production.");
+      }
     } catch (writeError) {
       // If write fails, try to create directory again and retry
       console.warn("⚠️ [DATABASE] First write attempt failed, retrying...", writeError);
@@ -119,6 +179,10 @@ export function saveContact(contact: Omit<ContactSubmission, "id" | "createdAt" 
         console.log("✅ [DATABASE] Contact saved successfully on retry");
       } catch (retryError) {
         console.error("❌ [DATABASE] Failed to save contact after retry:", retryError);
+        // In Serverless: gebe hilfreichere Fehlermeldung
+        if (IS_SERVERLESS) {
+          throw new Error(`Serverless-Umgebung: Dateisystem-Schreibzugriff nicht möglich. Bitte verwenden Sie eine Datenbank (z.B. Vercel Postgres, Prisma mit Cloud-DB).`);
+        }
         throw new Error(`Failed to write contact file: ${retryError instanceof Error ? retryError.message : String(retryError)}`);
       }
     }
@@ -171,20 +235,36 @@ export function markContactEmailSent(id: string): ContactSubmission | null {
   return contacts[index];
 }
 
-export function updateContact(id: string, updates: Partial<ContactSubmission>): ContactSubmission | null {
-  const contacts = getContacts();
+export async function updateContact(id: string, updates: Partial<ContactSubmission>): Promise<ContactSubmission | null> {
+  // JSON-Datenbank - funktioniert sofort
+  const contacts = await getContacts();
   const index = contacts.findIndex((c) => c.id === id);
   if (index === -1) return null;
   contacts[index] = { ...contacts[index], ...updates };
-  fs.writeFileSync(getFilePath("contacts.json"), JSON.stringify(contacts, null, 2), "utf-8");
+  
+  // Atomic write
+  const filePath = getFilePath("contacts.json");
+  const tempPath = `${filePath}.tmp`;
+  fs.writeFileSync(tempPath, JSON.stringify(contacts, null, 2), "utf-8");
+  fs.renameSync(tempPath, filePath);
+  
+  console.log("✅ [DATABASE] Contact updated:", id);
   return contacts[index];
 }
 
-export function deleteContact(id: string): boolean {
-  const contacts = getContacts();
+export async function deleteContact(id: string): Promise<boolean> {
+  // JSON-Datenbank - funktioniert sofort
+  const contacts = await getContacts();
   const filtered = contacts.filter((c) => c.id !== id);
   if (filtered.length === contacts.length) return false;
-  fs.writeFileSync(getFilePath("contacts.json"), JSON.stringify(filtered, null, 2), "utf-8");
+  
+  // Atomic write
+  const filePath = getFilePath("contacts.json");
+  const tempPath = `${filePath}.tmp`;
+  fs.writeFileSync(tempPath, JSON.stringify(filtered, null, 2), "utf-8");
+  fs.renameSync(tempPath, filePath);
+  
+  console.log("✅ [DATABASE] Contact deleted:", id);
   return true;
 }
 
