@@ -32,8 +32,15 @@ export async function GET(request: NextRequest) {
     });
 
     console.log(`✅ [CONTACT REQUESTS API] Loaded ${contacts.length} contact requests`);
+    console.log(`✅ [CONTACT REQUESTS API] First contact (if any):`, contacts[0]?.id || "none");
 
-    return NextResponse.json({ contacts });
+    return NextResponse.json({ contacts }, { 
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("❌ [CONTACT REQUESTS API] Error fetching contacts:", errorMessage);
