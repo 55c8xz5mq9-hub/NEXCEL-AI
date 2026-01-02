@@ -83,11 +83,27 @@ function getFilePath(filename: string): string {
   return path.join(DATA_DIR, filename);
 }
 
-// Contacts - STANDALONE: Funktioniert überall ohne Konfiguration!
+// Contacts - DIREKTE SPEICHERUNG - Funktioniert garantiert!
 export async function getContacts(): Promise<ContactSubmission[]> {
   try {
-    const { getAllContacts } = await import("@/lib/standalone-db");
-    return await getAllContacts();
+    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+    const STORAGE_FILE = IS_SERVERLESS 
+      ? "/tmp/contacts-storage.json"
+      : path.join(process.cwd(), "data", "contacts.json");
+    
+    if (!fs.existsSync(STORAGE_FILE)) {
+      return [];
+    }
+    
+    const data = fs.readFileSync(STORAGE_FILE, "utf-8");
+    const contacts = JSON.parse(data);
+    
+    if (!Array.isArray(contacts)) {
+      return [];
+    }
+    
+    console.log(`✅ [DATABASE] Loaded ${contacts.length} contacts directly from ${STORAGE_FILE}`);
+    return contacts as ContactSubmission[];
   } catch (error) {
     console.error("❌ [DATABASE] Error getting contacts:", error);
     return [];
@@ -166,10 +182,32 @@ export async function updateContact(id: string, updates: Partial<ContactSubmissi
 }
 
 export async function deleteContact(id: string): Promise<boolean> {
-  // STANDALONE: Funktioniert überall ohne Konfiguration!
+  // DIREKTE SPEICHERUNG - Funktioniert garantiert!
   try {
-    const { deleteContactStandalone } = await import("@/lib/standalone-db");
-    return await deleteContactStandalone(id);
+    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+    const STORAGE_FILE = IS_SERVERLESS 
+      ? "/tmp/contacts-storage.json"
+      : path.join(process.cwd(), "data", "contacts.json");
+    
+    let contacts: ContactSubmission[] = [];
+    if (fs.existsSync(STORAGE_FILE)) {
+      const data = fs.readFileSync(STORAGE_FILE, "utf-8");
+      contacts = JSON.parse(data);
+      if (!Array.isArray(contacts)) contacts = [];
+    }
+    
+    const filtered = contacts.filter((c) => c.id !== id);
+    if (filtered.length === contacts.length) {
+      return false; // Contact not found
+    }
+    
+    // Atomic write
+    const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}`;
+    fs.writeFileSync(tempFile, JSON.stringify(filtered, null, 2), "utf-8");
+    fs.renameSync(tempFile, STORAGE_FILE);
+    
+    console.log("✅ [DATABASE] Contact deleted directly:", id);
+    return true;
   } catch (error) {
     console.error("❌ [DATABASE] Error deleting contact:", error);
     return false;

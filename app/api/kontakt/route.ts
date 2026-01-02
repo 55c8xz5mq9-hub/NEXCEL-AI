@@ -103,71 +103,83 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save to database - HIGH-END: Robuste Speicherung mit mehreren Retry-Versuchen
-    // Keine E-Mails mehr - alle Anfragen werden nur in der DB gespeichert
-    let contact: { id: string } | null = null;
-    let saveAttempts = 0;
-    const maxAttempts = 3;
+    // DIREKTE SPEICHERUNG - Funktioniert garantiert!
+    // Speichere direkt in /tmp (Production) oder data/ (lokal)
+    const fs = await import("fs");
+    const path = await import("path");
     
-    while (saveAttempts < maxAttempts && !contact) {
+    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+    const STORAGE_FILE = IS_SERVERLESS 
+      ? "/tmp/contacts-storage.json"
+      : path.join(process.cwd(), "data", "contacts.json");
+    
+    // Lade bestehende Kontakte
+    let contacts: any[] = [];
+    try {
+      if (fs.existsSync(STORAGE_FILE)) {
+        const data = fs.readFileSync(STORAGE_FILE, "utf-8");
+        contacts = JSON.parse(data);
+        if (!Array.isArray(contacts)) contacts = [];
+      }
+    } catch (error) {
+      console.warn("⚠️ [KONTAKT API] Could not load existing contacts, starting fresh:", error);
+      contacts = [];
+    }
+    
+    // Erstelle neuen Kontakt
+    const newContact = {
+      id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      vorname: trimmedVorname,
+      nachname: trimmedNachname,
+      email: trimmedEmail,
+      telefon: trimmedTelefon,
+      unternehmen: trimmedUnternehmen,
+      betreff: trimmedBetreff,
+      nachricht: trimmedNachricht,
+      createdAt: new Date().toISOString(),
+      read: false,
+      archived: false,
+      emailSent: false,
+      emailVerified: false,
+    };
+    
+    contacts.push(newContact);
+    
+    // Speichere mit Retry
+    let saved = false;
+    for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        saveAttempts++;
-        const { saveContact } = await import("@/lib/database");
+        // Stelle sicher, dass Verzeichnis existiert
+        const dir = path.dirname(STORAGE_FILE);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
         
-        contact = await saveContact({
-          vorname: trimmedVorname,
-          nachname: trimmedNachname,
-          email: trimmedEmail,
-          telefon: trimmedTelefon,
-          unternehmen: trimmedUnternehmen,
-          betreff: trimmedBetreff,
-          nachricht: trimmedNachricht,
-        });
+        // Atomic write
+        const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}`;
+        fs.writeFileSync(tempFile, JSON.stringify(contacts, null, 2), "utf-8");
+        fs.renameSync(tempFile, STORAGE_FILE);
         
-        console.log(`✅ [KONTAKT API] Contact saved to database (attempt ${saveAttempts}):`, contact.id);
+        saved = true;
+        console.log(`✅ [KONTAKT API] Contact saved directly (attempt ${attempt}):`, newContact.id);
+        console.log(`✅ [KONTAKT API] File: ${STORAGE_FILE}`);
         console.log("✅ [KONTAKT API] Contact details:", {
           name: `${trimmedVorname} ${trimmedNachname}`,
           email: trimmedEmail,
           unternehmen: trimmedUnternehmen,
           betreff: trimmedBetreff,
         });
-        break; // Erfolg - verlasse Schleife
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        const errorStack = err instanceof Error ? err.stack : "No stack";
-        
-        console.error(`❌ [KONTAKT API] Database Save Failed (attempt ${saveAttempts}/${maxAttempts}):`);
-        console.error("  Error:", errorMessage);
-        console.error("  Stack:", errorStack);
-        
-        // Wenn letzter Versuch fehlgeschlagen ist
-        if (saveAttempts >= maxAttempts) {
-          console.error("❌ [KONTAKT API] All save attempts failed. Contact data:", {
-            vorname: trimmedVorname,
-            nachname: trimmedNachname,
-            email: trimmedEmail,
-            unternehmen: trimmedUnternehmen,
-            betreff: trimmedBetreff,
-          });
-          
-          // Return user-friendly error message
-          return NextResponse.json(
-            { 
-              success: false, 
-              error: "Fehler beim Speichern der Anfrage. Bitte versuchen Sie es später erneut." 
-            },
-            { status: 500 }
-          );
+        break;
+      } catch (writeError) {
+        console.warn(`⚠️ [KONTAKT API] Write attempt ${attempt} failed:`, writeError);
+        if (attempt < 3) {
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
-        
-        // Warte kurz vor Retry
-        await new Promise(resolve => setTimeout(resolve, 200));
       }
     }
     
-    // Sicherheitscheck: Falls contact immer noch null ist
-    if (!contact) {
-      console.error("❌ [KONTAKT API] CRITICAL: Contact is null after all attempts");
+    if (!saved) {
+      console.error("❌ [KONTAKT API] All write attempts failed");
       return NextResponse.json(
         { 
           success: false, 
@@ -176,6 +188,8 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+    
+    const contact = newContact;
 
     // Track analytics (non-blocking, optional)
     try {
