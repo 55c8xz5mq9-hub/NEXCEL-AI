@@ -13,7 +13,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": ["node"],
     "plugins": [
       {
         "name": "next"
@@ -24,6 +23,6 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "NEXCEL AI Webseite 2", "NEXCEL AI Webseite 2/**/*"]
+  "exclude": ["node_modules"]
 }
 
