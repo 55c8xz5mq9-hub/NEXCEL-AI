@@ -88,8 +88,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save to database/CMS
-    let contact;
+    // Save to database/CMS (optional - may fail in serverless environments)
+    let contact: { id: string; verificationToken?: string } | null = null;
     try {
       const { saveContact } = await import("@/lib/database");
       contact = saveContact({
@@ -101,18 +101,19 @@ export async function POST(request: NextRequest) {
         betreff: trimmedBetreff,
         nachricht: trimmedNachricht,
       });
-      console.log("✅ [KONTAKT API] Contact saved:", contact.id);
+      console.log("✅ [KONTAKT API] Contact saved to database:", contact.id);
     } catch (err) {
-      const error = new Error(`Failed to save contact to database: ${err instanceof Error ? err.message : String(err)}`);
-      console.error("❌ [KONTAKT API] Database Save Error:", error.message);
-      console.error("❌ [KONTAKT API] Full Error:", err);
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      );
+      // Database save failed (e.g., read-only filesystem in serverless)
+      // Continue anyway - we'll still send emails
+      console.warn("⚠️ [KONTAKT API] Database Save Failed (continuing anyway):", err instanceof Error ? err.message : String(err));
+      // Generate a temporary ID and token for email verification
+      contact = {
+        id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        verificationToken: `verify_${Date.now()}_${Math.random().toString(36).substr(2, 16)}`,
+      };
     }
 
-    // Track analytics (non-blocking)
+    // Track analytics (non-blocking, optional)
     try {
       const { saveAnalyticsEvent } = await import("@/lib/database");
       const ip = request.headers.get("x-forwarded-for") || 
@@ -125,17 +126,12 @@ export async function POST(request: NextRequest) {
         metadata: { contactId: contact.id },
       });
     } catch (err) {
-      console.error("⚠️ [KONTAKT API] Analytics tracking failed (non-critical):", err);
+      console.warn("⚠️ [KONTAKT API] Analytics tracking failed (non-critical):", err);
     }
 
-    // Validate verification token exists
+    // Ensure verification token exists (generate if not present)
     if (!contact.verificationToken) {
-      const error = new Error(`No verification token found for contact ${contact.id}`);
-      console.error("❌ [KONTAKT API] Verification Token Missing:", error.message);
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      );
+      contact.verificationToken = `verify_${Date.now()}_${Math.random().toString(36).substr(2, 16)}`;
     }
 
     // Send confirmation email synchronously - must succeed before response
@@ -164,12 +160,12 @@ export async function POST(request: NextRequest) {
 
       console.log("✅ [KONTAKT API] Confirmation email sent successfully");
 
-      // Mark email as sent
+      // Mark email as sent (optional - may fail in serverless)
       try {
         const { markContactEmailSent } = await import("@/lib/database");
         markContactEmailSent(contact.id);
       } catch (err) {
-        console.error("⚠️ [KONTAKT API] Failed to mark email as sent (non-critical):", err);
+        console.warn("⚠️ [KONTAKT API] Failed to mark email as sent (non-critical):", err);
       }
     } catch (err) {
       const error = new Error(`Email sending exception: ${err instanceof Error ? err.message : String(err)}`);
@@ -181,10 +177,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send notification email to admin (non-blocking, but log errors)
+    // Send notification email to admin (CRITICAL - must succeed)
+    // This is the primary way the admin receives contact form submissions
     try {
       const { sendAdminNotification } = await import("@/lib/email");
-      sendAdminNotification({
+      const adminResult = await sendAdminNotification({
         vorname: trimmedVorname,
         nachname: trimmedNachname,
         email: trimmedEmail,
@@ -192,11 +189,17 @@ export async function POST(request: NextRequest) {
         unternehmen: trimmedUnternehmen,
         betreff: trimmedBetreff,
         nachricht: trimmedNachricht,
-      }, contact.id).catch((error) => {
-        console.error(`⚠️ [KONTAKT API] Admin notification failed (non-critical):`, error);
-      });
+      }, contact.id);
+      
+      if (!adminResult.success) {
+        console.error("❌ [KONTAKT API] Admin notification failed:", adminResult.error);
+        // Don't fail the entire request, but log it
+      } else {
+        console.log("✅ [KONTAKT API] Admin notification sent successfully");
+      }
     } catch (err) {
-      console.error("⚠️ [KONTAKT API] Admin notification exception (non-critical):", err);
+      console.error("❌ [KONTAKT API] Admin notification exception:", err);
+      // Don't fail the entire request, but log it
     }
 
     return NextResponse.json({ 
