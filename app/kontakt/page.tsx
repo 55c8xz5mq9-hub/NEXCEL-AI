@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, FormEvent } from "react";
+import { submitContactForm } from "@/app/actions/contact";
 
 // Premium Floating Particle Background Component
 const FloatingParticles = () => {
@@ -564,41 +565,22 @@ export default function KontaktPage() {
     }
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName: formData.vorname,
-          lastName: formData.nachname,
-          email: formData.email,
-          phone: formData.telefon,
-          company: formData.unternehmen,
-          subject: formData.betreff,
-          message: formData.nachricht,
-        }),
+      // DIREKT ÜBER SERVER ACTION - KEIN API-CALL!
+      const result = await submitContactForm({
+        firstName: formData.vorname,
+        lastName: formData.nachname,
+        email: formData.email,
+        phone: formData.telefon,
+        company: formData.unternehmen,
+        subject: formData.betreff,
+        message: formData.nachricht,
       });
 
-      // Parse response
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        console.error("❌ [KONTAKT FORM] JSON Parse Error:", parseError);
-        setErrors({ 
-          submit: "Ungültige Antwort vom Server. Bitte versuchen Sie es erneut." 
-        });
-        setIsLoading(false);
-        return;
-      }
-      
-      // Check if request was successful (status 201 or 200)
-      if (response.ok && data.success) {
+      if (result.success) {
         // Success: Show success animation and reset form
         setSuccess(true);
         setErrors({});
-        console.log("✅ [KONTAKT FORM] Contact saved successfully:", data.id);
+        console.log("✅ [KONTAKT FORM] Contact saved successfully:", result.id);
         
         // Reset form after 3 seconds
         setTimeout(() => {
@@ -615,22 +597,17 @@ export default function KontaktPage() {
           setSuccess(false);
         }, 3000);
       } else {
-        // Error: Show error message from API (aus data.error)
-        const errorMessage = data.error || data.message || "Fehler beim Senden. Bitte versuchen Sie es erneut.";
-        setErrors({ submit: errorMessage });
-        console.error("❌ [KONTAKT FORM] API Error:", {
-          status: response.status,
-          statusText: response.statusText,
-          data: data,
-        });
+        // Error: Show error message
+        setErrors({ submit: result.error || "Fehler beim Senden. Bitte versuchen Sie es erneut." });
+        console.error("❌ [KONTAKT FORM] Error:", result.error);
       }
     } catch (error) {
-      // Network or parsing error
+      // Unhandled error
       const errorMessage = error instanceof Error 
-        ? `Netzwerkfehler: ${error.message}` 
-        : "Fehler beim Senden. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.";
+        ? error.message 
+        : "Fehler beim Senden. Bitte versuchen Sie es erneut.";
       setErrors({ submit: errorMessage });
-      console.error("❌ [KONTAKT FORM] Fetch Error:", error);
+      console.error("❌ [KONTAKT FORM] Error:", error);
     } finally {
       setIsLoading(false);
     }
