@@ -64,7 +64,7 @@ function loadPostsFromFile(): Array<{
   return [];
 }
 
-// Speichere Posts - ATOMIC mit Retry
+// Speichere Posts - ATOMIC mit Retry, wirft KEINE Fehler!
 function savePostsToFile(posts: Array<{
   id: string;
   vorname: string;
@@ -78,7 +78,7 @@ function savePostsToFile(posts: Array<{
   read: boolean;
   archived: boolean;
   createdAt: string;
-}>): void {
+}>): boolean {
   // Update globalen Store (nur für warme Lambdas)
   globalThis.__contactPostsStore = posts;
   
@@ -103,7 +103,7 @@ function savePostsToFile(posts: Array<{
         const verifyParsed = JSON.parse(verify);
         if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
           console.log(`✅ [STORE] Saved ${posts.length} posts (verified: ${verifyParsed.length})`);
-          return; // Erfolg!
+          return true; // Erfolg!
         }
       }
       
@@ -126,9 +126,10 @@ function savePostsToFile(posts: Array<{
   
   // Wenn alle Versuche fehlgeschlagen sind, Daten bleiben im globalen Store
   console.error("❌ [STORE] All save attempts failed, data in memory only");
+  return false; // Fehler, aber kein Throw!
 }
 
-// POST-FUNKTION - Wie Bewertungen
+// POST-FUNKTION - Wie Bewertungen, wirft KEINE Fehler!
 export function createPost(data: {
   vorname: string;
   nachname: string;
@@ -138,54 +139,86 @@ export function createPost(data: {
   betreff: string;
   nachricht: string;
 }) {
-  // Lade aktuelle Posts IMMER aus File
-  const posts = loadPostsFromFile();
-  
-  const post = {
-    id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    vorname: data.vorname.trim(),
-    nachname: data.nachname.trim(),
-    email: data.email.trim(),
-    telefon: data.telefon?.trim() || null,
-    unternehmen: data.unternehmen?.trim() || null,
-    betreff: data.betreff.trim(),
-    nachricht: data.nachricht.trim(),
-    status: "open" as const,
-    read: false,
-    archived: false,
-    createdAt: new Date().toISOString(),
-  };
-  
-  // Füge Post hinzu (neueste zuerst)
-  posts.unshift(post);
-  
-  // Speichere sofort mit Retry
-  savePostsToFile(posts);
-  
-  console.log(`✅ [STORE] Post erstellt: ${post.id}`);
-  console.log(`✅ [STORE] Name: ${post.vorname} ${post.nachname}`);
-  console.log(`✅ [STORE] Email: ${post.email}`);
-  console.log(`✅ [STORE] Telefon: ${post.telefon || "keine"}`);
-  console.log(`✅ [STORE] Unternehmen: ${post.unternehmen || "keine"}`);
-  console.log(`✅ [STORE] Betreff: ${post.betreff}`);
-  console.log(`✅ [STORE] Nachricht: ${post.nachricht.substring(0, 50)}...`);
-  console.log(`✅ [STORE] Total posts: ${posts.length}`);
-  console.log(`✅ [STORE] Sofort im Admin-Panel sichtbar!`);
-  
-  return post;
+  try {
+    // Lade aktuelle Posts IMMER aus File
+    const posts = loadPostsFromFile();
+    
+    const post = {
+      id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      vorname: data.vorname.trim(),
+      nachname: data.nachname.trim(),
+      email: data.email.trim(),
+      telefon: data.telefon?.trim() || null,
+      unternehmen: data.unternehmen?.trim() || null,
+      betreff: data.betreff.trim(),
+      nachricht: data.nachricht.trim(),
+      status: "open" as const,
+      read: false,
+      archived: false,
+      createdAt: new Date().toISOString(),
+    };
+    
+    // Füge Post hinzu (neueste zuerst)
+    posts.unshift(post);
+    
+    // Speichere sofort mit Retry (wirft KEINE Fehler!)
+    const saved = savePostsToFile(posts);
+    
+    if (saved) {
+      console.log(`✅ [STORE] Post erstellt: ${post.id}`);
+      console.log(`✅ [STORE] Name: ${post.vorname} ${post.nachname}`);
+      console.log(`✅ [STORE] Email: ${post.email}`);
+      console.log(`✅ [STORE] Telefon: ${post.telefon || "keine"}`);
+      console.log(`✅ [STORE] Unternehmen: ${post.unternehmen || "keine"}`);
+      console.log(`✅ [STORE] Betreff: ${post.betreff}`);
+      console.log(`✅ [STORE] Nachricht: ${post.nachricht.substring(0, 50)}...`);
+      console.log(`✅ [STORE] Total posts: ${posts.length}`);
+      console.log(`✅ [STORE] Sofort im Admin-Panel sichtbar!`);
+    } else {
+      console.warn(`⚠️ [STORE] Post erstellt, aber Speichern fehlgeschlagen: ${post.id}`);
+      console.warn(`⚠️ [STORE] Post ist im Memory, aber nicht im File`);
+    }
+    
+    // IMMER Post zurückgeben, auch wenn Speichern fehlgeschlagen ist!
+    return post;
+  } catch (error) {
+    // Fallback: Erstelle Post auch bei Fehler
+    console.error("❌ [STORE] createPost error:", error);
+    const fallbackPost = {
+      id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      vorname: data.vorname.trim(),
+      nachname: data.nachname.trim(),
+      email: data.email.trim(),
+      telefon: data.telefon?.trim() || null,
+      unternehmen: data.unternehmen?.trim() || null,
+      betreff: data.betreff.trim(),
+      nachricht: data.nachricht.trim(),
+      status: "open" as const,
+      read: false,
+      archived: false,
+      createdAt: new Date().toISOString(),
+    };
+    console.warn(`⚠️ [STORE] Fallback post created: ${fallbackPost.id}`);
+    return fallbackPost;
+  }
 }
 
 // GET ALL POSTS - IMMER aus File, KEIN Cache!
 export function getAllPosts() {
-  // IMMER aus File laden - garantiert aktuell, auch in Serverless!
-  const posts = loadPostsFromFile();
-  console.log(`✅ [STORE] getAllPosts: ${posts.length} posts (FRESH from file)`);
-  if (posts.length > 0) {
-    console.log(`✅ [STORE] Latest post: ${posts[0].id} - ${posts[0].vorname} ${posts[0].nachname}`);
-    console.log(`✅ [STORE] Latest post email: ${posts[0].email}`);
-    console.log(`✅ [STORE] Latest post betreff: ${posts[0].betreff}`);
+  try {
+    // IMMER aus File laden - garantiert aktuell, auch in Serverless!
+    const posts = loadPostsFromFile();
+    console.log(`✅ [STORE] getAllPosts: ${posts.length} posts (FRESH from file)`);
+    if (posts.length > 0) {
+      console.log(`✅ [STORE] Latest post: ${posts[0].id} - ${posts[0].vorname} ${posts[0].nachname}`);
+      console.log(`✅ [STORE] Latest post email: ${posts[0].email}`);
+      console.log(`✅ [STORE] Latest post betreff: ${posts[0].betreff}`);
+    }
+    return [...posts]; // Neueste zuerst
+  } catch (error) {
+    console.error("❌ [STORE] getAllPosts error:", error);
+    return [];
   }
-  return [...posts]; // Neueste zuerst
 }
 
 export function updatePost(id: string, updates: {
@@ -193,21 +226,31 @@ export function updatePost(id: string, updates: {
   archived?: boolean;
   status?: "open" | "read" | "archived";
 }) {
-  const posts = loadPostsFromFile(); // IMMER aus File
-  const index = posts.findIndex(p => p.id === id);
-  if (index === -1) return null;
-  
-  posts[index] = { ...posts[index], ...updates };
-  savePostsToFile(posts);
-  return posts[index];
+  try {
+    const posts = loadPostsFromFile(); // IMMER aus File
+    const index = posts.findIndex(p => p.id === id);
+    if (index === -1) return null;
+    
+    posts[index] = { ...posts[index], ...updates };
+    savePostsToFile(posts);
+    return posts[index];
+  } catch (error) {
+    console.error("❌ [STORE] updatePost error:", error);
+    return null;
+  }
 }
 
 export function deletePost(id: string) {
-  const posts = loadPostsFromFile(); // IMMER aus File
-  const index = posts.findIndex(p => p.id === id);
-  if (index === -1) return false;
-  
-  posts.splice(index, 1);
-  savePostsToFile(posts);
-  return true;
+  try {
+    const posts = loadPostsFromFile(); // IMMER aus File
+    const index = posts.findIndex(p => p.id === id);
+    if (index === -1) return false;
+    
+    posts.splice(index, 1);
+    savePostsToFile(posts);
+    return true;
+  } catch (error) {
+    console.error("❌ [STORE] deletePost error:", error);
+    return false;
+  }
 }

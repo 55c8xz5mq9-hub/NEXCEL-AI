@@ -42,7 +42,23 @@ export async function submitContactForm(formData: {
     }
 
     // POST-FUNKTION - Wie Bewertungen, instant sichtbar!
+    console.log("🔵 [POST] Starting createPost...");
+    
     const { createPost } = await import("@/lib/contact-store");
+    
+    if (!createPost || typeof createPost !== "function") {
+      console.error("❌ [POST] createPost is not a function");
+      return {
+        success: false,
+        error: "Backend-Funktion nicht verfügbar. Bitte versuchen Sie es erneut.",
+      };
+    }
+    
+    console.log("🔵 [POST] Calling createPost with data:", {
+      vorname: formData.firstName.trim(),
+      nachname: formData.lastName.trim(),
+      email: formData.email.trim(),
+    });
     
     const post = createPost({
       vorname: formData.firstName.trim(),
@@ -54,7 +70,21 @@ export async function submitContactForm(formData: {
       nachricht: formData.message.trim(),
     });
 
+    if (!post || !post.id) {
+      console.error("❌ [POST] createPost returned invalid post:", post);
+      return {
+        success: false,
+        error: "Fehler beim Erstellen des Posts. Bitte versuchen Sie es erneut.",
+      };
+    }
+
     console.log("✅ [POST] Neuer Post erstellt:", post.id);
+    console.log("✅ [POST] Post data:", {
+      id: post.id,
+      name: `${post.vorname} ${post.nachname}`,
+      email: post.email,
+      betreff: post.betreff,
+    });
     console.log("✅ [POST] Sofort im Admin-Panel sichtbar!");
 
     return {
