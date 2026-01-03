@@ -310,8 +310,41 @@ export default function AdminDashboard() {
         {/* Contacts Tab - POST-FEED wie Bewertungen */}
         {activeTab === "contacts" && (
           <GlassCard title="Kontakt-Posts">
+            {/* FEHLERANZEIGE - DETAILLIERT! */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 p-6 rounded-xl bg-red-500/10 border border-red-500/30"
+              >
+                <div className="flex items-start gap-3 mb-4">
+                  <svg className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-red-400 mb-2">Fehler beim Laden der Posts</h3>
+                    <p className="text-red-300 mb-4">{error}</p>
+                    {errorDetails && (
+                      <details className="mt-4">
+                        <summary className="cursor-pointer text-red-300 hover:text-red-200 text-sm font-medium mb-2">
+                          Detaillierte Fehlerinformationen anzeigen
+                        </summary>
+                        <pre className="mt-2 p-4 bg-black/30 rounded-lg text-xs text-red-200 overflow-auto max-h-96">
+                          {JSON.stringify(errorDetails, null, 2)}
+                        </pre>
+                      </details>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            
             <div className="space-y-0">
-              {contacts.length === 0 ? (
+              {contacts.length === 0 && !error ? (
                 <div className="text-center py-12 text-[#9CA3AF]">
                   Noch keine Posts vorhanden
                 </div>
