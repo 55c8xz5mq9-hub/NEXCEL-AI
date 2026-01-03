@@ -13,6 +13,8 @@ export async function getAdminContacts() {
 
     const posts = getAllPosts(); // Neueste zuerst
     
+    console.log(`✅ [ADMIN] getAllPosts returned ${posts.length} posts`);
+    
     const transformedContacts = posts.map((post) => ({
       id: post.id,
       name: `${post.vorname} ${post.nachname}`,

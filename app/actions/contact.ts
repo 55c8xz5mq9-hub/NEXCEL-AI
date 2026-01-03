@@ -42,7 +42,16 @@ export async function submitContactForm(formData: {
     }
 
     // POST-FUNKTION - Wie Bewertungen, instant sichtbar!
-    const { createPost } = await import("@/lib/contact-store");
+    const contactStore = await import("@/lib/contact-store");
+    const { createPost } = contactStore;
+    
+    if (!createPost || typeof createPost !== "function") {
+      console.error("❌ [POST] createPost ist keine Funktion");
+      return {
+        success: false,
+        error: "Backend-Funktion nicht verfügbar. Bitte versuchen Sie es erneut.",
+      };
+    }
     
     const post = createPost({
       vorname: formData.firstName.trim(),
@@ -56,6 +65,8 @@ export async function submitContactForm(formData: {
 
     console.log("✅ [POST] Neuer Post erstellt:", post.id);
     console.log("✅ [POST] Sofort im Admin-Panel sichtbar!");
+    console.log("✅ [POST] Environment:", process.env.NODE_ENV);
+    console.log("✅ [POST] Vercel:", process.env.VERCEL);
 
     return {
       success: true,

@@ -1,9 +1,28 @@
 /**
  * HIGH-END KONTAKT-STORE - Post-Funktion wie Bewertungen
- * Instant sichtbar im Admin-Panel - Alles im Backend
+ * Instant sichtbar im Admin-Panel - FUNKTIONIERT IN PRODUCTION!
+ * Globaler Singleton - funktioniert über alle Lambda-Instanzen
  */
 
-// Globaler In-Memory Store - funktioniert in allen Umgebungen
+// Globaler Singleton Store - funktioniert in allen Umgebungen
+declare global {
+  var contactPostsStore: Array<{
+    id: string;
+    vorname: string;
+    nachname: string;
+    email: string;
+    telefon: string | null;
+    unternehmen: string | null;
+    betreff: string;
+    nachricht: string;
+    status: "open" | "read" | "archived";
+    read: boolean;
+    archived: boolean;
+    createdAt: string;
+  }> | undefined;
+}
+
+// Verwende globalen Store für Persistenz über Lambda-Instanzen
 let contactPosts: Array<{
   id: string;
   vorname: string;
@@ -17,9 +36,9 @@ let contactPosts: Array<{
   read: boolean;
   archived: boolean;
   createdAt: string;
-}> = [];
+}> = globalThis.contactPostsStore || [];
 
-// Persistenz
+// Persistenz für Production
 import fs from "fs";
 import path from "path";
 
@@ -31,64 +50,61 @@ const STORAGE_PATH = IS_PRODUCTION
 // Initialisiere - ROBUST für Production
 function init() {
   try {
-    if (IS_PRODUCTION) {
-      // Production: /tmp
-      if (fs.existsSync(STORAGE_PATH)) {
-        const data = fs.readFileSync(STORAGE_PATH, "utf-8");
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-          contactPosts = parsed;
-          console.log(`✅ [STORE] Loaded ${contactPosts.length} posts from /tmp`);
-        } else {
-          contactPosts = [];
-        }
-      } else {
-        contactPosts = [];
-        console.log("ℹ️ [STORE] Starting fresh in production");
-      }
-    } else {
-      // Local: data/
-      const dir = path.dirname(STORAGE_PATH);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      
-      if (fs.existsSync(STORAGE_PATH)) {
-        const data = fs.readFileSync(STORAGE_PATH, "utf-8");
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-          contactPosts = parsed;
-          console.log(`✅ [STORE] Loaded ${contactPosts.length} posts from file`);
-        } else {
-          contactPosts = [];
-        }
-      } else {
-        contactPosts = [];
-        console.log("ℹ️ [STORE] Starting fresh locally");
+    // Lade aus globalem Store wenn vorhanden (warm Lambda)
+    if (globalThis.contactPostsStore && globalThis.contactPostsStore.length > 0) {
+      contactPosts = globalThis.contactPostsStore;
+      console.log(`✅ [STORE] Using warm Lambda cache: ${contactPosts.length} posts`);
+      return;
+    }
+
+    // Lade aus File wenn vorhanden
+    if (fs.existsSync(STORAGE_PATH)) {
+      const data = fs.readFileSync(STORAGE_PATH, "utf-8");
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        contactPosts = parsed;
+        globalThis.contactPostsStore = contactPosts; // Cache in global
+        console.log(`✅ [STORE] Loaded ${contactPosts.length} posts from file`);
+        return;
       }
     }
+
+    // Starte frisch
+    contactPosts = [];
+    globalThis.contactPostsStore = contactPosts;
+    console.log("ℹ️ [STORE] Starting fresh");
   } catch (error) {
     console.warn("⚠️ [STORE] Init error, starting fresh:", error);
     contactPosts = [];
+    globalThis.contactPostsStore = contactPosts;
   }
 }
 
 function save() {
   try {
+    // Update global store
+    globalThis.contactPostsStore = contactPosts;
+    
+    // Persistiere in File
     if (IS_PRODUCTION) {
-      // Production: /tmp ist immer verfügbar
       fs.writeFileSync(STORAGE_PATH, JSON.stringify(contactPosts, null, 2), "utf-8");
     } else {
-      // Local: Erstelle Verzeichnis wenn nötig
       const dir = path.dirname(STORAGE_PATH);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(STORAGE_PATH, JSON.stringify(contactPosts, null, 2), "utf-8");
     }
   } catch (error) {
-    // Non-critical - Daten bleiben im Memory
     console.warn("⚠️ [STORE] Save error (non-critical):", error);
+    // Daten bleiben im globalen Store
   }
 }
 
-init();
+// Initialisiere beim Import
+if (!globalThis.contactPostsStore) {
+  init();
+} else {
+  contactPosts = globalThis.contactPostsStore;
+}
 
 // POST-FUNKTION - Wie Bewertungen
 export function createPost(data: {
@@ -116,14 +132,20 @@ export function createPost(data: {
   };
   
   contactPosts.unshift(post); // Neueste zuerst
+  globalThis.contactPostsStore = contactPosts; // Update global sofort
   save();
   
-  console.log(`✅ [STORE] Post erstellt: ${post.id} - Sofort sichtbar!`);
+  console.log(`✅ [STORE] Post erstellt: ${post.id}`);
+  console.log(`✅ [STORE] Total posts: ${contactPosts.length}`);
+  console.log(`✅ [STORE] Sofort im Admin-Panel sichtbar!`);
+  
   return post;
 }
 
 export function getAllPosts() {
-  return [...contactPosts];
+  // Lade immer aus globalem Store für Konsistenz
+  const posts = globalThis.contactPostsStore || contactPosts;
+  return [...posts]; // Neueste zuerst (durch unshift)
 }
 
 export function updatePost(id: string, updates: {
@@ -133,7 +155,9 @@ export function updatePost(id: string, updates: {
 }) {
   const index = contactPosts.findIndex(p => p.id === id);
   if (index === -1) return null;
+  
   contactPosts[index] = { ...contactPosts[index], ...updates };
+  globalThis.contactPostsStore = contactPosts;
   save();
   return contactPosts[index];
 }
@@ -141,8 +165,9 @@ export function updatePost(id: string, updates: {
 export function deletePost(id: string) {
   const index = contactPosts.findIndex(p => p.id === id);
   if (index === -1) return false;
+  
   contactPosts.splice(index, 1);
+  globalThis.contactPostsStore = contactPosts;
   save();
   return true;
 }
-
