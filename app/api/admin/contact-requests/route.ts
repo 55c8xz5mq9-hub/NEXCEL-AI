@@ -10,7 +10,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
-import { getAllContacts } from "@/lib/backend-db";
+import { getAllPosts } from "@/lib/contact-store";
 
 export const runtime = "nodejs";
 
@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Lade alle Kontaktanfragen aus Backend-DB
-    const contacts = getAllContacts();
+    // Lade alle Posts aus Contact-Store
+    const contacts = getAllPosts();
 
     // Transformiere in Admin-Dashboard-Format
     const transformedContacts = contacts.map((contact) => ({

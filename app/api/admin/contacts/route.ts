@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
-import { getAllContacts, updateContact, deleteContact } from "@/lib/backend-db";
+import { getAllPosts, updatePost, deletePost } from "@/lib/contact-store";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
     const archived = searchParams.get("archived") === "true";
     const unread = searchParams.get("unread") === "true";
 
-    // Lade alle Kontakte aus Backend-DB
-    let contacts = getAllContacts();
+    // Lade alle Posts aus Contact-Store
+    let contacts = getAllPosts();
     
     // Filtere nach archived/unread
     if (archived) {
@@ -72,8 +72,8 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    // Update contact in Backend-DB
-    const updated = updateContact(id, {
+    // Update post in Contact-Store
+    const updated = updatePost(id, {
       read: updates.read,
       archived: updates.archived,
       status: updates.status,
@@ -120,8 +120,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    // Delete contact from Backend-DB
-    const success = deleteContact(id);
+    // Delete post from Contact-Store
+    const success = deletePost(id);
 
     if (!success) {
       return NextResponse.json({ error: "Contact not found" }, { status: 404 });
