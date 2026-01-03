@@ -1,7 +1,7 @@
 /**
  * HIGH-END KONTAKT-STORE - FUNKTIONIERT GARANTIERT IN PRODUCTION!
  * Post-Funktion wie Bewertungen - Instant sichtbar im Admin-Panel
- * File-basierte Persistenz - funktioniert in allen Umgebungen
+ * File-basierte Persistenz - IMMER aus File laden, kein Cache!
  */
 
 import fs from "fs";
@@ -12,7 +12,7 @@ const STORAGE_PATH = IS_PRODUCTION
   ? "/tmp/contact-posts.json"
   : path.join(process.cwd(), "data", "contact-posts.json");
 
-// Globaler Singleton für warme Lambdas
+// Globaler Singleton für warme Lambdas (nur für createPost)
 declare global {
   var __contactPostsStore: Array<{
     id: string;
@@ -30,30 +30,8 @@ declare global {
   }> | undefined;
 }
 
-// Initialisiere Store - lädt aus File wenn vorhanden
-function initializeStore() {
-  if (!globalThis.__contactPostsStore) {
-    globalThis.__contactPostsStore = [];
-    
-    // Lade aus File wenn vorhanden
-    try {
-      if (fs.existsSync(STORAGE_PATH)) {
-        const data = fs.readFileSync(STORAGE_PATH, "utf-8");
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-          globalThis.__contactPostsStore = parsed;
-          console.log(`✅ [STORE] Initialized with ${parsed.length} posts from file`);
-        }
-      }
-    } catch (error) {
-      console.warn("⚠️ [STORE] Init error:", error);
-    }
-  }
-  return globalThis.__contactPostsStore;
-}
-
-// Lade Posts - IMMER aktuell
-function loadPosts(): Array<{
+// Lade Posts - IMMER aus File, KEIN Cache für getAllPosts!
+function loadPostsFromFile(): Array<{
   id: string;
   vorname: string;
   nachname: string;
@@ -67,19 +45,13 @@ function loadPosts(): Array<{
   archived: boolean;
   createdAt: string;
 }> {
-  // Verwende globalen Store wenn vorhanden (warme Lambda)
-  if (globalThis.__contactPostsStore && globalThis.__contactPostsStore.length > 0) {
-    return globalThis.__contactPostsStore;
-  }
-  
-  // Lade aus File
+  // IMMER aus File laden - garantiert aktuell!
   try {
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
       const parsed = JSON.parse(data);
       if (Array.isArray(parsed)) {
-        globalThis.__contactPostsStore = parsed;
-        console.log(`✅ [STORE] Loaded ${parsed.length} posts from file`);
+        console.log(`✅ [STORE] Loaded ${parsed.length} posts from file (FRESH)`);
         return parsed;
       }
     }
@@ -88,26 +60,12 @@ function loadPosts(): Array<{
   }
   
   // Fallback: Leeres Array
-  const empty: Array<{
-    id: string;
-    vorname: string;
-    nachname: string;
-    email: string;
-    telefon: string | null;
-    unternehmen: string | null;
-    betreff: string;
-    nachricht: string;
-    status: "open" | "read" | "archived";
-    read: boolean;
-    archived: boolean;
-    createdAt: string;
-  }> = [];
-  globalThis.__contactPostsStore = empty;
-  return empty;
+  console.log(`✅ [STORE] No file found, returning empty array`);
+  return [];
 }
 
-// Speichere Posts - ATOMIC
-function savePosts(posts: Array<{
+// Speichere Posts - ATOMIC mit Retry
+function savePostsToFile(posts: Array<{
   id: string;
   vorname: string;
   nachname: string;
@@ -121,38 +79,54 @@ function savePosts(posts: Array<{
   archived: boolean;
   createdAt: string;
 }>): void {
-  // Update globalen Store sofort
+  // Update globalen Store (nur für warme Lambdas)
   globalThis.__contactPostsStore = posts;
   
-  try {
-    // Speichere in File
-    if (IS_PRODUCTION) {
-      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-    } else {
-      const dir = path.dirname(STORAGE_PATH);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-    }
-    
-    // Verifiziere
-    if (fs.existsSync(STORAGE_PATH)) {
-      const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
-      const verifyParsed = JSON.parse(verify);
-      if (Array.isArray(verifyParsed)) {
-        console.log(`✅ [STORE] Saved ${posts.length} posts (verified: ${verifyParsed.length})`);
-        return;
+  // Retry-Mechanismus: 3 Versuche
+  let attempts = 0;
+  const maxAttempts = 3;
+  
+  while (attempts < maxAttempts) {
+    try {
+      // Speichere in File
+      if (IS_PRODUCTION) {
+        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+      } else {
+        const dir = path.dirname(STORAGE_PATH);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+      }
+      
+      // Verifiziere sofort
+      if (fs.existsSync(STORAGE_PATH)) {
+        const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
+        const verifyParsed = JSON.parse(verify);
+        if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
+          console.log(`✅ [STORE] Saved ${posts.length} posts (verified: ${verifyParsed.length})`);
+          return; // Erfolg!
+        }
+      }
+      
+      attempts++;
+      if (attempts < maxAttempts) {
+        console.warn(`⚠️ [STORE] Verification failed, retry ${attempts}/${maxAttempts}`);
+        // Kurze Pause vor Retry
+        const start = Date.now();
+        while (Date.now() - start < 50) {} // 50ms Pause
+      }
+    } catch (error) {
+      attempts++;
+      console.error(`❌ [STORE] Save error (attempt ${attempts}/${maxAttempts}):`, error);
+      if (attempts < maxAttempts) {
+        const start = Date.now();
+        while (Date.now() - start < 50) {} // 50ms Pause
       }
     }
-    
-    throw new Error("Verification failed");
-  } catch (error) {
-    console.error("❌ [STORE] Save error:", error);
-    // Daten bleiben im globalen Store
   }
+  
+  // Wenn alle Versuche fehlgeschlagen sind, Daten bleiben im globalen Store
+  console.error("❌ [STORE] All save attempts failed, data in memory only");
 }
-
-// Initialisiere beim Import
-initializeStore();
 
 // POST-FUNKTION - Wie Bewertungen
 export function createPost(data: {
@@ -164,8 +138,8 @@ export function createPost(data: {
   betreff: string;
   nachricht: string;
 }) {
-  // Lade aktuelle Posts
-  const posts = loadPosts();
+  // Lade aktuelle Posts IMMER aus File
+  const posts = loadPostsFromFile();
   
   const post = {
     id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -185,25 +159,31 @@ export function createPost(data: {
   // Füge Post hinzu (neueste zuerst)
   posts.unshift(post);
   
-  // Speichere sofort
-  savePosts(posts);
+  // Speichere sofort mit Retry
+  savePostsToFile(posts);
   
   console.log(`✅ [STORE] Post erstellt: ${post.id}`);
   console.log(`✅ [STORE] Name: ${post.vorname} ${post.nachname}`);
   console.log(`✅ [STORE] Email: ${post.email}`);
+  console.log(`✅ [STORE] Telefon: ${post.telefon || "keine"}`);
+  console.log(`✅ [STORE] Unternehmen: ${post.unternehmen || "keine"}`);
   console.log(`✅ [STORE] Betreff: ${post.betreff}`);
+  console.log(`✅ [STORE] Nachricht: ${post.nachricht.substring(0, 50)}...`);
   console.log(`✅ [STORE] Total posts: ${posts.length}`);
   console.log(`✅ [STORE] Sofort im Admin-Panel sichtbar!`);
   
   return post;
 }
 
+// GET ALL POSTS - IMMER aus File, KEIN Cache!
 export function getAllPosts() {
-  // Lade IMMER aus Store/File - garantiert aktuell
-  const posts = loadPosts();
-  console.log(`✅ [STORE] getAllPosts: ${posts.length} posts`);
+  // IMMER aus File laden - garantiert aktuell, auch in Serverless!
+  const posts = loadPostsFromFile();
+  console.log(`✅ [STORE] getAllPosts: ${posts.length} posts (FRESH from file)`);
   if (posts.length > 0) {
     console.log(`✅ [STORE] Latest post: ${posts[0].id} - ${posts[0].vorname} ${posts[0].nachname}`);
+    console.log(`✅ [STORE] Latest post email: ${posts[0].email}`);
+    console.log(`✅ [STORE] Latest post betreff: ${posts[0].betreff}`);
   }
   return [...posts]; // Neueste zuerst
 }
@@ -213,21 +193,21 @@ export function updatePost(id: string, updates: {
   archived?: boolean;
   status?: "open" | "read" | "archived";
 }) {
-  const posts = loadPosts();
+  const posts = loadPostsFromFile(); // IMMER aus File
   const index = posts.findIndex(p => p.id === id);
   if (index === -1) return null;
   
   posts[index] = { ...posts[index], ...updates };
-  savePosts(posts);
+  savePostsToFile(posts);
   return posts[index];
 }
 
 export function deletePost(id: string) {
-  const posts = loadPosts();
+  const posts = loadPostsFromFile(); // IMMER aus File
   const index = posts.findIndex(p => p.id === id);
   if (index === -1) return false;
   
   posts.splice(index, 1);
-  savePosts(posts);
+  savePostsToFile(posts);
   return true;
 }

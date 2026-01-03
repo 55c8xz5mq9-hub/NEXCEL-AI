@@ -53,8 +53,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadData(true);
-    // Refresh every 300ms for INSTANT updates - wie Bewertungen!
-    const interval = setInterval(() => loadData(false), 300);
+    // Refresh every 200ms for INSTANT updates - wie Bewertungen!
+    const interval = setInterval(() => loadData(false), 200);
     return () => clearInterval(interval);
   }, []);
 
@@ -78,9 +78,19 @@ export default function AdminDashboard() {
       
       if (statsRes.ok) setStats(await statsRes.json());
       
-      // Kontakte aus Server Action - IMMER setzen
+      // Kontakte aus Server Action - IMMER setzen, auch wenn leer
       if (contactsData && contactsData.contacts) {
         console.log("✅ [ADMIN DASHBOARD] Setting contacts:", contactsData.contacts.length);
+        if (contactsData.contacts.length > 0) {
+          console.log("✅ [ADMIN DASHBOARD] First contact:", {
+            id: contactsData.contacts[0].id,
+            name: contactsData.contacts[0].name,
+            email: contactsData.contacts[0].email,
+            betreff: contactsData.contacts[0].betreff,
+            telefon: contactsData.contacts[0].telefon,
+            unternehmen: contactsData.contacts[0].unternehmen,
+          });
+        }
         setContacts(contactsData.contacts);
       } else {
         console.warn("⚠️ [ADMIN DASHBOARD] No contacts in response:", contactsData);
