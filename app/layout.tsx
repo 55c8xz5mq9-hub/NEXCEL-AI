@@ -129,50 +129,61 @@ export default function RootLayout({
                 setTimeout(reorderPortal, 500);
                 setTimeout(reorderPortal, 1000);
                 
-                // Use MutationObserver to watch for portal creation - More aggressive
+                // Use MutationObserver to watch for portal creation - ROBUST
                 function setupObserver() {
                   try {
                     if (typeof MutationObserver === 'undefined') return;
-                    if (!document.body) return;
-                    if (!(document.body instanceof Node)) return;
+                    
+                    // Warte bis body wirklich bereit ist
+                    const body = document.body;
+                    if (!body) {
+                      setTimeout(setupObserver, 50);
+                      return;
+                    }
+                    
+                    // Prüfe ob body wirklich ein Node ist
+                    if (!(body instanceof Node)) {
+                      return;
+                    }
                     
                     let observerTimeout;
                     const observer = new MutationObserver(function(mutations) {
-                      // Debounce to avoid excessive calls
-                      clearTimeout(observerTimeout);
-                      observerTimeout = setTimeout(function() {
-                        mutations.forEach(function(mutation) {
-                          if (mutation.addedNodes && mutation.addedNodes.length) {
-                            mutation.addedNodes.forEach(function(node) {
-                              if (node && node.nodeName === 'NEXTJS-PORTAL' || 
-                                  (node && node.nodeType === 1 && node.querySelector && node.querySelector('nextjs-portal'))) {
-                                setTimeout(reorderPortal, 10);
-                              }
-                            });
-                          }
-                        });
-                      }, 50);
+                      try {
+                        clearTimeout(observerTimeout);
+                        observerTimeout = setTimeout(function() {
+                          mutations.forEach(function(mutation) {
+                            if (mutation.addedNodes && mutation.addedNodes.length) {
+                              mutation.addedNodes.forEach(function(node) {
+                                if (node && typeof node === 'object' && node.nodeName === 'NEXTJS-PORTAL' || 
+                                    (node && node.nodeType === 1 && typeof node.querySelector === 'function' && node.querySelector('nextjs-portal'))) {
+                                  setTimeout(reorderPortal, 10);
+                                }
+                              });
+                            }
+                          });
+                        }, 50);
+                      } catch (e) {
+                        // Ignoriere Fehler in Observer-Callback
+                      }
                     });
                     
-                    observer.observe(document.body, {
+                    // Observer nur aufrufen wenn body wirklich ein Node ist
+                    observer.observe(body, {
                       childList: true,
-                      subtree: false // Only watch direct children for performance
+                      subtree: false
                     });
                   } catch (e) {
-                    console.warn('MutationObserver setup error:', e);
+                    // Fehler ignorieren - nicht kritisch
                   }
                 }
                 
-                // Setup observer when body is ready
-                if (document.body && document.body instanceof Node) {
-                  setupObserver();
-                } else {
-                  // Wait for body to be ready
-                  if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', setupObserver);
-                  } else {
+                // Setup observer sicher
+                if (document.readyState === 'loading') {
+                  document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(setupObserver, 100);
-                  }
+                  });
+                } else {
+                  setTimeout(setupObserver, 100);
                 }
               })();
             `,
