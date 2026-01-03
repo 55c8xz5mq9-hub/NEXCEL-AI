@@ -14,9 +14,6 @@ const STORAGE_FILE = IS_SERVERLESS
   ? "/tmp/contact-requests.json"
   : path.join(process.cwd(), "data", "contact-requests.json");
 
-console.log("🔍 [STORAGE API] Initialized with file:", STORAGE_FILE);
-console.log("🔍 [STORAGE API] IS_SERVERLESS:", IS_SERVERLESS);
-
 // GET - Lade alle Kontakte
 export async function GET() {
   try {
