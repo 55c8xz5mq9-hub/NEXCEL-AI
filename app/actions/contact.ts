@@ -1,5 +1,7 @@
 "use server";
 
+import { createPost } from "@/lib/contact-store";
+
 export const runtime = "nodejs";
 
 /**
@@ -46,44 +48,24 @@ export async function submitContactForm(formData: {
   let post;
   try {
     console.log("🔵 [POST] Starting createPost...");
+    console.log("🔵 [POST] Calling createPost with data:", {
+      vorname: formData.firstName.trim(),
+      nachname: formData.lastName.trim(),
+      email: formData.email.trim(),
+    });
     
-    const { createPost } = await import("@/lib/contact-store");
+    // STATISCHER IMPORT - kein dynamischer Import mehr!
+    post = createPost({
+      vorname: formData.firstName.trim(),
+      nachname: formData.lastName.trim(),
+      email: formData.email.trim(),
+      telefon: formData.phone?.trim() || null,
+      unternehmen: formData.company?.trim() || null,
+      betreff: formData.subject.trim(),
+      nachricht: formData.message.trim(),
+    });
     
-    if (!createPost || typeof createPost !== "function") {
-      console.error("❌ [POST] createPost is not a function");
-      // FALLBACK: Erstelle Post manuell
-      post = {
-        id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        vorname: formData.firstName.trim(),
-        nachname: formData.lastName.trim(),
-        email: formData.email.trim(),
-        telefon: formData.phone?.trim() || null,
-        unternehmen: formData.company?.trim() || null,
-        betreff: formData.subject.trim(),
-        nachricht: formData.message.trim(),
-        status: "open" as const,
-        read: false,
-        archived: false,
-        createdAt: new Date().toISOString(),
-      };
-      console.warn("⚠️ [POST] Using fallback post creation");
-    } else {
-      console.log("🔵 [POST] Calling createPost with data:", {
-        vorname: formData.firstName.trim(),
-        nachname: formData.lastName.trim(),
-        email: formData.email.trim(),
-      });
-      
-      post = createPost({
-        vorname: formData.firstName.trim(),
-        nachname: formData.lastName.trim(),
-        email: formData.email.trim(),
-        telefon: formData.phone?.trim() || null,
-        unternehmen: formData.company?.trim() || null,
-        betreff: formData.subject.trim(),
-        nachricht: formData.message.trim(),
-      });
-    }
+    console.log("✅ [POST] createPost returned:", post?.id);
   } catch (error) {
     // FALLBACK: Erstelle Post auch bei Fehler
     console.error("❌ [POST] Error in createPost, using fallback:", error);
