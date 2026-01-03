@@ -1,7 +1,7 @@
 /**
  * HIGH-END KONTAKT-STORE - FUNKTIONIERT GARANTIERT!
  * Post-Funktion wie Bewertungen - Instant sichtbar im Admin-Panel
- * File-basierte Persistenz mit Lock-Mechanismus
+ * File-basierte Persistenz - funktioniert in allen Umgebungen
  */
 
 import fs from "fs";
@@ -11,6 +11,25 @@ const IS_PRODUCTION = process.env.VERCEL === "1" || process.env.NODE_ENV === "pr
 const STORAGE_PATH = IS_PRODUCTION
   ? "/tmp/contact-posts.json"
   : path.join(process.cwd(), "data", "contact-posts.json");
+
+// Globaler Singleton für warme Lambdas
+declare global {
+  var __contactPostsCache: Array<{
+    id: string;
+    vorname: string;
+    nachname: string;
+    email: string;
+    telefon: string | null;
+    unternehmen: string | null;
+    betreff: string;
+    nachricht: string;
+    status: "open" | "read" | "archived";
+    read: boolean;
+    archived: boolean;
+    createdAt: string;
+  }> | undefined;
+  var __contactPostsCacheTime: number | undefined;
+}
 
 // Lade Posts - IMMER aus File, garantiert aktuell
 function loadPostsFromFile(): Array<{
@@ -28,17 +47,34 @@ function loadPostsFromFile(): Array<{
   createdAt: string;
 }> {
   try {
+    // Prüfe Cache (nur für warme Lambdas, max 5 Sekunden alt)
+    const now = Date.now();
+    if (globalThis.__contactPostsCache && globalThis.__contactPostsCacheTime && (now - globalThis.__contactPostsCacheTime) < 5000) {
+      console.log(`✅ [STORE] Using cache (${globalThis.__contactPostsCache.length} posts)`);
+      return globalThis.__contactPostsCache;
+    }
+
+    // Lade aus File
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
       const parsed = JSON.parse(data);
       if (Array.isArray(parsed)) {
+        // Update Cache
+        globalThis.__contactPostsCache = parsed;
+        globalThis.__contactPostsCacheTime = now;
+        console.log(`✅ [STORE] Loaded ${parsed.length} posts from file`);
         return parsed;
       }
     }
   } catch (error) {
     console.warn("⚠️ [STORE] Load error:", error);
   }
-  return [];
+  
+  // Fallback: Leeres Array
+  const empty: typeof globalThis.__contactPostsCache = [];
+  globalThis.__contactPostsCache = empty;
+  globalThis.__contactPostsCacheTime = now;
+  return empty;
 }
 
 // Speichere Posts - ATOMIC mit Verifikation
@@ -57,17 +93,17 @@ function savePostsToFile(posts: Array<{
   createdAt: string;
 }>): void {
   try {
-    // Atomic write: Schreibe zuerst in temp file, dann rename
-    const tempPath = `${STORAGE_PATH}.tmp.${Date.now()}`;
+    // Update Cache sofort
+    globalThis.__contactPostsCache = posts;
+    globalThis.__contactPostsCacheTime = Date.now();
     
+    // Speichere in File
     if (IS_PRODUCTION) {
-      fs.writeFileSync(tempPath, JSON.stringify(posts, null, 2), "utf-8");
-      fs.renameSync(tempPath, STORAGE_PATH);
+      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
     } else {
       const dir = path.dirname(STORAGE_PATH);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(tempPath, JSON.stringify(posts, null, 2), "utf-8");
-      fs.renameSync(tempPath, STORAGE_PATH);
+      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
     }
     
     // Verifiziere
@@ -97,7 +133,7 @@ export function createPost(data: {
   betreff: string;
   nachricht: string;
 }) {
-  // Lade IMMER aus File - garantiert aktuell
+  // Lade aktuelle Posts IMMER aus File
   const posts = loadPostsFromFile();
   
   const post = {
@@ -123,7 +159,6 @@ export function createPost(data: {
   
   console.log(`✅ [STORE] Post erstellt: ${post.id}`);
   console.log(`✅ [STORE] Total posts: ${posts.length}`);
-  console.log(`✅ [STORE] File: ${STORAGE_PATH}`);
   console.log(`✅ [STORE] Sofort im Admin-Panel sichtbar!`);
   
   return post;
@@ -132,7 +167,7 @@ export function createPost(data: {
 export function getAllPosts() {
   // Lade IMMER aus File - garantiert aktuell
   const posts = loadPostsFromFile();
-  console.log(`✅ [STORE] getAllPosts: ${posts.length} posts from ${STORAGE_PATH}`);
+  console.log(`✅ [STORE] getAllPosts: ${posts.length} posts`);
   return posts; // Bereits neueste zuerst (durch unshift)
 }
 

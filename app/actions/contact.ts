@@ -44,7 +44,6 @@ export async function submitContactForm(formData: {
     // POST-FUNKTION - Wie Bewertungen, instant sichtbar!
     const { createPost } = await import("@/lib/contact-store");
     
-    console.log("🔵 [POST] Creating post...");
     const post = createPost({
       vorname: formData.firstName.trim(),
       nachname: formData.lastName.trim(),
@@ -56,12 +55,6 @@ export async function submitContactForm(formData: {
     });
 
     console.log("✅ [POST] Neuer Post erstellt:", post.id);
-    console.log("✅ [POST] Post Details:", {
-      name: `${post.vorname} ${post.nachname}`,
-      email: post.email,
-      betreff: post.betreff,
-      createdAt: post.createdAt,
-    });
     console.log("✅ [POST] Sofort im Admin-Panel sichtbar!");
 
     return {
