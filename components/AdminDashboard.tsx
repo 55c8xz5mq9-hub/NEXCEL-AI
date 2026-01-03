@@ -27,6 +27,7 @@ interface Contact {
   createdAt: string;
   read: boolean;
   archived: boolean;
+  status: "open" | "read" | "archived";
 }
 
 interface DemoRequest {
