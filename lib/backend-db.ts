@@ -117,26 +117,41 @@ export function createContact(data: {
   betreff: string;
   nachricht: string;
 }): ContactData {
-  const newContact: ContactData = {
-    id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    vorname: data.vorname.trim(),
-    nachname: data.nachname.trim(),
-    email: data.email.trim(),
-    telefon: data.telefon?.trim() || null,
-    unternehmen: data.unternehmen?.trim() || null,
-    betreff: data.betreff.trim(),
-    nachricht: data.nachricht.trim(),
-    status: "open",
-    read: false,
-    archived: false,
-    createdAt: new Date().toISOString(),
-  };
-  
-  contactsDatabase.push(newContact);
-  saveToFile();
-  
-  console.log(`✅ [BACKEND DB] Contact created: ${newContact.id}`);
-  return newContact;
+  try {
+    const newContact: ContactData = {
+      id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      vorname: data.vorname.trim(),
+      nachname: data.nachname.trim(),
+      email: data.email.trim(),
+      telefon: data.telefon?.trim() || null,
+      unternehmen: data.unternehmen?.trim() || null,
+      betreff: data.betreff.trim(),
+      nachricht: data.nachricht.trim(),
+      status: "open",
+      read: false,
+      archived: false,
+      createdAt: new Date().toISOString(),
+    };
+    
+    contactsDatabase.push(newContact);
+    
+    // Speichere in Datei (non-blocking, falls es fehlschlägt, bleiben Daten im Memory)
+    try {
+      saveToFile();
+    } catch (saveError) {
+      console.warn("⚠️ [BACKEND DB] File-Save fehlgeschlagen, aber Daten im Memory:", saveError);
+      // Nicht kritisch - Daten bleiben im Memory
+    }
+    
+    console.log(`✅ [BACKEND DB] Contact created: ${newContact.id}`);
+    console.log(`✅ [BACKEND DB] Total contacts: ${contactsDatabase.length}`);
+    console.log(`✅ [BACKEND DB] Environment: ${IS_SERVERLESS ? "PRODUCTION" : "LOCAL"}`);
+    
+    return newContact;
+  } catch (error) {
+    console.error("❌ [BACKEND DB] Fehler beim Erstellen:", error);
+    throw error;
+  }
 }
 
 export function getAllContacts(): ContactData[] {

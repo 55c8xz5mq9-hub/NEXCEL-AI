@@ -1,6 +1,6 @@
 "use server";
 
-import { createContact } from "@/lib/backend-db";
+export const runtime = "nodejs";
 
 export async function submitContactForm(formData: {
   firstName: string;
@@ -12,16 +12,18 @@ export async function submitContactForm(formData: {
   message: string;
 }) {
   try {
+    console.log("🔵 [CONTACT ACTION] Server Action aufgerufen in:", process.env.NODE_ENV);
+    
     // Validierung
-    if (!formData.firstName?.trim()) {
+    if (!formData?.firstName?.trim()) {
       return { success: false, error: "Vorname ist erforderlich" };
     }
 
-    if (!formData.lastName?.trim()) {
+    if (!formData?.lastName?.trim()) {
       return { success: false, error: "Nachname ist erforderlich" };
     }
 
-    if (!formData.email?.trim()) {
+    if (!formData?.email?.trim()) {
       return { success: false, error: "E-Mail ist erforderlich" };
     }
 
@@ -30,11 +32,11 @@ export async function submitContactForm(formData: {
       return { success: false, error: "Ungültige E-Mail-Adresse" };
     }
 
-    if (!formData.subject?.trim()) {
+    if (!formData?.subject?.trim()) {
       return { success: false, error: "Betreff ist erforderlich" };
     }
 
-    if (!formData.message?.trim()) {
+    if (!formData?.message?.trim()) {
       return { success: false, error: "Nachricht ist erforderlich" };
     }
 
@@ -43,6 +45,27 @@ export async function submitContactForm(formData: {
     }
 
     // DIREKT IM BACKEND SPEICHERN - KOMPLETT VERANKERT, KEIN PRISMA, KEINE API!
+    // Dynamischer Import für bessere Fehlerbehandlung
+    let createContact;
+    try {
+      const backendDb = await import("@/lib/backend-db");
+      createContact = backendDb.createContact;
+    } catch (importError) {
+      console.error("❌ [CONTACT ACTION] Import-Fehler:", importError);
+      return {
+        success: false,
+        error: "Backend-Datenbank konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+      };
+    }
+
+    if (!createContact || typeof createContact !== "function") {
+      console.error("❌ [CONTACT ACTION] createContact ist keine Funktion");
+      return {
+        success: false,
+        error: "Backend-Funktion nicht verfügbar. Bitte versuchen Sie es erneut.",
+      };
+    }
+
     const newContact = createContact({
       vorname: formData.firstName.trim(),
       nachname: formData.lastName.trim(),
@@ -53,8 +76,9 @@ export async function submitContactForm(formData: {
       nachricht: formData.message.trim(),
     });
 
-    console.log("✅ [CONTACT POST] Neuer Post erstellt:", newContact.id);
-    console.log("✅ [CONTACT POST] Sofort im Admin-Panel sichtbar");
+    console.log("✅ [CONTACT ACTION] Neuer Post erstellt:", newContact.id);
+    console.log("✅ [CONTACT ACTION] Environment:", process.env.NODE_ENV);
+    console.log("✅ [CONTACT ACTION] Vercel:", process.env.VERCEL);
 
     return {
       success: true,
@@ -63,8 +87,13 @@ export async function submitContactForm(formData: {
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("❌ [CONTACT POST] Fehler:", errorMessage);
-    console.error("❌ [CONTACT POST] Full Error:", error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
+    console.error("❌ [CONTACT ACTION] Fehler:", errorMessage);
+    console.error("❌ [CONTACT ACTION] Stack:", errorStack);
+    console.error("❌ [CONTACT ACTION] Full Error:", error);
+    console.error("❌ [CONTACT ACTION] Environment:", process.env.NODE_ENV);
+    console.error("❌ [CONTACT ACTION] Vercel:", process.env.VERCEL);
 
     return {
       success: false,
