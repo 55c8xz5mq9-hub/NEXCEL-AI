@@ -73,7 +73,7 @@ function loadPostsFromFile(): Array<{
   // Fallback: Leeres Array
   const empty: typeof globalThis.__contactPostsCache = [];
   globalThis.__contactPostsCache = empty;
-  globalThis.__contactPostsCacheTime = now;
+  globalThis.__contactPostsCacheTime = Date.now();
   return empty;
 }
 
