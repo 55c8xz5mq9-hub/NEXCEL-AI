@@ -6,7 +6,7 @@
  */
 
 export async function trackAnalyticsEvent(
-  type: string,
+  type: "page_view" | "click" | "form_submit" | "demo_request" | "contact",
   page: string,
   metadata?: Record<string, any>
 ) {
