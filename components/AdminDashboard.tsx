@@ -73,11 +73,12 @@ export default function AdminDashboard() {
       ]);
 
       if (statsRes.ok) setStats(await statsRes.json());
-      if (contactsRes.ok) {
-        const data = await contactsRes.json();
-        // Die API gibt bereits das korrekte Format zurück (vorname/nachname aus Prisma)
-        setContacts(data.contacts || []);
+      
+      // Kontakte aus Server Action
+      if (contactsData.contacts) {
+        setContacts(contactsData.contacts);
       }
+      
       if (demoRes.ok) setDemoRequests((await demoRes.json()).requests);
       if (userRes.ok) setUser(await userRes.json());
     } catch (error) {
