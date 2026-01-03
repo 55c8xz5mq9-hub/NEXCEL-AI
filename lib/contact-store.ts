@@ -53,7 +53,20 @@ function initializeStore() {
 }
 
 // Lade Posts - IMMER aktuell
-function loadPosts(): typeof globalThis.__contactPostsStore {
+function loadPosts(): Array<{
+  id: string;
+  vorname: string;
+  nachname: string;
+  email: string;
+  telefon: string | null;
+  unternehmen: string | null;
+  betreff: string;
+  nachricht: string;
+  status: "open" | "read" | "archived";
+  read: boolean;
+  archived: boolean;
+  createdAt: string;
+}> {
   // Verwende globalen Store wenn vorhanden (warme Lambda)
   if (globalThis.__contactPostsStore && globalThis.__contactPostsStore.length > 0) {
     return globalThis.__contactPostsStore;
@@ -75,13 +88,39 @@ function loadPosts(): typeof globalThis.__contactPostsStore {
   }
   
   // Fallback: Leeres Array
-  const empty: typeof globalThis.__contactPostsStore = [];
+  const empty: Array<{
+    id: string;
+    vorname: string;
+    nachname: string;
+    email: string;
+    telefon: string | null;
+    unternehmen: string | null;
+    betreff: string;
+    nachricht: string;
+    status: "open" | "read" | "archived";
+    read: boolean;
+    archived: boolean;
+    createdAt: string;
+  }> = [];
   globalThis.__contactPostsStore = empty;
   return empty;
 }
 
 // Speichere Posts - ATOMIC
-function savePosts(posts: typeof globalThis.__contactPostsStore): void {
+function savePosts(posts: Array<{
+  id: string;
+  vorname: string;
+  nachname: string;
+  email: string;
+  telefon: string | null;
+  unternehmen: string | null;
+  betreff: string;
+  nachricht: string;
+  status: "open" | "read" | "archived";
+  read: boolean;
+  archived: boolean;
+  createdAt: string;
+}>): void {
   // Update globalen Store sofort
   globalThis.__contactPostsStore = posts;
   
