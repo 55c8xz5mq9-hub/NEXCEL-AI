@@ -1,12 +1,12 @@
 /**
- * GET /api/admin/contact-requests
+ * GET /api/admin/contact-posts
  * 
- * PERSISTENTE DATENBANK-API
+ * FEED-API FÜR ADMIN-PANEL
  * Lädt alle Kontaktanfragen aus PostgreSQL über Prisma
  * Sortiert nach createdAt DESC (neueste zuerst)
  * 
  * Datenfluss:
- * Kontaktformular ➜ /api/contact ➜ Prisma/PostgreSQL ➜ /api/admin/contact-requests ➜ Admin-Panel
+ * Kontaktformular ➜ /api/contact ➜ Prisma/PostgreSQL ➜ /api/admin/contact-posts ➜ Admin-Feed
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -30,25 +30,27 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Transformiere Prisma-Modell in Admin-Dashboard-Format
-    const transformedContacts = contacts.map((contact) => ({
+    // Transformiere Prisma-Modell in Feed-Format
+    const feedPosts = contacts.map((contact) => ({
       id: contact.id,
-      name: `${contact.vorname} ${contact.nachname}`,
+      firstName: contact.vorname,
+      lastName: contact.nachname,
       email: contact.email,
-      telefon: contact.telefon || undefined,
-      unternehmen: contact.unternehmen || undefined,
-      betreff: contact.betreff,
-      nachricht: contact.nachricht,
-      createdAt: contact.createdAt.toISOString(),
+      phone: contact.telefon || undefined,
+      company: contact.unternehmen || undefined,
+      subject: contact.betreff,
+      message: contact.nachricht,
+      status: contact.status,
       read: contact.read,
       archived: contact.archived,
-      status: contact.status,
+      createdAt: contact.createdAt.toISOString(),
+      updatedAt: contact.updatedAt.toISOString(),
     }));
 
-    console.log(`✅ [CONTACT REQUESTS API] Loaded ${transformedContacts.length} contacts from PostgreSQL`);
+    console.log(`✅ [CONTACT POSTS API] Loaded ${feedPosts.length} contact posts from PostgreSQL`);
 
     return NextResponse.json(
-      { contacts: transformedContacts },
+      { posts: feedPosts },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
@@ -60,11 +62,11 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("❌ [CONTACT REQUESTS API] Error fetching contacts:", errorMessage);
-    console.error("❌ [CONTACT REQUESTS API] Full Error:", error);
+    console.error("❌ [CONTACT POSTS API] Error fetching contact posts:", errorMessage);
+    console.error("❌ [CONTACT POSTS API] Full Error:", error);
     
     return NextResponse.json(
-      { error: "Failed to fetch contact requests", contacts: [] },
+      { error: "Failed to fetch contact posts", posts: [] },
       { status: 500 }
     );
   }

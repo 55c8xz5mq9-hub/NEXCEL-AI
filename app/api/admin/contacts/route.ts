@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
-import { getContacts, updateContact, deleteContact } from "@/lib/database";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,34 +9,39 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const contacts = await getContacts();
     const { searchParams } = new URL(request.url);
     const archived = searchParams.get("archived") === "true";
     const unread = searchParams.get("unread") === "true";
 
-    let filtered = contacts;
+    // Baue Prisma-Query mit Filtern
+    const where: any = {};
     if (archived) {
-      filtered = filtered.filter((c) => c.archived);
+      where.archived = true;
     } else {
-      filtered = filtered.filter((c) => !c.archived);
+      where.archived = false;
     }
     if (unread) {
-      filtered = filtered.filter((c) => !c.read);
+      where.read = false;
     }
 
-    // Sort by newest first
-    filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    // Lade Kontakte aus PostgreSQL über Prisma
+    const contacts = await prisma.contactRequest.findMany({
+      where,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
     // Transform contacts to match AdminDashboard interface
-    const transformedContacts = filtered.map(contact => ({
+    const transformedContacts = contacts.map((contact) => ({
       id: contact.id,
       name: `${contact.vorname} ${contact.nachname}`,
       email: contact.email,
-      telefon: contact.telefon,
-      unternehmen: contact.unternehmen,
+      telefon: contact.telefon || undefined,
+      unternehmen: contact.unternehmen || undefined,
       betreff: contact.betreff,
       nachricht: contact.nachricht,
-      createdAt: contact.createdAt,
+      createdAt: contact.createdAt.toISOString(),
       read: contact.read,
       archived: contact.archived,
     }));
@@ -65,12 +70,36 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    const updated = await updateContact(id, updates);
+    // Update contact in PostgreSQL über Prisma
+    const updated = await prisma.contactRequest.update({
+      where: { id },
+      data: {
+        ...updates,
+        // Map status to read/archived if needed
+        read: updates.read !== undefined ? updates.read : undefined,
+        archived: updates.archived !== undefined ? updates.archived : undefined,
+        status: updates.status || undefined,
+      },
+    });
+
     if (!updated) {
       return NextResponse.json({ error: "Contact not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ contact: updated });
+    return NextResponse.json({
+      contact: {
+        id: updated.id,
+        name: `${updated.vorname} ${updated.nachname}`,
+        email: updated.email,
+        telefon: updated.telefon || undefined,
+        unternehmen: updated.unternehmen || undefined,
+        betreff: updated.betreff,
+        nachricht: updated.nachricht,
+        createdAt: updated.createdAt.toISOString(),
+        read: updated.read,
+        archived: updated.archived,
+      },
+    });
   } catch (error) {
     console.error("Error updating contact:", error);
     return NextResponse.json(
@@ -94,12 +123,16 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    const deleted = await deleteContact(id);
-    if (!deleted) {
+    // Delete contact from PostgreSQL über Prisma
+    try {
+      await prisma.contactRequest.delete({
+        where: { id },
+      });
+      return NextResponse.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting contact:", error);
       return NextResponse.json({ error: "Contact not found" }, { status: 404 });
     }
-
-    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting contact:", error);
     return NextResponse.json(

@@ -72,20 +72,8 @@ export default function AdminDashboard() {
       if (statsRes.ok) setStats(await statsRes.json());
       if (contactsRes.ok) {
         const data = await contactsRes.json();
-        // Transformiere die neuen ContactRequest-Daten in das alte Format
-        const transformedContacts = (data.contacts || []).map((contact: any) => ({
-          id: contact.id,
-          name: `${contact.firstName} ${contact.lastName}`,
-          email: contact.email,
-          telefon: contact.phone,
-          unternehmen: contact.company,
-          betreff: contact.subject,
-          nachricht: contact.message,
-          createdAt: contact.createdAt,
-          read: contact.status !== "open",
-          archived: contact.status === "archived",
-        }));
-        setContacts(transformedContacts);
+        // Die API gibt bereits das korrekte Format zurück (vorname/nachname aus Prisma)
+        setContacts(data.contacts || []);
       }
       if (demoRes.ok) setDemoRequests((await demoRes.json()).requests);
       if (userRes.ok) setUser(await userRes.json());

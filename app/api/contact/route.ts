@@ -1,23 +1,18 @@
 /**
  * POST /api/contact
  * 
- * Speichert Kontaktanfragen DIREKT in einer JSON-Datei
- * Komplett unabhängig von Mail/Resend/Prisma
- * GARANTIERT FUNKTIONSFÄHIG!
+ * PERSISTENTE DATENBANK-SPEICHERUNG
+ * Speichert Kontaktanfragen direkt in PostgreSQL über Prisma
+ * Komplett unabhängig von Mail/Resend/File-System
+ * 
+ * Datenfluss:
+ * Kontaktformular ➜ /api/contact ➜ Prisma/PostgreSQL ➜ /api/admin/contact-posts ➜ Admin-Feed
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import fsPromises from "fs/promises";
-import path from "path";
+import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
-
-// ABSOLUT GLEICHE DATEI FÜR ALLE
-const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
-const STORAGE_FILE = IS_SERVERLESS
-  ? "/tmp/contact-requests.json"
-  : path.join(process.cwd(), "data", "contact-requests.json");
 
 export async function POST(request: NextRequest) {
   try {
@@ -104,129 +99,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // HIGH-END PERSISTENTE SPEICHERUNG - GARANTIERT FUNKTIONSFÄHIG!
-    // Verwende die Storage-API für garantierte Persistenz
-    const contactId = `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const newContact = {
-      id: contactId,
-      createdAt: new Date().toISOString(),
-      firstName: trimmedFirstName,
-      lastName: trimmedLastName,
-      email: trimmedEmail,
-      phone: trimmedPhone || undefined,
-      company: trimmedCompany || undefined,
-      subject: trimmedSubject,
-      message: trimmedMessage,
-      status: "open",
-    };
+    // EINFACHE POST-FUNKTION - SPEICHERT DIREKT IN DATENBANK
+    // Wie ein Forum-Post: Formular absenden ➜ Sofort im Admin-Panel sichtbar
+    const newContact = await prisma.contactRequest.create({
+      data: {
+        vorname: trimmedFirstName,
+        nachname: trimmedLastName,
+        email: trimmedEmail,
+        telefon: trimmedPhone || null,
+        unternehmen: trimmedCompany || null,
+        betreff: trimmedSubject,
+        nachricht: trimmedMessage,
+        status: "open",
+        read: false,
+        archived: false,
+      },
+    });
 
-    // Versuche zuerst über Storage-API (funktioniert immer)
-    try {
-      const baseUrl = process.env.VERCEL_URL 
-        ? `https://${process.env.VERCEL_URL}` 
-        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-      
-      const storageResponse = await fetch(`${baseUrl}/api/contacts-storage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newContact),
-        cache: 'no-store',
-      });
-
-      if (storageResponse.ok) {
-        const data = await storageResponse.json();
-        console.log("✅ [CONTACT API] Contact saved via Storage API:", contactId);
-        return NextResponse.json(
-          {
-            success: true,
-            id: contactId,
-            message: "Ihre Anfrage wurde erfolgreich übermittelt. Wir werden uns schnellstmöglich bei Ihnen melden.",
-          },
-          { status: 201 }
-        );
-      }
-    } catch (apiError) {
-      console.warn("⚠️ [CONTACT API] Storage API failed, trying direct write:", apiError);
-    }
-
-    // Fallback: Direkte Speicherung
-    let saved = false;
-    for (let attempt = 1; attempt <= 5; attempt++) {
-      try {
-        const dir = path.dirname(STORAGE_FILE);
-        if (!fs.existsSync(dir)) {
-          await fsPromises.mkdir(dir, { recursive: true });
-        }
-
-        let contacts: any[] = [];
-        if (fs.existsSync(STORAGE_FILE)) {
-          const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
-          contacts = JSON.parse(data);
-          if (!Array.isArray(contacts)) contacts = [];
-        }
-
-        contacts.push(newContact);
-
-        if (attempt <= 2) {
-          const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}.${Math.random().toString(36).substr(2, 9)}`;
-          await fsPromises.writeFile(tempFile, JSON.stringify(contacts, null, 2), "utf-8");
-          await fsPromises.rename(tempFile, STORAGE_FILE);
-        } else {
-          await fsPromises.writeFile(STORAGE_FILE, JSON.stringify(contacts, null, 2), "utf-8");
-        }
-
-        if (fs.existsSync(STORAGE_FILE)) {
-          const verifyData = await fsPromises.readFile(STORAGE_FILE, "utf-8");
-          const verifyContacts = JSON.parse(verifyData);
-          if (Array.isArray(verifyContacts) && verifyContacts.some((c: any) => c.id === contactId)) {
-            saved = true;
-            console.log(`✅ [CONTACT API] Contact saved directly (attempt ${attempt}):`, contactId);
-            break;
-          }
-        }
-      } catch (error) {
-        console.error(`❌ [CONTACT API] Save attempt ${attempt} failed:`, error);
-        if (attempt < 5) {
-          await new Promise(resolve => setTimeout(resolve, 100 * attempt));
-        }
-      }
-    }
-
-    if (!saved) {
-      console.error("❌ [CONTACT API] ALL SAVE ATTEMPTS FAILED!");
-      return NextResponse.json(
-        { success: false, error: "Fehler beim Speichern der Anfrage. Bitte versuchen Sie es später erneut." },
-        { status: 500 }
-      );
-    }
+    console.log("✅ [CONTACT POST] Neuer Post erstellt:", newContact.id);
+    console.log("✅ [CONTACT POST] Sofort im Admin-Panel sichtbar");
 
     return NextResponse.json(
       {
         success: true,
-        id: contactId,
+        id: newContact.id,
         message: "Ihre Anfrage wurde erfolgreich übermittelt. Wir werden uns schnellstmöglich bei Ihnen melden.",
       },
       { status: 201 }
     );
   } catch (error) {
-    // Unhandled exception
-    const errorType = error instanceof Error ? error.constructor.name : typeof error;
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : "No stack trace";
-
-    console.error("❌ [CONTACT API] Unhandled Exception:");
-    console.error("  Error Type:", errorType);
-    console.error("  Error Message:", errorMessage);
-    console.error("  Error Stack:", errorStack);
-    console.error("  Full Error Object:", error);
+    console.error("❌ [CONTACT POST] Fehler:", errorMessage);
+    console.error("❌ [CONTACT POST] Full Error:", error);
 
     return NextResponse.json(
       {
         success: false,
-        error: "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+        error: "Fehler beim Speichern. Bitte versuchen Sie es erneut.",
       },
       { status: 500 }
     );
   }
 }
-
