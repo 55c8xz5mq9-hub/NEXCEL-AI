@@ -130,7 +130,7 @@ export default function RootLayout({
                 setTimeout(reorderPortal, 1000);
                 
                 // Use MutationObserver to watch for portal creation - More aggressive
-                if (typeof MutationObserver !== 'undefined') {
+                if (typeof MutationObserver !== 'undefined' && document.body) {
                   let observerTimeout;
                   const observer = new MutationObserver(function(mutations) {
                     // Debounce to avoid excessive calls
@@ -139,8 +139,8 @@ export default function RootLayout({
                       mutations.forEach(function(mutation) {
                         if (mutation.addedNodes.length) {
                           mutation.addedNodes.forEach(function(node) {
-                            if (node.nodeName === 'NEXTJS-PORTAL' || 
-                                (node.nodeType === 1 && node.querySelector && node.querySelector('nextjs-portal'))) {
+                            if (node && node.nodeName === 'NEXTJS-PORTAL' || 
+                                (node && node.nodeType === 1 && node.querySelector && node.querySelector('nextjs-portal'))) {
                               setTimeout(reorderPortal, 10);
                             }
                           });
@@ -149,17 +149,16 @@ export default function RootLayout({
                     }, 50);
                   });
                   
-                  observer.observe(document.body, {
-                    childList: true,
-                    subtree: false // Only watch direct children for performance
-                  });
-                  
-                  // Also watch for attribute changes on body children
-                  observer.observe(document.body, {
-                    childList: true,
-                    attributes: false,
-                    subtree: false
-                  });
+                  try {
+                    if (document.body instanceof Node) {
+                      observer.observe(document.body, {
+                        childList: true,
+                        subtree: false // Only watch direct children for performance
+                      });
+                    }
+                  } catch (e) {
+                    console.warn('MutationObserver setup error:', e);
+                  }
                 }
               })();
             `,

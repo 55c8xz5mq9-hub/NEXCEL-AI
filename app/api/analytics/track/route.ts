@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveAnalyticsEvent } from "@/lib/database";
+
+export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,28 +14,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Analytics-Tracking - Non-blocking, keine Fehler werfen
+    // Wird einfach geloggt, keine Speicherung erforderlich
     const ip = request.headers.get("x-forwarded-for") || 
                request.headers.get("x-real-ip") || 
                "unknown";
     const userAgent = request.headers.get("user-agent") || undefined;
     const referrer = request.headers.get("referer") || undefined;
 
-    saveAnalyticsEvent({
-      type,
-      page,
-      referrer,
-      userAgent,
-      ip,
-      metadata,
-    });
+    // Log analytics event (non-blocking)
+    console.log("📊 [ANALYTICS]", { type, page, referrer, ip });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Analytics tracking error:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to track event" },
-      { status: 500 }
-    );
+    // Analytics-Fehler sollten die Seite nicht blockieren
+    console.warn("⚠️ [ANALYTICS] Tracking error (non-critical):", error);
+    return NextResponse.json({ success: true }); // Immer success zurückgeben
   }
 }
 
