@@ -1,9 +1,9 @@
 "use server";
 
 import { verifySession } from "@/lib/auth";
-import { getAllContacts, updateContact, deleteContact } from "@/lib/backend-db";
+import { getAllPosts, updatePost, deletePost } from "@/lib/contact-store";
 
-// Admin-Kontakte laden
+// POSTS laden - Instant sichtbar!
 export async function getAdminContacts() {
   try {
     const session = await verifySession();
@@ -11,30 +11,31 @@ export async function getAdminContacts() {
       return { error: "Unauthorized", contacts: [] };
     }
 
-    const contacts = getAllContacts();
+    const posts = getAllPosts(); // Neueste zuerst
     
-    const transformedContacts = contacts.map((contact) => ({
-      id: contact.id,
-      name: `${contact.vorname} ${contact.nachname}`,
-      email: contact.email,
-      telefon: contact.telefon || undefined,
-      unternehmen: contact.unternehmen || undefined,
-      betreff: contact.betreff,
-      nachricht: contact.nachricht,
-      createdAt: contact.createdAt,
-      read: contact.read,
-      archived: contact.archived,
-      status: contact.status,
+    const transformedContacts = posts.map((post) => ({
+      id: post.id,
+      name: `${post.vorname} ${post.nachname}`,
+      email: post.email,
+      telefon: post.telefon || undefined,
+      unternehmen: post.unternehmen || undefined,
+      betreff: post.betreff,
+      nachricht: post.nachricht,
+      createdAt: post.createdAt,
+      read: post.read,
+      archived: post.archived,
+      status: post.status,
     }));
 
+    console.log(`✅ [ADMIN] Loaded ${transformedContacts.length} posts`);
     return { contacts: transformedContacts };
   } catch (error) {
-    console.error("❌ [ADMIN ACTION] Error fetching contacts:", error);
-    return { error: "Failed to fetch contacts", contacts: [] };
+    console.error("❌ [ADMIN] Error:", error);
+    return { error: "Failed to fetch posts", contacts: [] };
   }
 }
 
-// Kontakt als gelesen markieren
+// Post als gelesen markieren
 export async function markContactAsRead(id: string) {
   try {
     const session = await verifySession();
@@ -42,19 +43,16 @@ export async function markContactAsRead(id: string) {
       return { error: "Unauthorized" };
     }
 
-    const updated = updateContact(id, { read: true, status: "read" });
-    if (!updated) {
-      return { error: "Contact not found" };
-    }
-
+    const updated = updatePost(id, { read: true, status: "read" });
+    if (!updated) return { error: "Post not found" };
     return { success: true, contact: updated };
   } catch (error) {
-    console.error("❌ [ADMIN ACTION] Error updating contact:", error);
-    return { error: "Failed to update contact" };
+    console.error("❌ [ADMIN] Error:", error);
+    return { error: "Failed to update post" };
   }
 }
 
-// Kontakt archivieren
+// Post archivieren
 export async function archiveContact(id: string) {
   try {
     const session = await verifySession();
@@ -62,19 +60,16 @@ export async function archiveContact(id: string) {
       return { error: "Unauthorized" };
     }
 
-    const updated = updateContact(id, { archived: true, status: "archived" });
-    if (!updated) {
-      return { error: "Contact not found" };
-    }
-
+    const updated = updatePost(id, { archived: true, status: "archived" });
+    if (!updated) return { error: "Post not found" };
     return { success: true, contact: updated };
   } catch (error) {
-    console.error("❌ [ADMIN ACTION] Error archiving contact:", error);
-    return { error: "Failed to archive contact" };
+    console.error("❌ [ADMIN] Error:", error);
+    return { error: "Failed to archive post" };
   }
 }
 
-// Kontakt löschen
+// Post löschen
 export async function deleteAdminContact(id: string) {
   try {
     const session = await verifySession();
@@ -82,15 +77,12 @@ export async function deleteAdminContact(id: string) {
       return { error: "Unauthorized" };
     }
 
-    const success = deleteContact(id);
-    if (!success) {
-      return { error: "Contact not found" };
-    }
-
+    const success = deletePost(id);
+    if (!success) return { error: "Post not found" };
     return { success: true };
   } catch (error) {
-    console.error("❌ [ADMIN ACTION] Error deleting contact:", error);
-    return { error: "Failed to delete contact" };
+    console.error("❌ [ADMIN] Error:", error);
+    return { error: "Failed to delete post" };
   }
 }
 

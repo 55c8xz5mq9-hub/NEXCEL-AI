@@ -31,42 +31,68 @@ const DATA_FILE = IS_SERVERLESS
   ? "/tmp/contacts-backend.json" // Vercel: /tmp ist verfügbar
   : path.join(process.cwd(), "data", "contacts-backend.json");
 
-// Lade Daten beim Start
+// Lade Daten beim Start - ROBUST für Production
 function loadFromFile() {
   try {
     if (IS_SERVERLESS) {
       // In Vercel: /tmp existiert immer, aber ist leer bei neuem Lambda
-      if (fs.existsSync(DATA_FILE)) {
-        const data = fs.readFileSync(DATA_FILE, "utf-8");
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-          contactsDatabase = parsed;
-          console.log(`✅ [BACKEND DB] Loaded ${contactsDatabase.length} contacts from /tmp`);
+      console.log("🔵 [BACKEND DB] Serverless environment detected");
+      console.log("🔵 [BACKEND DB] DATA_FILE:", DATA_FILE);
+      
+      try {
+        if (fs.existsSync(DATA_FILE)) {
+          const data = fs.readFileSync(DATA_FILE, "utf-8");
+          const parsed = JSON.parse(data);
+          if (Array.isArray(parsed)) {
+            contactsDatabase = parsed;
+            console.log(`✅ [BACKEND DB] Loaded ${contactsDatabase.length} contacts from /tmp`);
+          } else {
+            contactsDatabase = [];
+            console.log("⚠️ [BACKEND DB] File exists but invalid format, starting fresh");
+          }
+        } else {
+          // Neues Lambda - starte frisch
+          contactsDatabase = [];
+          console.log("ℹ️ [BACKEND DB] Starting fresh in serverless environment");
         }
-      } else {
-        // Neues Lambda - starte frisch
+      } catch (fileError) {
+        console.warn("⚠️ [BACKEND DB] File read error, starting fresh:", fileError);
         contactsDatabase = [];
-        console.log("ℹ️ [BACKEND DB] Starting fresh in serverless environment");
       }
     } else {
       // Lokale Entwicklung
+      console.log("🔵 [BACKEND DB] Local environment detected");
       const dir = path.dirname(DATA_FILE);
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
+        console.log("✅ [BACKEND DB] Created data directory");
       }
       
       if (fs.existsSync(DATA_FILE)) {
-        const data = fs.readFileSync(DATA_FILE, "utf-8");
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-          contactsDatabase = parsed;
-          console.log(`✅ [BACKEND DB] Loaded ${contactsDatabase.length} contacts from file`);
+        try {
+          const data = fs.readFileSync(DATA_FILE, "utf-8");
+          const parsed = JSON.parse(data);
+          if (Array.isArray(parsed)) {
+            contactsDatabase = parsed;
+            console.log(`✅ [BACKEND DB] Loaded ${contactsDatabase.length} contacts from file`);
+          } else {
+            contactsDatabase = [];
+            console.log("⚠️ [BACKEND DB] File exists but invalid format, starting fresh");
+          }
+        } catch (parseError) {
+          console.warn("⚠️ [BACKEND DB] Parse error, starting fresh:", parseError);
+          contactsDatabase = [];
         }
+      } else {
+        contactsDatabase = [];
+        console.log("ℹ️ [BACKEND DB] No existing data file, starting fresh");
       }
     }
+    
+    console.log(`✅ [BACKEND DB] Initialized with ${contactsDatabase.length} contacts`);
   } catch (error) {
-    console.warn("⚠️ [BACKEND DB] Could not load from file, starting fresh:", error);
-    contactsDatabase = [];
+    console.error("❌ [BACKEND DB] Critical error during initialization:", error);
+    contactsDatabase = []; // Sicherheitshalber leeres Array
   }
 }
 
