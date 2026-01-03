@@ -64,26 +64,26 @@ export default function AdminDashboard() {
       }
       // DIREKT ÜBER SERVER ACTIONS - KEINE API-CALLS!
       const { getAdminContacts } = await import("@/app/actions/admin");
-      const contactsData = await getAdminContacts();
       
-      console.log("🔵 [ADMIN DASHBOARD] Contacts data:", contactsData);
-      console.log("🔵 [ADMIN DASHBOARD] Contacts count:", contactsData.contacts?.length || 0);
-      
-      const [statsRes, demoRes, userRes] = await Promise.all([
+      const [contactsData, statsRes, demoRes, userRes] = await Promise.all([
+        getAdminContacts(), // Server Action für Posts
         fetch("/api/admin/stats"), // Stats bleibt API (komplex)
         fetch("/api/admin/demo-requests?archived=false"), // Demo bleibt API
         fetch("/api/admin/me"), // Auth bleibt API
       ]);
-
+      
+      console.log("🔵 [ADMIN DASHBOARD] Contacts data:", contactsData);
+      console.log("🔵 [ADMIN DASHBOARD] Contacts count:", contactsData.contacts?.length || 0);
+      
       if (statsRes.ok) setStats(await statsRes.json());
       
-      // Kontakte aus Server Action - IMMER setzen, auch wenn leer
+      // Kontakte aus Server Action - IMMER setzen
       if (contactsData && contactsData.contacts) {
         console.log("✅ [ADMIN DASHBOARD] Setting contacts:", contactsData.contacts.length);
         setContacts(contactsData.contacts);
       } else {
         console.warn("⚠️ [ADMIN DASHBOARD] No contacts in response:", contactsData);
-        setContacts([]); // Leeres Array setzen
+        setContacts([]);
       }
       
       if (demoRes.ok) setDemoRequests((await demoRes.json()).requests);
