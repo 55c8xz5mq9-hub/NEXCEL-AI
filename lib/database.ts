@@ -85,28 +85,33 @@ function getFilePath(filename: string): string {
 
 // Contacts - DIREKTE SPEICHERUNG - Funktioniert garantiert!
 export async function getContacts(): Promise<ContactSubmission[]> {
+  // DIREKT ÜBER PRISMA - KEINE API, KEIN FILE-SYSTEM!
   try {
-    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
-    const STORAGE_FILE = IS_SERVERLESS 
-      ? "/tmp/contacts-storage.json"
-      : path.join(process.cwd(), "data", "contacts.json");
+    const { prisma } = await import("@/lib/prisma");
     
-    if (!fs.existsSync(STORAGE_FILE)) {
-      console.log(`ℹ️ [DATABASE] Storage file does not exist yet: ${STORAGE_FILE}`);
-      return [];
-    }
+    const contacts = await prisma.contactRequest.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
     
-    const fsPromises = require("fs").promises;
-    const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
-    const contacts = JSON.parse(data);
+    console.log(`✅ [DATABASE] Loaded ${contacts.length} contacts from Prisma`);
     
-    if (!Array.isArray(contacts)) {
-      console.warn(`⚠️ [DATABASE] Invalid data format in ${STORAGE_FILE}`);
-      return [];
-    }
-    
-    console.log(`✅ [DATABASE] Loaded ${contacts.length} contacts directly from ${STORAGE_FILE}`);
-    return contacts as ContactSubmission[];
+    return contacts.map((c) => ({
+      id: c.id,
+      vorname: c.vorname,
+      nachname: c.nachname,
+      email: c.email,
+      telefon: c.telefon || "",
+      unternehmen: c.unternehmen || "",
+      betreff: c.betreff,
+      nachricht: c.nachricht,
+      createdAt: c.createdAt.toISOString(),
+      read: c.read,
+      archived: c.archived,
+      emailSent: false,
+      emailVerified: false,
+    }));
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("❌ [DATABASE] Error getting contacts:", errorMessage);
@@ -115,12 +120,42 @@ export async function getContacts(): Promise<ContactSubmission[]> {
 }
 
 export async function saveContact(contact: Omit<ContactSubmission, "id" | "createdAt" | "read" | "archived" | "emailSent" | "emailSentAt" | "emailVerified" | "verificationToken" | "verificationTokenExpiresAt">): Promise<ContactSubmission> {
-  // STANDALONE: Funktioniert überall ohne Konfiguration!
+  // DIREKT ÜBER PRISMA - KEINE API, KEIN DUMMY!
   try {
-    const { saveContactStandalone } = await import("@/lib/standalone-db");
-    const saved = await saveContactStandalone(contact);
-    console.log("✅ [DATABASE] Contact saved via standalone-db:", saved.id);
-    return saved;
+    const { prisma } = await import("@/lib/prisma");
+    
+    const saved = await prisma.contactRequest.create({
+      data: {
+        vorname: contact.vorname,
+        nachname: contact.nachname,
+        email: contact.email,
+        telefon: contact.telefon || null,
+        unternehmen: contact.unternehmen || null,
+        betreff: contact.betreff,
+        nachricht: contact.nachricht,
+        status: "open",
+        read: false,
+        archived: false,
+      },
+    });
+    
+    console.log("✅ [DATABASE] Contact saved via Prisma:", saved.id);
+    
+    return {
+      id: saved.id,
+      vorname: saved.vorname,
+      nachname: saved.nachname,
+      email: saved.email,
+      telefon: saved.telefon || "",
+      unternehmen: saved.unternehmen || "",
+      betreff: saved.betreff,
+      nachricht: saved.nachricht,
+      createdAt: saved.createdAt.toISOString(),
+      read: saved.read,
+      archived: saved.archived,
+      emailSent: false,
+      emailVerified: false,
+    };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("❌ [DATABASE] Error saving contact:", errorMessage);
@@ -129,33 +164,8 @@ export async function saveContact(contact: Omit<ContactSubmission, "id" | "creat
 }
 
 export async function verifyContactEmail(token: string): Promise<ContactSubmission | null> {
-  const contacts = await getContacts();
-  const contact = contacts.find((c) => c.verificationToken === token);
-  
-  if (!contact) {
-    return null;
-  }
-  
-  // Prüfe ob Token abgelaufen ist
-  if (contact.verificationTokenExpiresAt && new Date(contact.verificationTokenExpiresAt) < new Date()) {
-    return null;
-  }
-  
-  // Markiere als verifiziert
-  const { updateContactStandalone } = await import("@/lib/standalone-db");
-  const updated = await updateContactStandalone(contact.id, {
-    read: contact.read,
-    archived: contact.archived,
-  });
-  
-  if (!updated) return null;
-  
-  return {
-    ...updated,
-    emailVerified: true,
-    verificationToken: undefined,
-    verificationTokenExpiresAt: undefined,
-  };
+  // Email-Verifizierung wird nicht mehr verwendet - direkt über Prisma
+  return null;
 }
 
 export async function markContactEmailSent(id: string): Promise<ContactSubmission | null> {
@@ -172,35 +182,36 @@ export async function markContactEmailSent(id: string): Promise<ContactSubmissio
 }
 
 export async function updateContact(id: string, updates: Partial<ContactSubmission>): Promise<ContactSubmission | null> {
-  // DIREKTE SPEICHERUNG - Funktioniert garantiert!
+  // DIREKT ÜBER PRISMA - KEINE API, KEIN FILE-SYSTEM!
   try {
-    const fsPromises = require("fs").promises;
-    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
-    const STORAGE_FILE = IS_SERVERLESS 
-      ? "/tmp/contacts-storage.json"
-      : path.join(process.cwd(), "data", "contacts.json");
+    const { prisma } = await import("@/lib/prisma");
     
-    let contacts: ContactSubmission[] = [];
-    if (fs.existsSync(STORAGE_FILE)) {
-      const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
-      contacts = JSON.parse(data);
-      if (!Array.isArray(contacts)) contacts = [];
-    }
+    const updated = await prisma.contactRequest.update({
+      where: { id },
+      data: {
+        read: updates.read !== undefined ? updates.read : undefined,
+        archived: updates.archived !== undefined ? updates.archived : undefined,
+        status: updates.read === true ? "read" : updates.archived === true ? "archived" : "open",
+      },
+    });
     
-    const index = contacts.findIndex((c) => c.id === id);
-    if (index === -1) {
-      return null;
-    }
+    console.log("✅ [DATABASE] Contact updated via Prisma:", id);
     
-    contacts[index] = { ...contacts[index], ...updates };
-    
-    // Atomic write
-    const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}.${Math.random().toString(36).substr(2, 9)}`;
-    await fsPromises.writeFile(tempFile, JSON.stringify(contacts, null, 2), "utf-8");
-    await fsPromises.rename(tempFile, STORAGE_FILE);
-    
-    console.log("✅ [DATABASE] Contact updated directly:", id);
-    return contacts[index];
+    return {
+      id: updated.id,
+      vorname: updated.vorname,
+      nachname: updated.nachname,
+      email: updated.email,
+      telefon: updated.telefon || "",
+      unternehmen: updated.unternehmen || "",
+      betreff: updated.betreff,
+      nachricht: updated.nachricht,
+      createdAt: updated.createdAt.toISOString(),
+      read: updated.read,
+      archived: updated.archived,
+      emailSent: false,
+      emailVerified: false,
+    };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("❌ [DATABASE] Error updating contact:", errorMessage);
@@ -209,32 +220,15 @@ export async function updateContact(id: string, updates: Partial<ContactSubmissi
 }
 
 export async function deleteContact(id: string): Promise<boolean> {
-  // DIREKTE SPEICHERUNG - Funktioniert garantiert!
+  // DIREKT ÜBER PRISMA - KEINE API, KEIN FILE-SYSTEM!
   try {
-    const fsPromises = require("fs").promises;
-    const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV || process.env.NODE_ENV === "production";
-    const STORAGE_FILE = IS_SERVERLESS 
-      ? "/tmp/contacts-storage.json"
-      : path.join(process.cwd(), "data", "contacts.json");
+    const { prisma } = await import("@/lib/prisma");
     
-    let contacts: ContactSubmission[] = [];
-    if (fs.existsSync(STORAGE_FILE)) {
-      const data = await fsPromises.readFile(STORAGE_FILE, "utf-8");
-      contacts = JSON.parse(data);
-      if (!Array.isArray(contacts)) contacts = [];
-    }
+    await prisma.contactRequest.delete({
+      where: { id },
+    });
     
-    const filtered = contacts.filter((c) => c.id !== id);
-    if (filtered.length === contacts.length) {
-      return false; // Contact not found
-    }
-    
-    // Atomic write
-    const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}.${Math.random().toString(36).substr(2, 9)}`;
-    await fsPromises.writeFile(tempFile, JSON.stringify(filtered, null, 2), "utf-8");
-    await fsPromises.rename(tempFile, STORAGE_FILE);
-    
-    console.log("✅ [DATABASE] Contact deleted directly:", id);
+    console.log("✅ [DATABASE] Contact deleted via Prisma:", id);
     return true;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
