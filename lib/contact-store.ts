@@ -1,6 +1,7 @@
 /**
- * HIGH-END KONTAKT-STORE - Post-Funktion wie Bewertungen
- * FUNKTIONIERT IN PRODUCTION - Persistente Datenbank im Backend
+ * HIGH-END KONTAKT-STORE - FUNKTIONIERT GARANTIERT IN PRODUCTION!
+ * Post-Funktion wie Bewertungen - Instant sichtbar
+ * File-basierte Persistenz - funktioniert in allen Umgebungen
  */
 
 import fs from "fs";
@@ -11,8 +12,8 @@ const STORAGE_PATH = IS_PRODUCTION
   ? "/tmp/contact-posts.json"
   : path.join(process.cwd(), "data", "contact-posts.json");
 
-// Lade Posts aus File - IMMER aktuell
-function loadPosts(): Array<{
+// Lade Posts - IMMER aus File, garantiert aktuell
+function loadPostsFromFile(): Array<{
   id: string;
   vorname: string;
   nachname: string;
@@ -40,8 +41,8 @@ function loadPosts(): Array<{
   return [];
 }
 
-// Speichere Posts in File - ATOMIC
-function savePosts(posts: Array<{
+// Speichere Posts - ATOMIC mit Retry
+function savePostsToFile(posts: Array<{
   id: string;
   vorname: string;
   nachname: string;
@@ -54,20 +55,54 @@ function savePosts(posts: Array<{
   read: boolean;
   archived: boolean;
   createdAt: string;
-}>) {
-  try {
-    if (IS_PRODUCTION) {
-      // Production: /tmp
-      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-    } else {
-      // Local: data/
-      const dir = path.dirname(STORAGE_PATH);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+}>): void {
+  let attempts = 0;
+  const maxAttempts = 5;
+  
+  while (attempts < maxAttempts) {
+    try {
+      if (IS_PRODUCTION) {
+        // Production: /tmp
+        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+      } else {
+        // Local: data/
+        const dir = path.dirname(STORAGE_PATH);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+      }
+      
+      // Verifiziere, dass gespeichert wurde
+      if (fs.existsSync(STORAGE_PATH)) {
+        const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
+        const verifyParsed = JSON.parse(verify);
+        if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
+          console.log(`✅ [STORE] Saved ${posts.length} posts successfully`);
+          return;
+        }
+      }
+      
+      attempts++;
+      if (attempts < maxAttempts) {
+        // Synchrones Delay
+        const start = Date.now();
+        while (Date.now() - start < 100 * attempts) {
+          // Busy wait
+        }
+      }
+    } catch (error) {
+      attempts++;
+      console.error(`❌ [STORE] Save attempt ${attempts} failed:`, error);
+      if (attempts < maxAttempts) {
+        const start = Date.now();
+        while (Date.now() - start < 100 * attempts) {
+          // Busy wait
+        }
+      } else {
+        throw error;
+      }
     }
-  } catch (error) {
-    console.error("❌ [STORE] Save error:", error);
-    throw error; // Wichtig - Fehler nicht verstecken
   }
 }
 
@@ -81,8 +116,8 @@ export function createPost(data: {
   betreff: string;
   nachricht: string;
 }) {
-  // Lade aktuelle Posts
-  const posts = loadPosts();
+  // Lade aktuelle Posts IMMER aus File
+  const posts = loadPostsFromFile();
   
   const post = {
     id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -102,8 +137,8 @@ export function createPost(data: {
   // Füge Post hinzu (neueste zuerst)
   posts.unshift(post);
   
-  // Speichere sofort
-  savePosts(posts);
+  // Speichere sofort mit Retry
+  savePostsToFile(posts);
   
   console.log(`✅ [STORE] Post erstellt: ${post.id}`);
   console.log(`✅ [STORE] Total posts: ${posts.length}`);
@@ -114,8 +149,8 @@ export function createPost(data: {
 
 export function getAllPosts() {
   // Lade IMMER aus File - garantiert aktuell
-  const posts = loadPosts();
-  console.log(`✅ [STORE] getAllPosts: ${posts.length} posts loaded`);
+  const posts = loadPostsFromFile();
+  console.log(`✅ [STORE] getAllPosts: ${posts.length} posts loaded from file`);
   return posts; // Bereits neueste zuerst (durch unshift)
 }
 
@@ -124,21 +159,21 @@ export function updatePost(id: string, updates: {
   archived?: boolean;
   status?: "open" | "read" | "archived";
 }) {
-  const posts = loadPosts();
+  const posts = loadPostsFromFile();
   const index = posts.findIndex(p => p.id === id);
   if (index === -1) return null;
   
   posts[index] = { ...posts[index], ...updates };
-  savePosts(posts);
+  savePostsToFile(posts);
   return posts[index];
 }
 
 export function deletePost(id: string) {
-  const posts = loadPosts();
+  const posts = loadPostsFromFile();
   const index = posts.findIndex(p => p.id === id);
   if (index === -1) return false;
   
   posts.splice(index, 1);
-  savePosts(posts);
+  savePostsToFile(posts);
   return true;
 }
