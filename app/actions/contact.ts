@@ -47,11 +47,18 @@ export async function submitContactForm(formData: {
     
     if (!createPost || typeof createPost !== "function") {
       console.error("❌ [POST] createPost ist keine Funktion");
+      console.error("❌ [POST] contactStore:", contactStore);
       return {
         success: false,
         error: "Backend-Funktion nicht verfügbar. Bitte versuchen Sie es erneut.",
       };
     }
+    
+    console.log("🔵 [POST] Creating post with data:", {
+      vorname: formData.firstName.trim(),
+      nachname: formData.lastName.trim(),
+      email: formData.email.trim(),
+    });
     
     const post = createPost({
       vorname: formData.firstName.trim(),
@@ -64,6 +71,12 @@ export async function submitContactForm(formData: {
     });
 
     console.log("✅ [POST] Neuer Post erstellt:", post.id);
+    console.log("✅ [POST] Post data:", {
+      id: post.id,
+      name: `${post.vorname} ${post.nachname}`,
+      email: post.email,
+      createdAt: post.createdAt,
+    });
     console.log("✅ [POST] Sofort im Admin-Panel sichtbar!");
     console.log("✅ [POST] Environment:", process.env.NODE_ENV);
     console.log("✅ [POST] Vercel:", process.env.VERCEL);
