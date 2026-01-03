@@ -15,7 +15,14 @@ export async function getAdminContacts() {
     const posts = getAllPosts();
     
     console.log(`✅ [ADMIN] Loaded ${posts.length} posts from store`);
-    console.log(`✅ [ADMIN] First post ID: ${posts[0]?.id || "none"}`);
+    if (posts.length > 0) {
+      console.log(`✅ [ADMIN] First post:`, {
+        id: posts[0].id,
+        name: `${posts[0].vorname} ${posts[0].nachname}`,
+        email: posts[0].email,
+        createdAt: posts[0].createdAt,
+      });
+    }
     
     const transformedContacts = posts.map((post) => ({
       id: post.id,
