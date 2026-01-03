@@ -42,18 +42,8 @@ export async function submitContactForm(formData: {
     }
 
     // POST-FUNKTION - Wie Bewertungen, instant sichtbar!
-    // Direkter Import - kein dynamischer Import für bessere Performance
     const { createPost } = await import("@/lib/contact-store");
     
-    if (!createPost || typeof createPost !== "function") {
-      console.error("❌ [POST] createPost ist keine Funktion");
-      return {
-        success: false,
-        error: "Backend-Funktion nicht verfügbar. Bitte versuchen Sie es erneut.",
-      };
-    }
-    
-    // Erstelle Post - FUNKTIONIERT GARANTIERT!
     const post = createPost({
       vorname: formData.firstName.trim(),
       nachname: formData.lastName.trim(),
