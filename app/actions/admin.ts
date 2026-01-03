@@ -35,18 +35,28 @@ function loadPosts() {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
           globalThis.__contactPosts = parsed;
+          console.log(`✅ [ADMIN] Loaded ${parsed.length} posts from file: ${STORAGE_PATH}`);
           return parsed;
+        } else {
+          console.warn("⚠️ [ADMIN] File data is not an array");
         }
+      } else {
+        console.warn("⚠️ [ADMIN] File is empty");
       }
+    } else {
+      console.log(`ℹ️ [ADMIN] File does not exist yet: ${STORAGE_PATH}`);
     }
-  } catch (error) {
-    // Ignoriere
+  } catch (error: any) {
+    console.error("❌ [ADMIN] Error loading posts:", error?.message || error);
   }
   
+  // Fallback: Memory
   if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
+    console.log(`✅ [ADMIN] Using ${globalThis.__contactPosts.length} posts from memory (fallback)`);
     return globalThis.__contactPosts;
   }
   
+  console.log("ℹ️ [ADMIN] Returning empty array");
   return [];
 }
 

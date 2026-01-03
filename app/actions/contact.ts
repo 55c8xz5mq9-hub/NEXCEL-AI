@@ -46,26 +46,40 @@ function loadPosts(): Array<any> {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
           globalThis.__contactPosts = parsed;
+          console.log(`✅ [CONTACT] Loaded ${parsed.length} posts from file: ${STORAGE_PATH}`);
           return parsed;
+        } else {
+          console.warn("⚠️ [CONTACT] File data is not an array");
         }
+      } else {
+        console.warn("⚠️ [CONTACT] File is empty");
       }
+    } else {
+      console.log(`ℹ️ [CONTACT] File does not exist yet: ${STORAGE_PATH}`);
     }
-  } catch (error) {
-    // Ignoriere
+  } catch (error: any) {
+    console.error("❌ [CONTACT] Error loading posts:", error?.message || error);
   }
   
+  // Fallback: Memory
   if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
+    console.log(`✅ [CONTACT] Using ${globalThis.__contactPosts.length} posts from memory (fallback)`);
     return globalThis.__contactPosts;
   }
   
+  console.log("ℹ️ [CONTACT] Returning empty array");
   return [];
 }
 
 // Speichere Posts - GARANTIERT!
 function savePosts(posts: Array<any>): void {
-  if (!Array.isArray(posts)) return;
+  if (!Array.isArray(posts)) {
+    console.error("❌ [CONTACT] savePosts: posts is not an array");
+    return;
+  }
   
   globalThis.__contactPosts = posts;
+  console.log(`💾 [CONTACT] Saving ${posts.length} posts to: ${STORAGE_PATH}`);
   
   // RETRY: 10 Versuche!
   for (let attempt = 1; attempt <= 10; attempt++) {
@@ -76,6 +90,7 @@ function savePosts(posts: Array<any>): void {
         const dir = path.dirname(STORAGE_PATH);
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
+          console.log(`📁 [CONTACT] Created directory: ${dir}`);
         }
         fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
       }
@@ -85,11 +100,16 @@ function savePosts(posts: Array<any>): void {
         const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
         const verifyParsed = JSON.parse(verify);
         if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
+          console.log(`✅ [CONTACT] Successfully saved ${posts.length} posts (attempt ${attempt})`);
           return; // ERFOLG!
+        } else {
+          console.warn(`⚠️ [CONTACT] Verification failed: expected ${posts.length}, got ${verifyParsed.length}`);
         }
+      } else {
+        console.warn(`⚠️ [CONTACT] File does not exist after write (attempt ${attempt})`);
       }
-    } catch (error) {
-      // Retry
+    } catch (error: any) {
+      console.error(`❌ [CONTACT] Save attempt ${attempt} failed:`, error?.message || error);
     }
     
     if (attempt < 10) {
@@ -97,6 +117,8 @@ function savePosts(posts: Array<any>): void {
       while (Date.now() - start < 200) {}
     }
   }
+  
+  console.error("❌ [CONTACT] Failed to save after 10 attempts");
 }
 
 // POST-FUNKTION - 1000% GARANTIERT!
