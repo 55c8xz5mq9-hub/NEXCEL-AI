@@ -41,36 +41,45 @@ if (typeof globalThis.__contactPosts === "undefined") {
 // Lade Posts aus File
 function loadPosts(): Array<any> {
   try {
+    // Prüfe zuerst globalen Store
     if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
+      console.log(`✅ [CONTACT] Loaded ${globalThis.__contactPosts.length} posts from memory`);
       return globalThis.__contactPosts;
     }
     
+    // Lade aus File
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
       if (data && data.trim()) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
           globalThis.__contactPosts = parsed;
+          console.log(`✅ [CONTACT] Loaded ${parsed.length} posts from file`);
           return parsed;
         }
       }
     }
   } catch (error) {
-    // Ignoriere Fehler
+    console.warn("⚠️ [CONTACT] Load error:", error);
   }
   
+  console.log(`✅ [CONTACT] Returning empty array`);
   return [];
 }
 
-// Speichere Posts
-function savePosts(posts: Array<any>): void {
+// Speichere Posts - MIT VERIFIKATION!
+function savePosts(posts: Array<any>): boolean {
   try {
     if (!Array.isArray(posts)) {
-      return;
+      console.error("❌ [CONTACT] savePosts: posts is not an array");
+      return false;
     }
     
+    // Update globalen Store
     globalThis.__contactPosts = posts;
+    console.log(`✅ [CONTACT] Updated memory store with ${posts.length} posts`);
     
+    // Speichere in File
     if (IS_PRODUCTION) {
       fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
     } else {
@@ -80,8 +89,23 @@ function savePosts(posts: Array<any>): void {
       }
       fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
     }
+    
+    // VERIFIKATION: Prüfe ob gespeichert wurde
+    if (fs.existsSync(STORAGE_PATH)) {
+      const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
+      const verifyParsed = JSON.parse(verify);
+      if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
+        console.log(`✅ [CONTACT] Saved ${posts.length} posts (verified: ${verifyParsed.length})`);
+        return true;
+      }
+    }
+    
+    console.warn("⚠️ [CONTACT] Verification failed, but post is in memory");
+    return false;
   } catch (error) {
-    // Ignoriere Fehler - Post ist im Memory
+    console.error("❌ [CONTACT] Save error:", error);
+    // Post ist im Memory, auch wenn File-Speichern fehlschlägt
+    return false;
   }
 }
 
@@ -95,11 +119,19 @@ export async function submitContactForm(formData: {
   subject: string;
   message: string;
 }): Promise<{ success: boolean; id?: string; message?: string; error?: string }> {
+  console.log("🔵 [CONTACT] submitContactForm called");
+  console.log("🔵 [CONTACT] Form data:", {
+    firstName: formData?.firstName,
+    lastName: formData?.lastName,
+    email: formData?.email,
+    subject: formData?.subject,
+  });
+  
   // ABSOLUTER TRY-CATCH - FÄNGT ALLES AB!
   try {
     // Validierung
     if (!formData || typeof formData !== "object") {
-      // GARANTIERT: Auch bei Validierungsfehlern Post erstellen!
+      console.warn("⚠️ [CONTACT] Invalid formData, creating fallback post");
       const fallbackPost = {
         id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         vorname: "Unbekannt",
@@ -128,8 +160,11 @@ export async function submitContactForm(formData: {
     const subject = formData.subject ? String(formData.subject).trim() : "";
     const message = formData.message ? String(formData.message).trim() : "";
     
+    console.log("🔵 [CONTACT] Processed data:", { firstName, lastName, email, subject });
+    
     // Erstelle Post IMMER, auch bei Validierungsfehlern!
     let posts: Array<any> = loadPosts();
+    console.log(`🔵 [CONTACT] Current posts count: ${posts.length}`);
     
     const post = {
       id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -146,13 +181,23 @@ export async function submitContactForm(formData: {
       createdAt: new Date().toISOString(),
     };
     
+    console.log("✅ [CONTACT] Created post:", {
+      id: post.id,
+      name: `${post.vorname} ${post.nachname}`,
+      email: post.email,
+      betreff: post.betreff,
+    });
+    
     // Füge Post hinzu (neueste zuerst)
     posts.unshift(post);
+    console.log(`✅ [CONTACT] Added post, new count: ${posts.length}`);
     
     // Speichere IMMER
-    savePosts(posts);
+    const saved = savePosts(posts);
+    console.log(`✅ [CONTACT] Save result: ${saved}`);
     
     // GARANTIERT: IMMER success zurückgeben!
+    console.log("✅ [CONTACT] Returning success");
     return {
       success: true,
       id: post.id,
@@ -160,6 +205,9 @@ export async function submitContactForm(formData: {
     };
   } catch (error: any) {
     // ABSOLUTER FALLBACK: Auch bei kritischen Fehlern success zurückgeben!
+    console.error("❌ [CONTACT] CRITICAL ERROR:", error);
+    console.error("❌ [CONTACT] Error stack:", error?.stack);
+    
     try {
       const fallbackPost = {
         id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -181,15 +229,17 @@ export async function submitContactForm(formData: {
         globalThis.__contactPosts = [];
       }
       globalThis.__contactPosts.unshift(fallbackPost);
+      console.log(`✅ [CONTACT] Added fallback post to memory: ${fallbackPost.id}`);
       
       // Speichere auch im Fallback
       try {
         savePosts(globalThis.__contactPosts);
       } catch (e) {
-        // Ignoriere
+        console.error("❌ [CONTACT] Fallback save error:", e);
       }
       
       // GARANTIERT: IMMER success zurückgeben!
+      console.log("✅ [CONTACT] Returning success from fallback");
       return {
         success: true,
         id: fallbackPost.id,
@@ -197,6 +247,7 @@ export async function submitContactForm(formData: {
       };
     } catch (fallbackError) {
       // FINAL FALLBACK: Auch wenn Fallback fehlschlägt, success zurückgeben!
+      console.error("❌ [CONTACT] Fallback error:", fallbackError);
       return {
         success: true,
         id: `post_${Date.now()}`,

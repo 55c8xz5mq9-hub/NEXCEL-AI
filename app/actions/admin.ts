@@ -31,22 +31,28 @@ declare global {
 function loadPosts() {
   try {
     // Prüfe globalen Store zuerst
-    if (globalThis.__contactPosts) {
+    if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
+      console.log(`✅ [ADMIN] Loaded ${globalThis.__contactPosts.length} posts from memory`);
       return globalThis.__contactPosts;
     }
     
+    // Lade aus File
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
-      const parsed = JSON.parse(data);
-      if (Array.isArray(parsed)) {
-        globalThis.__contactPosts = parsed;
-        return parsed;
+      if (data && data.trim()) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          globalThis.__contactPosts = parsed;
+          console.log(`✅ [ADMIN] Loaded ${parsed.length} posts from file`);
+          return parsed;
+        }
       }
     }
   } catch (error) {
     console.warn("⚠️ [ADMIN] Load error:", error);
   }
   
+  console.log(`✅ [ADMIN] Returning empty array`);
   return [];
 }
 
