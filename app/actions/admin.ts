@@ -27,29 +27,30 @@ declare global {
   }> | undefined;
 }
 
-// Lade Posts aus File - GLEICHE FUNKTION wie in contact.ts!
+// Lade Posts aus File - IMMER aus File, nicht aus Memory!
 function loadPosts() {
   try {
-    // Prüfe globalen Store zuerst
-    if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
-      console.log(`✅ [ADMIN] Loaded ${globalThis.__contactPosts.length} posts from memory`);
-      return globalThis.__contactPosts;
-    }
-    
-    // Lade aus File
+    // IMMER aus File laden - garantiert aktuell, auch in Serverless!
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
       if (data && data.trim()) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
+          // Update Memory für warme Lambdas
           globalThis.__contactPosts = parsed;
-          console.log(`✅ [ADMIN] Loaded ${parsed.length} posts from file`);
+          console.log(`✅ [ADMIN] Loaded ${parsed.length} posts from FILE`);
           return parsed;
         }
       }
     }
   } catch (error) {
     console.warn("⚠️ [ADMIN] Load error:", error);
+  }
+  
+  // Fallback: Memory
+  if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
+    console.log(`✅ [ADMIN] Loaded ${globalThis.__contactPosts.length} posts from MEMORY (fallback)`);
+    return globalThis.__contactPosts;
   }
   
   console.log(`✅ [ADMIN] Returning empty array`);
