@@ -9,6 +9,24 @@ const STORAGE_PATH = IS_PRODUCTION
   ? "/tmp/contact-posts.json"
   : path.join(process.cwd(), "data", "contact-posts.json");
 
+// Globaler Store für warme Lambdas - GLEICHE DEKLARATION wie in contact.ts!
+declare global {
+  var __contactPosts: Array<{
+    id: string;
+    vorname: string;
+    nachname: string;
+    email: string;
+    telefon: string | null;
+    unternehmen: string | null;
+    betreff: string;
+    nachricht: string;
+    status: "open" | "read" | "archived";
+    read: boolean;
+    archived: boolean;
+    createdAt: string;
+  }> | undefined;
+}
+
 // Lade Posts aus File - GLEICHE FUNKTION wie in contact.ts!
 function loadPosts() {
   try {

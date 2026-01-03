@@ -34,6 +34,11 @@ declare global {
   }> | undefined;
 }
 
+// Initialisiere globalen Store
+if (typeof globalThis.__contactPosts === "undefined") {
+  globalThis.__contactPosts = undefined;
+}
+
 // Lade Posts aus File
 function loadPosts() {
   try {
