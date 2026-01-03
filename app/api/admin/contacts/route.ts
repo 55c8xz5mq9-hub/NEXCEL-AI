@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAllContacts, updateContact, deleteContact } from "@/lib/backend-db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,24 +13,19 @@ export async function GET(request: NextRequest) {
     const archived = searchParams.get("archived") === "true";
     const unread = searchParams.get("unread") === "true";
 
-    // Baue Prisma-Query mit Filtern
-    const where: any = {};
+    // Lade alle Kontakte aus Backend-DB
+    let contacts = getAllContacts();
+    
+    // Filtere nach archived/unread
     if (archived) {
-      where.archived = true;
+      contacts = contacts.filter(c => c.archived);
     } else {
-      where.archived = false;
+      contacts = contacts.filter(c => !c.archived);
     }
+    
     if (unread) {
-      where.read = false;
+      contacts = contacts.filter(c => !c.read);
     }
-
-    // Lade Kontakte aus PostgreSQL über Prisma
-    const contacts = await prisma.contactRequest.findMany({
-      where,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
 
     // Transform contacts to match AdminDashboard interface
     const transformedContacts = contacts.map((contact) => ({
@@ -41,12 +36,19 @@ export async function GET(request: NextRequest) {
       unternehmen: contact.unternehmen || undefined,
       betreff: contact.betreff,
       nachricht: contact.nachricht,
-      createdAt: contact.createdAt.toISOString(),
+      createdAt: contact.createdAt,
       read: contact.read,
       archived: contact.archived,
     }));
 
-    return NextResponse.json({ contacts: transformedContacts });
+    return NextResponse.json({ contacts: transformedContacts }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Surrogate-Control': 'no-store'
+      }
+    });
   } catch (error) {
     console.error("Error fetching contacts:", error);
     return NextResponse.json(
@@ -70,16 +72,11 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    // Update contact in PostgreSQL über Prisma
-    const updated = await prisma.contactRequest.update({
-      where: { id },
-      data: {
-        ...updates,
-        // Map status to read/archived if needed
-        read: updates.read !== undefined ? updates.read : undefined,
-        archived: updates.archived !== undefined ? updates.archived : undefined,
-        status: updates.status || undefined,
-      },
+    // Update contact in Backend-DB
+    const updated = updateContact(id, {
+      read: updates.read,
+      archived: updates.archived,
+      status: updates.status,
     });
 
     if (!updated) {
@@ -95,7 +92,7 @@ export async function PATCH(request: NextRequest) {
         unternehmen: updated.unternehmen || undefined,
         betreff: updated.betreff,
         nachricht: updated.nachricht,
-        createdAt: updated.createdAt.toISOString(),
+        createdAt: updated.createdAt,
         read: updated.read,
         archived: updated.archived,
       },
@@ -123,16 +120,14 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    // Delete contact from PostgreSQL über Prisma
-    try {
-      await prisma.contactRequest.delete({
-        where: { id },
-      });
-      return NextResponse.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting contact:", error);
+    // Delete contact from Backend-DB
+    const success = deleteContact(id);
+
+    if (!success) {
       return NextResponse.json({ error: "Contact not found" }, { status: 404 });
     }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting contact:", error);
     return NextResponse.json(
@@ -141,4 +136,3 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
-

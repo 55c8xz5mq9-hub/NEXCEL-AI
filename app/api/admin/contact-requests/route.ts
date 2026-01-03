@@ -1,17 +1,16 @@
 /**
  * GET /api/admin/contact-requests
  * 
- * PERSISTENTE DATENBANK-API
- * Lädt alle Kontaktanfragen aus PostgreSQL über Prisma
- * Sortiert nach createdAt DESC (neueste zuerst)
+ * BACKEND-DATENBANK - Komplett im Backend verankert
+ * Lädt alle Kontaktanfragen aus Backend-DB (In-Memory + File)
  * 
  * Datenfluss:
- * Kontaktformular ➜ /api/contact ➜ Prisma/PostgreSQL ➜ /api/admin/contact-requests ➜ Admin-Panel
+ * Kontaktformular ➜ Server Action ➜ Backend-DB ➜ /api/admin/contact-requests ➜ Admin-Panel
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAllContacts } from "@/lib/backend-db";
 
 export const runtime = "nodejs";
 
@@ -23,14 +22,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Lade alle Kontaktanfragen aus PostgreSQL, sortiert nach createdAt DESC
-    const contacts = await prisma.contactRequest.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    // Lade alle Kontaktanfragen aus Backend-DB
+    const contacts = getAllContacts();
 
-    // Transformiere Prisma-Modell in Admin-Dashboard-Format
+    // Transformiere in Admin-Dashboard-Format
     const transformedContacts = contacts.map((contact) => ({
       id: contact.id,
       name: `${contact.vorname} ${contact.nachname}`,
@@ -39,13 +34,13 @@ export async function GET(request: NextRequest) {
       unternehmen: contact.unternehmen || undefined,
       betreff: contact.betreff,
       nachricht: contact.nachricht,
-      createdAt: contact.createdAt.toISOString(),
+      createdAt: contact.createdAt,
       read: contact.read,
       archived: contact.archived,
       status: contact.status,
     }));
 
-    console.log(`✅ [CONTACT REQUESTS API] Loaded ${transformedContacts.length} contacts from PostgreSQL`);
+    console.log(`✅ [CONTACT REQUESTS API] Loaded ${transformedContacts.length} contacts from Backend-DB`);
 
     return NextResponse.json(
       { contacts: transformedContacts },
