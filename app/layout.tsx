@@ -129,76 +129,8 @@ export default function RootLayout({
                 setTimeout(reorderPortal, 500);
                 setTimeout(reorderPortal, 1000);
                 
-                // Use MutationObserver to watch for portal creation - ULTRA ROBUST
-                function setupObserver() {
-                  try {
-                    if (typeof MutationObserver === 'undefined') return;
-                    if (typeof document === 'undefined') return;
-                    
-                    // Warte bis body wirklich bereit ist und ein Node ist
-                    const body = document.body;
-                    if (!body) {
-                      setTimeout(setupObserver, 50);
-                      return;
-                    }
-                    
-                    // Prüfe ob body wirklich ein Node ist - STRICT CHECK
-                    if (!body || typeof body !== 'object') return;
-                    if (!(body instanceof Node)) return;
-                    if (body.nodeType !== 1) return; // ELEMENT_NODE
-                    
-                    let observerTimeout;
-                    const observer = new MutationObserver(function(mutations) {
-                      try {
-                        clearTimeout(observerTimeout);
-                        observerTimeout = setTimeout(function() {
-                          if (!mutations || !Array.isArray(mutations)) return;
-                          mutations.forEach(function(mutation) {
-                            if (mutation && mutation.addedNodes && mutation.addedNodes.length) {
-                              mutation.addedNodes.forEach(function(node) {
-                                if (!node || typeof node !== 'object') return;
-                                if (node.nodeName === 'NEXTJS-PORTAL' || 
-                                    (node.nodeType === 1 && typeof node.querySelector === 'function' && node.querySelector('nextjs-portal'))) {
-                                  setTimeout(reorderPortal, 10);
-                                }
-                              });
-                            }
-                          });
-                        }, 50);
-                      } catch (e) {
-                        // Ignoriere Fehler in Observer-Callback - nicht kritisch
-                      }
-                    });
-                    
-                    // Observer nur aufrufen wenn body wirklich ein Node ist
-                    try {
-                      observer.observe(body, {
-                        childList: true,
-                        subtree: false
-                      });
-                    } catch (observeError) {
-                      // Observer konnte nicht initialisiert werden - nicht kritisch
-                      return;
-                    }
-                  } catch (e) {
-                    // Fehler ignorieren - nicht kritisch
-                  }
-                }
-                
-                // Setup observer sicher - warte bis alles bereit ist
-                function initObserver() {
-                  if (typeof document === 'undefined') return;
-                  
-                  if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', function() {
-                      setTimeout(setupObserver, 200);
-                    });
-                  } else {
-                    setTimeout(setupObserver, 200);
-                  }
-                }
-                
-                initObserver();
+                // MutationObserver DEAKTIVIERT - verursacht Fehler
+                // Portal-Reordering läuft nur über setTimeout
               })();
             `,
           }}
