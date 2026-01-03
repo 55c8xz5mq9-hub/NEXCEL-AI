@@ -62,11 +62,14 @@ export default function AdminDashboard() {
       if (isInitial) {
         setLoading(true);
       }
-      const [statsRes, contactsRes, demoRes, userRes] = await Promise.all([
-        fetch("/api/admin/stats"),
-        fetch("/api/admin/contact-requests"),
-        fetch("/api/admin/demo-requests?archived=false"),
-        fetch("/api/admin/me"),
+      // DIREKT ÜBER SERVER ACTIONS - KEINE API-CALLS!
+      const { getAdminContacts } = await import("@/app/actions/admin");
+      const contactsData = await getAdminContacts();
+      
+      const [statsRes, demoRes, userRes] = await Promise.all([
+        fetch("/api/admin/stats"), // Stats bleibt API (komplex)
+        fetch("/api/admin/demo-requests?archived=false"), // Demo bleibt API
+        fetch("/api/admin/me"), // Auth bleibt API
       ]);
 
       if (statsRes.ok) setStats(await statsRes.json());
@@ -93,11 +96,18 @@ export default function AdminDashboard() {
 
   const markAsRead = async (type: "contact" | "demo", id: string) => {
     try {
-      await fetch(`/api/admin/${type === "contact" ? "contacts" : "demo-requests"}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, read: true }),
-      });
+      if (type === "contact") {
+        // DIREKT ÜBER SERVER ACTION - KEIN API-CALL!
+        const { markContactAsRead } = await import("@/app/actions/admin");
+        await markContactAsRead(id);
+      } else {
+        // Demo bleibt API (später umstellen)
+        await fetch(`/api/admin/demo-requests`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, read: true }),
+        });
+      }
       loadData();
     } catch (error) {
       console.error("Error marking as read:", error);
