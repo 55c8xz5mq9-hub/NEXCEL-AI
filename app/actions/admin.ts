@@ -90,10 +90,13 @@ export async function getAdminContacts() {
   try {
     const session = await verifySession();
     if (!session || session.role !== "admin") {
+      console.log("❌ [ADMIN] Unauthorized access");
       return { error: "Unauthorized", contacts: [] };
     }
 
+    console.log("✅ [ADMIN] Loading posts...");
     const posts = loadPosts();
+    console.log(`✅ [ADMIN] Loaded ${posts.length} posts from file`);
     
     const transformedContacts = posts.map((post) => ({
       id: post.id,
@@ -109,9 +112,11 @@ export async function getAdminContacts() {
       status: post.status,
     }));
 
+    console.log(`✅ [ADMIN] Returning ${transformedContacts.length} contacts`);
     return { contacts: transformedContacts };
-  } catch (error) {
-    return { error: "Failed to fetch posts", contacts: [] };
+  } catch (error: any) {
+    console.error("❌ [ADMIN] Error in getAdminContacts:", error);
+    return { error: `Failed to fetch posts: ${error?.message || String(error)}`, contacts: [] };
   }
 }
 

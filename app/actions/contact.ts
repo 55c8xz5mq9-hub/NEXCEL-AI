@@ -109,6 +109,8 @@ export async function submitContactForm(formData: {
   subject: string;
   message: string;
 }): Promise<{ success: boolean; id?: string; message?: string; error?: string }> {
+  console.log("📝 [CONTACT] Form submitted:", { firstName: formData.firstName, email: formData.email });
+  
   try {
     const firstName = formData?.firstName ? String(formData.firstName).trim() : "Unbekannt";
     const lastName = formData?.lastName ? String(formData.lastName).trim() : "Unbekannt";
@@ -116,7 +118,9 @@ export async function submitContactForm(formData: {
     const subject = formData?.subject ? String(formData.subject).trim() : "Kein Betreff";
     const message = formData?.message ? String(formData.message).trim() : "Keine Nachricht";
     
+    console.log("📝 [CONTACT] Loading posts...");
     let posts = loadPosts();
+    console.log(`📝 [CONTACT] Loaded ${posts.length} existing posts`);
     
     const post = {
       id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -133,8 +137,11 @@ export async function submitContactForm(formData: {
       createdAt: new Date().toISOString(),
     };
     
+    console.log("📝 [CONTACT] Created post:", post.id);
     posts.unshift(post);
+    console.log(`📝 [CONTACT] Saving ${posts.length} posts...`);
     savePosts(posts);
+    console.log("✅ [CONTACT] Post saved successfully!");
     
     return {
       success: true,
@@ -142,6 +149,7 @@ export async function submitContactForm(formData: {
       message: "Ihre Anfrage wurde erfolgreich übermittelt. Wir werden uns schnellstmöglich bei Ihnen melden.",
     };
   } catch (error: any) {
+    console.error("❌ [CONTACT] Error in submitContactForm:", error);
     try {
       const fallbackPost = {
         id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -158,11 +166,13 @@ export async function submitContactForm(formData: {
         createdAt: new Date().toISOString(),
       };
       
+      console.log("📝 [CONTACT] Using fallback post:", fallbackPost.id);
       if (!globalThis.__contactPosts || !Array.isArray(globalThis.__contactPosts)) {
         globalThis.__contactPosts = [];
       }
       globalThis.__contactPosts.unshift(fallbackPost);
       savePosts(globalThis.__contactPosts);
+      console.log("✅ [CONTACT] Fallback post saved!");
       
       return {
         success: true,
@@ -170,6 +180,7 @@ export async function submitContactForm(formData: {
         message: "Ihre Anfrage wurde erfolgreich übermittelt. Wir werden uns schnellstmöglich bei Ihnen melden.",
       };
     } catch (fallbackError) {
+      console.error("❌ [CONTACT] Fallback also failed:", fallbackError);
       return {
         success: true,
         id: `post_${Date.now()}`,

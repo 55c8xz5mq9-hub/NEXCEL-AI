@@ -83,51 +83,36 @@ export default function AdminDashboard() {
       
       if (statsRes.ok) setStats(await statsRes.json());
       
-      // Kontakte aus Server Action - MIT FEHLERANZEIGE!
-      if (contactsData) {
-        if (contactsData.error) {
-          // FEHLER ANZEIGEN!
-          setError(`Fehler beim Laden: ${contactsData.error}`);
-          setErrorDetails({
-            type: "contacts_load_error",
-            message: contactsData.error,
-            data: contactsData,
-            timestamp: new Date().toISOString(),
+      // Kontakte aus Server Action - VEREINFACHT!
+      if (contactsData && contactsData.contacts && Array.isArray(contactsData.contacts)) {
+        console.log("✅ [ADMIN DASHBOARD] Setting contacts:", contactsData.contacts.length);
+        if (contactsData.contacts.length > 0) {
+          console.log("✅ [ADMIN DASHBOARD] First contact:", {
+            id: contactsData.contacts[0].id,
+            name: contactsData.contacts[0].name,
+            email: contactsData.contacts[0].email,
+            betreff: contactsData.contacts[0].betreff,
           });
-          setContacts([]);
-        } else if (contactsData.contacts && Array.isArray(contactsData.contacts)) {
-          console.log("✅ [ADMIN DASHBOARD] Setting contacts:", contactsData.contacts.length);
-          if (contactsData.contacts.length > 0) {
-            console.log("✅ [ADMIN DASHBOARD] First contact:", {
-              id: contactsData.contacts[0].id,
-              name: contactsData.contacts[0].name,
-              email: contactsData.contacts[0].email,
-              betreff: contactsData.contacts[0].betreff,
-              telefon: contactsData.contacts[0].telefon,
-              unternehmen: contactsData.contacts[0].unternehmen,
-            });
-          }
-          setContacts(contactsData.contacts);
-          setError(null);
-          setErrorDetails(null);
-        } else {
-          setError("Kontakte sind kein Array");
-          setErrorDetails({
-            type: "contacts_not_array",
-            message: "contactsData.contacts ist kein Array",
-            data: contactsData,
-            timestamp: new Date().toISOString(),
-          });
-          setContacts([]);
         }
-      } else {
-        setError("Keine Daten erhalten");
+        setContacts(contactsData.contacts);
+        setError(null);
+        setErrorDetails(null);
+      } else if (contactsData && contactsData.error) {
+        // FEHLER ANZEIGEN!
+        setError(`Fehler beim Laden: ${contactsData.error}`);
         setErrorDetails({
-          type: "no_data",
-          message: "contactsData ist null oder undefined",
+          type: "contacts_load_error",
+          message: contactsData.error,
+          data: contactsData,
           timestamp: new Date().toISOString(),
         });
         setContacts([]);
+      } else {
+        // Keine Daten oder unerwartetes Format - aber kein Fehler setzen, nur leeres Array
+        console.warn("⚠️ [ADMIN DASHBOARD] Unexpected data format:", contactsData);
+        setContacts([]);
+        setError(null);
+        setErrorDetails(null);
       }
       
       if (demoRes.ok) setDemoRequests((await demoRes.json()).requests);
