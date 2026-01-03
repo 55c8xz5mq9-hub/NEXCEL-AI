@@ -130,34 +130,48 @@ export default function RootLayout({
                 setTimeout(reorderPortal, 1000);
                 
                 // Use MutationObserver to watch for portal creation - More aggressive
-                if (typeof MutationObserver !== 'undefined' && document.body) {
-                  let observerTimeout;
-                  const observer = new MutationObserver(function(mutations) {
-                    // Debounce to avoid excessive calls
-                    clearTimeout(observerTimeout);
-                    observerTimeout = setTimeout(function() {
-                      mutations.forEach(function(mutation) {
-                        if (mutation.addedNodes.length) {
-                          mutation.addedNodes.forEach(function(node) {
-                            if (node && node.nodeName === 'NEXTJS-PORTAL' || 
-                                (node && node.nodeType === 1 && node.querySelector && node.querySelector('nextjs-portal'))) {
-                              setTimeout(reorderPortal, 10);
-                            }
-                          });
-                        }
-                      });
-                    }, 50);
-                  });
-                  
+                function setupObserver() {
                   try {
-                    if (document.body instanceof Node) {
-                      observer.observe(document.body, {
-                        childList: true,
-                        subtree: false // Only watch direct children for performance
-                      });
-                    }
+                    if (typeof MutationObserver === 'undefined') return;
+                    if (!document.body) return;
+                    if (!(document.body instanceof Node)) return;
+                    
+                    let observerTimeout;
+                    const observer = new MutationObserver(function(mutations) {
+                      // Debounce to avoid excessive calls
+                      clearTimeout(observerTimeout);
+                      observerTimeout = setTimeout(function() {
+                        mutations.forEach(function(mutation) {
+                          if (mutation.addedNodes && mutation.addedNodes.length) {
+                            mutation.addedNodes.forEach(function(node) {
+                              if (node && node.nodeName === 'NEXTJS-PORTAL' || 
+                                  (node && node.nodeType === 1 && node.querySelector && node.querySelector('nextjs-portal'))) {
+                                setTimeout(reorderPortal, 10);
+                              }
+                            });
+                          }
+                        });
+                      }, 50);
+                    });
+                    
+                    observer.observe(document.body, {
+                      childList: true,
+                      subtree: false // Only watch direct children for performance
+                    });
                   } catch (e) {
                     console.warn('MutationObserver setup error:', e);
+                  }
+                }
+                
+                // Setup observer when body is ready
+                if (document.body && document.body instanceof Node) {
+                  setupObserver();
+                } else {
+                  // Wait for body to be ready
+                  if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', setupObserver);
+                  } else {
+                    setTimeout(setupObserver, 100);
                   }
                 }
               })();
