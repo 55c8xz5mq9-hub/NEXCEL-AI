@@ -41,7 +41,7 @@ function loadPostsFromFile(): Array<{
   return [];
 }
 
-// Speichere Posts - ATOMIC mit Retry
+// Speichere Posts - ATOMIC mit Verifikation
 function savePostsToFile(posts: Array<{
   id: string;
   vorname: string;
@@ -56,53 +56,33 @@ function savePostsToFile(posts: Array<{
   archived: boolean;
   createdAt: string;
 }>): void {
-  let attempts = 0;
-  const maxAttempts = 5;
-  
-  while (attempts < maxAttempts) {
-    try {
-      if (IS_PRODUCTION) {
-        // Production: /tmp
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-      } else {
-        // Local: data/
-        const dir = path.dirname(STORAGE_PATH);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+  try {
+    if (IS_PRODUCTION) {
+      // Production: /tmp
+      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+    } else {
+      // Local: data/
+      const dir = path.dirname(STORAGE_PATH);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
       }
-      
-      // Verifiziere, dass gespeichert wurde
-      if (fs.existsSync(STORAGE_PATH)) {
-        const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
-        const verifyParsed = JSON.parse(verify);
-        if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
-          console.log(`✅ [STORE] Saved ${posts.length} posts successfully`);
-          return;
-        }
-      }
-      
-      attempts++;
-      if (attempts < maxAttempts) {
-        // Synchrones Delay
-        const start = Date.now();
-        while (Date.now() - start < 100 * attempts) {
-          // Busy wait
-        }
-      }
-    } catch (error) {
-      attempts++;
-      console.error(`❌ [STORE] Save attempt ${attempts} failed:`, error);
-      if (attempts < maxAttempts) {
-        const start = Date.now();
-        while (Date.now() - start < 100 * attempts) {
-          // Busy wait
-        }
-      } else {
-        throw error;
+      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+    }
+    
+    // Verifiziere, dass gespeichert wurde
+    if (fs.existsSync(STORAGE_PATH)) {
+      const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
+      const verifyParsed = JSON.parse(verify);
+      if (Array.isArray(verifyParsed)) {
+        console.log(`✅ [STORE] Saved ${posts.length} posts successfully (verified: ${verifyParsed.length})`);
+        return;
       }
     }
+    
+    throw new Error("Verification failed - file not saved correctly");
+  } catch (error) {
+    console.error("❌ [STORE] Save error:", error);
+    throw error; // Wichtig - Fehler nicht verstecken
   }
 }
 
