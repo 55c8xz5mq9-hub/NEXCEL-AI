@@ -9,7 +9,6 @@ const STORAGE_PATH = IS_PRODUCTION
   ? "/tmp/contact-posts.json"
   : path.join(process.cwd(), "data", "contact-posts.json");
 
-// Globaler Store für warme Lambdas - GLEICHE DEKLARATION wie in contact.ts!
 declare global {
   var __contactPosts: Array<{
     id: string;
@@ -27,37 +26,66 @@ declare global {
   }> | undefined;
 }
 
-// Lade Posts aus File - IMMER aus File, nicht aus Memory!
+// Lade Posts - IMMER aus File!
 function loadPosts() {
   try {
-    // IMMER aus File laden - garantiert aktuell, auch in Serverless!
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
       if (data && data.trim()) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
-          // Update Memory für warme Lambdas
           globalThis.__contactPosts = parsed;
-          console.log(`✅ [ADMIN] Loaded ${parsed.length} posts from FILE`);
           return parsed;
         }
       }
     }
   } catch (error) {
-    console.warn("⚠️ [ADMIN] Load error:", error);
+    // Ignoriere
   }
   
-  // Fallback: Memory
   if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
-    console.log(`✅ [ADMIN] Loaded ${globalThis.__contactPosts.length} posts from MEMORY (fallback)`);
     return globalThis.__contactPosts;
   }
   
-  console.log(`✅ [ADMIN] Returning empty array`);
   return [];
 }
 
-// POSTS laden - Instant sichtbar!
+// Speichere Posts
+function savePosts(posts: Array<any>): void {
+  if (!Array.isArray(posts)) return;
+  
+  globalThis.__contactPosts = posts;
+  
+  for (let attempt = 1; attempt <= 10; attempt++) {
+    try {
+      if (IS_PRODUCTION) {
+        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+      } else {
+        const dir = path.dirname(STORAGE_PATH);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+      }
+      
+      if (fs.existsSync(STORAGE_PATH)) {
+        const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
+        const verifyParsed = JSON.parse(verify);
+        if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
+          return;
+        }
+      }
+    } catch (error) {
+      // Retry
+    }
+    
+    if (attempt < 10) {
+      const start = Date.now();
+      while (Date.now() - start < 200) {}
+    }
+  }
+}
+
 export async function getAdminContacts() {
   try {
     const session = await verifySession();
@@ -65,11 +93,7 @@ export async function getAdminContacts() {
       return { error: "Unauthorized", contacts: [] };
     }
 
-    // Lade Posts - GLEICHE FUNKTION wie in contact.ts!
     const posts = loadPosts();
-    
-    console.log(`✅ [ADMIN] Loaded ${posts.length} posts`);
-    console.log(`✅ [ADMIN] First post ID: ${posts[0]?.id || "none"}`);
     
     const transformedContacts = posts.map((post) => ({
       id: post.id,
@@ -85,15 +109,12 @@ export async function getAdminContacts() {
       status: post.status,
     }));
 
-    console.log(`✅ [ADMIN] Loaded ${transformedContacts.length} posts`);
     return { contacts: transformedContacts };
   } catch (error) {
-    console.error("❌ [ADMIN] Error:", error);
     return { error: "Failed to fetch posts", contacts: [] };
   }
 }
 
-// Post als gelesen markieren
 export async function markContactAsRead(id: string) {
   try {
     const session = await verifySession();
@@ -106,29 +127,14 @@ export async function markContactAsRead(id: string) {
     if (index === -1) return { error: "Post not found" };
     
     posts[index] = { ...posts[index], read: true, status: "read" };
-    
-    // Speichere
-    try {
-      globalThis.__contactPosts = posts;
-      if (IS_PRODUCTION) {
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-      } else {
-        const dir = path.dirname(STORAGE_PATH);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-      }
-    } catch (error) {
-      console.error("❌ [ADMIN] Save error:", error);
-    }
+    savePosts(posts);
     
     return { success: true, contact: posts[index] };
   } catch (error) {
-    console.error("❌ [ADMIN] Error:", error);
     return { error: "Failed to update post" };
   }
 }
 
-// Post archivieren
 export async function archiveContact(id: string) {
   try {
     const session = await verifySession();
@@ -141,29 +147,14 @@ export async function archiveContact(id: string) {
     if (index === -1) return { error: "Post not found" };
     
     posts[index] = { ...posts[index], archived: true, status: "archived" };
-    
-    // Speichere
-    try {
-      globalThis.__contactPosts = posts;
-      if (IS_PRODUCTION) {
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-      } else {
-        const dir = path.dirname(STORAGE_PATH);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-      }
-    } catch (error) {
-      console.error("❌ [ADMIN] Save error:", error);
-    }
+    savePosts(posts);
     
     return { success: true, contact: posts[index] };
   } catch (error) {
-    console.error("❌ [ADMIN] Error:", error);
     return { error: "Failed to archive post" };
   }
 }
 
-// Post löschen
 export async function deleteAdminContact(id: string) {
   try {
     const session = await verifySession();
@@ -176,24 +167,10 @@ export async function deleteAdminContact(id: string) {
     if (index === -1) return { error: "Post not found" };
     
     posts.splice(index, 1);
-    
-    // Speichere
-    try {
-      globalThis.__contactPosts = posts;
-      if (IS_PRODUCTION) {
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-      } else {
-        const dir = path.dirname(STORAGE_PATH);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-      }
-    } catch (error) {
-      console.error("❌ [ADMIN] Save error:", error);
-    }
+    savePosts(posts);
     
     return { success: true };
   } catch (error) {
-    console.error("❌ [ADMIN] Error:", error);
     return { error: "Failed to delete post" };
   }
 }

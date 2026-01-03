@@ -53,8 +53,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadData(true);
-    // Refresh every 100ms for INSTANT updates - wie Bewertungen!
-    const interval = setInterval(() => loadData(false), 100);
+    // Refresh every 50ms for INSTANT updates - wie Bewertungen!
+    const interval = setInterval(() => loadData(false), 50);
     return () => clearInterval(interval);
   }, []);
 
