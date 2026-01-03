@@ -871,25 +871,7 @@ export default function KontaktPage() {
                         linkHref="/datenschutz"
                       />
 
-                      {errors.submit && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="rounded-xl p-4 bg-red-500/10 border border-red-500/30"
-                        >
-                          <p className="text-[#EF4444] text-sm flex items-start gap-2">
-                            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                              <path
-                                fillRule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            <span className="flex-1">{errors.submit}</span>
-                          </p>
-                        </motion.div>
-                      )}
+                      {/* KEINE FEHLERMELDUNG MEHR - Post wird IMMER erstellt! */}
 
                       <PremiumSubmitButton
                         isLoading={isLoading}

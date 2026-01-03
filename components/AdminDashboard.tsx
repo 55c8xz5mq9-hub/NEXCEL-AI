@@ -50,6 +50,8 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"overview" | "contacts" | "demo" | "analytics">("overview");
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = useState<any>(null);
 
   useEffect(() => {
     loadData(true);
@@ -62,7 +64,10 @@ export default function AdminDashboard() {
     try {
       if (isInitial) {
         setLoading(true);
+        setError(null);
+        setErrorDetails(null);
       }
+      
       // DIREKT ÜBER SERVER ACTIONS - KEINE API-CALLS!
       const { getAdminContacts } = await import("@/app/actions/admin");
       
@@ -78,9 +83,19 @@ export default function AdminDashboard() {
       
       if (statsRes.ok) setStats(await statsRes.json());
       
-      // Kontakte aus Server Action - IMMER setzen, auch wenn leer
+      // Kontakte aus Server Action - MIT FEHLERANZEIGE!
       if (contactsData) {
-        if (contactsData.contacts && Array.isArray(contactsData.contacts)) {
+        if (contactsData.error) {
+          // FEHLER ANZEIGEN!
+          setError(`Fehler beim Laden: ${contactsData.error}`);
+          setErrorDetails({
+            type: "contacts_load_error",
+            message: contactsData.error,
+            data: contactsData,
+            timestamp: new Date().toISOString(),
+          });
+          setContacts([]);
+        } else if (contactsData.contacts && Array.isArray(contactsData.contacts)) {
           console.log("✅ [ADMIN DASHBOARD] Setting contacts:", contactsData.contacts.length);
           if (contactsData.contacts.length > 0) {
             console.log("✅ [ADMIN DASHBOARD] First contact:", {
@@ -93,19 +108,42 @@ export default function AdminDashboard() {
             });
           }
           setContacts(contactsData.contacts);
+          setError(null);
+          setErrorDetails(null);
         } else {
-          console.warn("⚠️ [ADMIN DASHBOARD] contacts is not an array:", contactsData);
+          setError("Kontakte sind kein Array");
+          setErrorDetails({
+            type: "contacts_not_array",
+            message: "contactsData.contacts ist kein Array",
+            data: contactsData,
+            timestamp: new Date().toISOString(),
+          });
           setContacts([]);
         }
       } else {
-        console.warn("⚠️ [ADMIN DASHBOARD] No contactsData in response");
+        setError("Keine Daten erhalten");
+        setErrorDetails({
+          type: "no_data",
+          message: "contactsData ist null oder undefined",
+          timestamp: new Date().toISOString(),
+        });
         setContacts([]);
       }
       
       if (demoRes.ok) setDemoRequests((await demoRes.json()).requests);
       if (userRes.ok) setUser(await userRes.json());
-    } catch (error) {
-      console.error("Error loading data:", error);
+    } catch (error: any) {
+      // DETAILLIERTE FEHLERANZEIGE!
+      const errorMessage = error?.message || String(error) || "Unbekannter Fehler";
+      setError(`Fehler beim Laden der Daten: ${errorMessage}`);
+      setErrorDetails({
+        type: "load_error",
+        message: errorMessage,
+        stack: error?.stack,
+        error: error,
+        timestamp: new Date().toISOString(),
+      });
+      console.error("❌ [ADMIN DASHBOARD] Error loading data:", error);
     } finally {
       if (isInitial) {
         setLoading(false);
