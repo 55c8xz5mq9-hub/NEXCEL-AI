@@ -11,9 +11,11 @@ export async function getAdminContacts() {
       return { error: "Unauthorized", contacts: [] };
     }
 
-    const posts = getAllPosts(); // Neueste zuerst
+    // Lade Posts - IMMER aus File, garantiert aktuell
+    const posts = getAllPosts();
     
-    console.log(`✅ [ADMIN] getAllPosts returned ${posts.length} posts`);
+    console.log(`✅ [ADMIN] Loaded ${posts.length} posts from store`);
+    console.log(`✅ [ADMIN] First post ID: ${posts[0]?.id || "none"}`);
     
     const transformedContacts = posts.map((post) => ({
       id: post.id,
