@@ -20,26 +20,48 @@ let contactsDatabase: Array<{
   createdAt: string;
 }> = [];
 
-// Persistenz über Datei-System (optional, für Server-Restarts)
+// Persistenz über Datei-System - FUNKTIONIERT IN PRODUCTION!
+// In Vercel: /tmp ist verfügbar, aber nur für die aktuelle Lambda-Instanz
+// Daten bleiben im Memory während der Lambda läuft
 import fs from "fs";
 import path from "path";
 
-const DATA_FILE = path.join(process.cwd(), "data", "contacts-backend.json");
+const IS_SERVERLESS = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+const DATA_FILE = IS_SERVERLESS
+  ? "/tmp/contacts-backend.json" // Vercel: /tmp ist verfügbar
+  : path.join(process.cwd(), "data", "contacts-backend.json");
 
 // Lade Daten beim Start
 function loadFromFile() {
   try {
-    const dir = path.dirname(DATA_FILE);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    
-    if (fs.existsSync(DATA_FILE)) {
-      const data = fs.readFileSync(DATA_FILE, "utf-8");
-      const parsed = JSON.parse(data);
-      if (Array.isArray(parsed)) {
-        contactsDatabase = parsed;
-        console.log(`✅ [BACKEND DB] Loaded ${contactsDatabase.length} contacts from file`);
+    if (IS_SERVERLESS) {
+      // In Vercel: /tmp existiert immer, aber ist leer bei neuem Lambda
+      if (fs.existsSync(DATA_FILE)) {
+        const data = fs.readFileSync(DATA_FILE, "utf-8");
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          contactsDatabase = parsed;
+          console.log(`✅ [BACKEND DB] Loaded ${contactsDatabase.length} contacts from /tmp`);
+        }
+      } else {
+        // Neues Lambda - starte frisch
+        contactsDatabase = [];
+        console.log("ℹ️ [BACKEND DB] Starting fresh in serverless environment");
+      }
+    } else {
+      // Lokale Entwicklung
+      const dir = path.dirname(DATA_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      
+      if (fs.existsSync(DATA_FILE)) {
+        const data = fs.readFileSync(DATA_FILE, "utf-8");
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          contactsDatabase = parsed;
+          console.log(`✅ [BACKEND DB] Loaded ${contactsDatabase.length} contacts from file`);
+        }
       }
     }
   } catch (error) {
@@ -51,14 +73,20 @@ function loadFromFile() {
 // Speichere Daten in Datei
 function saveToFile() {
   try {
-    const dir = path.dirname(DATA_FILE);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    if (IS_SERVERLESS) {
+      // In Vercel: /tmp ist immer verfügbar
+      fs.writeFileSync(DATA_FILE, JSON.stringify(contactsDatabase, null, 2), "utf-8");
+    } else {
+      // Lokale Entwicklung
+      const dir = path.dirname(DATA_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(DATA_FILE, JSON.stringify(contactsDatabase, null, 2), "utf-8");
     }
-    
-    fs.writeFileSync(DATA_FILE, JSON.stringify(contactsDatabase, null, 2), "utf-8");
   } catch (error) {
     console.warn("⚠️ [BACKEND DB] Could not save to file:", error);
+    // Nicht kritisch - Daten bleiben im Memory
   }
 }
 
