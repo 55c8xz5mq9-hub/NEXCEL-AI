@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { getContactPosts, markContactAsRead, archiveContact } from "@/app/actions/admin";
 
 interface Stats {
   analytics: {
@@ -63,26 +62,21 @@ export default function AdminDashboard() {
       if (isInitial) {
         setLoading(true);
       }
-      
-      // DIREKT ÜBER SERVER ACTIONS - KEINE API-CALLS!
-      // Lade Kontakt-Posts direkt aus Datenbank - wie Forum-Posts
-      const contactsData = await getContactPosts();
-      setContacts(contactsData.contacts || []);
-      
-      // Stats und andere Daten können später auch über Server Actions
-      // Für jetzt bleiben sie über API (kann später umgestellt werden)
-      try {
-        const [statsRes, demoRes, userRes] = await Promise.all([
-          fetch("/api/admin/stats"),
-          fetch("/api/admin/demo-requests?archived=false"),
-          fetch("/api/admin/me"),
-        ]);
-        if (statsRes.ok) setStats(await statsRes.json());
-        if (demoRes.ok) setDemoRequests((await demoRes.json()).requests);
-        if (userRes.ok) setUser(await userRes.json());
-      } catch (apiError) {
-        console.warn("API calls failed (non-critical):", apiError);
+      const [statsRes, contactsRes, demoRes, userRes] = await Promise.all([
+        fetch("/api/admin/stats"),
+        fetch("/api/admin/contact-requests"),
+        fetch("/api/admin/demo-requests?archived=false"),
+        fetch("/api/admin/me"),
+      ]);
+
+      if (statsRes.ok) setStats(await statsRes.json());
+      if (contactsRes.ok) {
+        const data = await contactsRes.json();
+        // Die API gibt bereits das korrekte Format zurück (vorname/nachname aus Prisma)
+        setContacts(data.contacts || []);
       }
+      if (demoRes.ok) setDemoRequests((await demoRes.json()).requests);
+      if (userRes.ok) setUser(await userRes.json());
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
@@ -99,17 +93,11 @@ export default function AdminDashboard() {
 
   const markAsRead = async (type: "contact" | "demo", id: string) => {
     try {
-      if (type === "contact") {
-        // DIREKT ÜBER SERVER ACTION - KEIN API-CALL!
-        await markContactAsRead(id);
-      } else {
-        // Demo-Requests können später auch über Server Action
-        await fetch(`/api/admin/demo-requests`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, read: true }),
-        });
-      }
+      await fetch(`/api/admin/${type === "contact" ? "contacts" : "demo-requests"}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, read: true }),
+      });
       loadData();
     } catch (error) {
       console.error("Error marking as read:", error);
@@ -221,12 +209,18 @@ export default function AdminDashboard() {
               />
             </div>
 
-            {/* Recent Contacts */}
-            <GlassCard title="Neueste Kontakte">
-              <div className="space-y-3">
-                {contacts.slice(0, 5).map((contact) => (
-                  <ContactRow key={contact.id} contact={contact} onMarkRead={() => markAsRead("contact", contact.id)} />
-                ))}
+            {/* Recent Contacts - POST-FEED */}
+            <GlassCard title="Neueste Posts">
+              <div className="space-y-0">
+                {contacts.slice(0, 5).length === 0 ? (
+                  <div className="text-center py-8 text-[#9CA3AF] text-sm">
+                    Noch keine Posts vorhanden
+                  </div>
+                ) : (
+                  contacts.slice(0, 5).map((contact) => (
+                    <ContactRow key={contact.id} contact={contact} onMarkRead={() => markAsRead("contact", contact.id)} />
+                  ))
+                )}
               </div>
             </GlassCard>
 
@@ -241,13 +235,19 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Contacts Tab */}
+        {/* Contacts Tab - POST-FEED wie Bewertungen */}
         {activeTab === "contacts" && (
-          <GlassCard title="Alle Kontakte">
-            <div className="space-y-3">
-              {contacts.map((contact) => (
-                <ContactRow key={contact.id} contact={contact} onMarkRead={() => markAsRead("contact", contact.id)} />
-              ))}
+          <GlassCard title="Kontakt-Posts">
+            <div className="space-y-0">
+              {contacts.length === 0 ? (
+                <div className="text-center py-12 text-[#9CA3AF]">
+                  Noch keine Posts vorhanden
+                </div>
+              ) : (
+                contacts.map((contact) => (
+                  <ContactRow key={contact.id} contact={contact} onMarkRead={() => markAsRead("contact", contact.id)} />
+                ))
+              )}
             </div>
           </GlassCard>
         )}
@@ -353,47 +353,87 @@ function GlassCard({ title, children }: { title: string; children: React.ReactNo
 }
 
 function ContactRow({ contact, onMarkRead }: { contact: Contact; onMarkRead: () => void }) {
+  // POST-ANSICHT wie Bewertung/Forum-Post
+  const timeAgo = (date: string) => {
+    const now = new Date();
+    const postDate = new Date(date);
+    const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return "gerade eben";
+    if (diffInSeconds < 3600) return `vor ${Math.floor(diffInSeconds / 60)} Min`;
+    if (diffInSeconds < 86400) return `vor ${Math.floor(diffInSeconds / 3600)} Std`;
+    return postDate.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  };
+
   return (
-    <div
-      className="p-4 rounded-xl"
+    <motion.div
+      className="p-5 rounded-2xl mb-4"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       style={{
-        background: contact.read ? "rgba(255, 255, 255, 0.03)" : "rgba(164, 92, 255, 0.1)",
-        border: `1px solid ${contact.read ? "rgba(255, 255, 255, 0.05)" : "rgba(164, 92, 255, 0.3)"}`,
+        background: contact.read 
+          ? "rgba(255, 255, 255, 0.02)" 
+          : "rgba(164, 92, 255, 0.08)",
+        border: `1px solid ${contact.read ? "rgba(255, 255, 255, 0.05)" : "rgba(164, 92, 255, 0.2)"}`,
+        boxShadow: contact.read ? "none" : "0 4px 20px rgba(164, 92, 255, 0.1)",
       }}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
+      {/* POST-HEADER wie Bewertung */}
+      <div className="flex items-start gap-4 mb-4">
+        {/* Avatar */}
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white flex-shrink-0"
+          style={{
+            background: "linear-gradient(135deg, rgba(164, 92, 255, 0.4), rgba(198, 168, 255, 0.4))",
+            border: "2px solid rgba(164, 92, 255, 0.3)",
+          }}
+        >
+          {contact.name.charAt(0).toUpperCase()}
+        </div>
+
+        {/* Post-Info */}
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-white">{contact.name}</span>
+            <span className="font-semibold text-white text-base">{contact.name}</span>
             {!contact.read && (
-              <span className="w-2 h-2 rounded-full bg-[#A45CFF]" />
+              <span className="w-2 h-2 rounded-full bg-[#A45CFF] animate-pulse" />
+            )}
+            <span className="text-xs text-[#9CA3AF]">•</span>
+            <span className="text-xs text-[#9CA3AF]">{timeAgo(contact.createdAt)}</span>
+          </div>
+          
+          {/* Kontaktdaten wie Post-Metadaten */}
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[#9CA3AF] mb-3">
+            <span className="flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              {contact.email}
+            </span>
+            {contact.telefon && (
+              <span className="flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                {contact.telefon}
+              </span>
+            )}
+            {contact.unternehmen && (
+              <span className="flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                {contact.unternehmen}
+              </span>
             )}
           </div>
-          <div className="text-sm text-[#9CA3AF] mb-1">{contact.email}</div>
-          {contact.telefon && (
-            <div className="text-xs text-[#9CA3AF] mb-1">📞 {contact.telefon}</div>
-          )}
-          {contact.unternehmen && (
-            <div className="text-xs text-[#9CA3AF] mb-1">🏢 {contact.unternehmen}</div>
-          )}
-          {contact.betreff && (
-            <div className="text-xs text-[#A45CFF] mb-2 font-semibold">📌 {contact.betreff}</div>
-          )}
-          <div className="text-sm text-[#E5E7EB] line-clamp-3 mb-2">{contact.nachricht}</div>
-          <div className="text-xs text-[#9CA3AF] mt-2">
-            {new Date(contact.createdAt).toLocaleDateString("de-DE", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </div>
         </div>
+
+        {/* Mark as Read Button */}
         {!contact.read && (
           <motion.button
             onClick={onMarkRead}
-            className="ml-4 px-3 py-1 rounded-lg text-xs font-medium text-white"
+            className="px-3 py-1.5 rounded-lg text-xs font-medium text-white flex-shrink-0"
             style={{
               background: "rgba(164, 92, 255, 0.2)",
               border: "1px solid rgba(164, 92, 255, 0.3)",
@@ -401,11 +441,41 @@ function ContactRow({ contact, onMarkRead }: { contact: Contact; onMarkRead: () 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Als gelesen
+            Gelesen
           </motion.button>
         )}
       </div>
-    </div>
+
+      {/* POST-CONTENT wie Bewertung */}
+      {contact.betreff && (
+        <div className="mb-3">
+          <span className="text-sm font-semibold text-[#A45CFF]">📌 {contact.betreff}</span>
+        </div>
+      )}
+      
+      <div className="text-[#E5E7EB] text-base leading-relaxed whitespace-pre-wrap mb-4">
+        {contact.nachricht}
+      </div>
+
+      {/* POST-FOOTER */}
+      <div className="flex items-center justify-between pt-3 border-t border-white/5">
+        <span className="text-xs text-[#9CA3AF]">
+          {new Date(contact.createdAt).toLocaleDateString("de-DE", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </span>
+        <span className="text-xs px-2 py-1 rounded" style={{
+          background: contact.status === "open" ? "rgba(164, 92, 255, 0.2)" : "rgba(107, 114, 128, 0.2)",
+          color: contact.status === "open" ? "#A45CFF" : "#9CA3AF",
+        }}>
+          {contact.status === "open" ? "Offen" : contact.status === "read" ? "Gelesen" : "Archiviert"}
+        </span>
+      </div>
+    </motion.div>
   );
 }
 
