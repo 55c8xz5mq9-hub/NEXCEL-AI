@@ -7,13 +7,21 @@
 
 import fs from "fs";
 import path from "path";
-import { kv } from "@vercel/kv";
+import { Redis } from "@upstash/redis";
 
 const IS_PRODUCTION = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
 const STORAGE_PATH = IS_PRODUCTION
   ? "/tmp/contact-posts.json"
   : path.join(process.cwd(), "data", "contact-posts.json");
 const KV_KEY = "contact-posts";
+
+// Upstash Redis Client (nur wenn Umgebungsvariablen gesetzt sind)
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
 
 // Globaler Store
 declare global {
@@ -40,17 +48,17 @@ if (typeof globalThis.__contactPosts === "undefined") {
 // Lade Posts - IMMER aus KV! Sortiert nach createdAt DESC
 async function loadPosts(): Promise<Array<any>> {
   try {
-    // In Production: Vercel KV (persistent!)
-    if (IS_PRODUCTION) {
+    // In Production: Upstash Redis (persistent!)
+    if (IS_PRODUCTION && redis) {
       try {
-        const data = await kv.get(KV_KEY);
+        const data = await redis.get(KV_KEY);
         if (data && Array.isArray(data)) {
           globalThis.__contactPosts = data;
-          console.log(`✅ [CONTACT] Loaded ${data.length} posts from KV`);
+          console.log(`✅ [CONTACT] Loaded ${data.length} posts from Redis`);
           return data;
         }
-      } catch (kvError: any) {
-        console.warn("⚠️ [CONTACT] KV error (falling back to file):", kvError?.message || kvError);
+      } catch (redisError: any) {
+        console.warn("⚠️ [CONTACT] Redis error (falling back to file):", redisError?.message || redisError);
       }
     }
     
@@ -90,14 +98,14 @@ async function savePosts(posts: Array<any>): Promise<void> {
   globalThis.__contactPosts = posts;
   console.log(`💾 [CONTACT] Saving ${posts.length} posts`);
   
-  // In Production: Vercel KV (persistent!)
-  if (IS_PRODUCTION) {
+  // In Production: Upstash Redis (persistent!)
+  if (IS_PRODUCTION && redis) {
     try {
-      await kv.set(KV_KEY, posts);
-      console.log(`✅ [CONTACT] Successfully saved ${posts.length} posts to KV`);
+      await redis.set(KV_KEY, posts);
+      console.log(`✅ [CONTACT] Successfully saved ${posts.length} posts to Redis`);
       return; // ERFOLG!
-    } catch (kvError: any) {
-      console.error("❌ [CONTACT] KV save error:", kvError?.message || kvError);
+    } catch (redisError: any) {
+      console.error("❌ [CONTACT] Redis save error:", redisError?.message || redisError);
       // Fallback zu File
     }
   }

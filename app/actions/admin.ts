@@ -3,13 +3,21 @@
 import { verifySession } from "@/lib/auth";
 import fs from "fs";
 import path from "path";
-import { kv } from "@vercel/kv";
+import { Redis } from "@upstash/redis";
 
 const IS_PRODUCTION = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
 const STORAGE_PATH = IS_PRODUCTION
   ? "/tmp/contact-posts.json"
   : path.join(process.cwd(), "data", "contact-posts.json");
 const KV_KEY = "contact-posts";
+
+// Upstash Redis Client (nur wenn Umgebungsvariablen gesetzt sind)
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
 
 declare global {
   var __contactPosts: Array<{
@@ -31,10 +39,10 @@ declare global {
 // Lade Posts - IMMER aus KV! Sortiert nach createdAt DESC
 async function loadPosts() {
   try {
-    // In Production: Vercel KV (persistent!)
-    if (IS_PRODUCTION) {
+    // In Production: Upstash Redis (persistent!)
+    if (IS_PRODUCTION && redis) {
       try {
-        const data = await kv.get(KV_KEY);
+        const data = await redis.get(KV_KEY);
         if (data && Array.isArray(data)) {
           // Sortiere nach createdAt DESC (neueste zuerst)
           const sorted = data.sort((a: any, b: any) => {
@@ -43,11 +51,11 @@ async function loadPosts() {
             return dateB - dateA; // DESC
           });
           globalThis.__contactPosts = sorted;
-          console.log(`✅ [ADMIN] Loaded ${sorted.length} posts from KV`);
+          console.log(`✅ [ADMIN] Loaded ${sorted.length} posts from Redis`);
           return sorted;
         }
-      } catch (kvError: any) {
-        console.warn("⚠️ [ADMIN] KV error (falling back to file):", kvError?.message || kvError);
+      } catch (redisError: any) {
+        console.warn("⚠️ [ADMIN] Redis error (falling back to file):", redisError?.message || redisError);
       }
     }
     
@@ -93,14 +101,14 @@ async function savePosts(posts: Array<any>): Promise<void> {
   
   globalThis.__contactPosts = posts;
   
-  // In Production: Vercel KV (persistent!)
-  if (IS_PRODUCTION) {
+  // In Production: Upstash Redis (persistent!)
+  if (IS_PRODUCTION && redis) {
     try {
-      await kv.set(KV_KEY, posts);
-      console.log(`✅ [ADMIN] Saved ${posts.length} posts to KV`);
+      await redis.set(KV_KEY, posts);
+      console.log(`✅ [ADMIN] Saved ${posts.length} posts to Redis`);
       return; // Erfolg!
-    } catch (kvError: any) {
-      console.error("❌ [ADMIN] KV save error:", kvError?.message || kvError);
+    } catch (redisError: any) {
+      console.error("❌ [ADMIN] Redis save error:", redisError?.message || redisError);
       // Fallback zu File
     }
   }
