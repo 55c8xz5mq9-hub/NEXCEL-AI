@@ -83,30 +83,12 @@ function getFilePath(filename: string): string {
   return path.join(DATA_DIR, filename);
 }
 
-// Contacts - DIREKTE SPEICHERUNG - Funktioniert garantiert!
+// Contacts - NICHT MEHR VERWENDET - Server Actions verwenden!
 export async function getContacts(): Promise<ContactSubmission[]> {
-  // DIREKT ÜBER PRISMA - KEINE API, KEIN FILE-SYSTEM!
-  try {
-    const { prisma } = await import("@/lib/prisma");
-    
-    const contacts = await prisma.contactRequest.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-    
-    console.log(`✅ [DATABASE] Loaded ${contacts.length} contacts from Prisma`);
-    
-    return contacts.map((c) => ({
-      id: c.id,
-      vorname: c.vorname,
-      nachname: c.nachname,
-      email: c.email,
-      telefon: c.telefon || "",
-      unternehmen: c.unternehmen || "",
-      betreff: c.betreff,
-      nachricht: c.nachricht,
-      createdAt: c.createdAt.toISOString(),
+  // Diese Funktion wird nicht mehr verwendet - Server Actions verwenden!
+  // Gibt leeres Array zurück, damit Build funktioniert
+  console.warn("⚠️ [DATABASE] getContacts() wird nicht mehr verwendet - Server Actions verwenden!");
+  return [];
       read: c.read,
       archived: c.archived,
       emailSent: false,
