@@ -177,12 +177,12 @@ export async function markContactAsRead(id: string) {
       return { error: "Unauthorized" };
     }
 
-    const posts = loadPosts();
+    const posts = await loadPosts();
     const index = posts.findIndex(p => p.id === id);
     if (index === -1) return { error: "Post not found" };
     
     posts[index] = { ...posts[index], read: true, status: "read" };
-    savePosts(posts);
+    await savePosts(posts);
     
     return { success: true, contact: posts[index] };
   } catch (error) {
