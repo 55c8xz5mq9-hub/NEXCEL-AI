@@ -89,16 +89,6 @@ export async function getContacts(): Promise<ContactSubmission[]> {
   // Gibt leeres Array zurück, damit Build funktioniert
   console.warn("⚠️ [DATABASE] getContacts() wird nicht mehr verwendet - Server Actions verwenden!");
   return [];
-      read: c.read,
-      archived: c.archived,
-      emailSent: false,
-      emailVerified: false,
-    }));
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("❌ [DATABASE] Error getting contacts:", errorMessage);
-    return [];
-  }
 }
 
 export async function saveContact(contact: Omit<ContactSubmission, "id" | "createdAt" | "read" | "archived" | "emailSent" | "emailSentAt" | "emailVerified" | "verificationToken" | "verificationTokenExpiresAt">): Promise<ContactSubmission> {
