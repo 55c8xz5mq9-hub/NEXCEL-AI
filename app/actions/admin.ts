@@ -197,12 +197,12 @@ export async function archiveContact(id: string) {
       return { error: "Unauthorized" };
     }
 
-    const posts = loadPosts();
+    const posts = await loadPosts();
     const index = posts.findIndex(p => p.id === id);
     if (index === -1) return { error: "Post not found" };
     
     posts[index] = { ...posts[index], archived: true, status: "archived" };
-    savePosts(posts);
+    await savePosts(posts);
     
     return { success: true, contact: posts[index] };
   } catch (error) {
@@ -217,12 +217,12 @@ export async function deleteAdminContact(id: string) {
       return { error: "Unauthorized" };
     }
 
-    const posts = loadPosts();
+    const posts = await loadPosts();
     const index = posts.findIndex(p => p.id === id);
     if (index === -1) return { error: "Post not found" };
     
     posts.splice(index, 1);
-    savePosts(posts);
+    await savePosts(posts);
     
     return { success: true };
   } catch (error) {

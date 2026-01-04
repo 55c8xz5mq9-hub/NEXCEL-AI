@@ -157,7 +157,7 @@ export async function submitContactForm(formData: {
     const message = formData?.message ? String(formData.message).trim() : "Keine Nachricht";
     
     console.log("📝 [CONTACT] Loading posts...");
-    let posts = loadPosts();
+    let posts = await loadPosts();
     console.log(`📝 [CONTACT] Loaded ${posts.length} existing posts`);
     
     const post = {
@@ -178,7 +178,7 @@ export async function submitContactForm(formData: {
     console.log("📝 [CONTACT] Created post:", post.id);
     posts.unshift(post);
     console.log(`📝 [CONTACT] Saving ${posts.length} posts...`);
-    savePosts(posts);
+    await savePosts(posts);
     console.log("✅ [CONTACT] Post saved successfully!");
     
     // #region agent log
