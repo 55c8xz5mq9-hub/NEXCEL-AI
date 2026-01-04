@@ -120,9 +120,6 @@ export default function AdminDashboard() {
         setErrorDetails(errorDetailsObj);
         setContacts([]);
       } else {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/AdminDashboard.tsx:115',message:'Unexpected data format',data:{contactsData},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'N'})}).catch(()=>{});
-        // #endregion
         // Keine Daten oder unerwartetes Format - aber kein Fehler setzen, nur leeres Array
         console.warn("⚠️ [ADMIN DASHBOARD] Unexpected data format:", contactsData);
         setContacts([]);
