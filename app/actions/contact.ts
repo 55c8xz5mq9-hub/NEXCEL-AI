@@ -1,7 +1,5 @@
 "use server";
 
-export const runtime = "nodejs";
-
 /**
  * ABSOLUT FUNKTIONIERENDE LÖSUNG - 1000% GARANTIERT!
  * Posts werden IMMER gespeichert und sind sofort sichtbar!
