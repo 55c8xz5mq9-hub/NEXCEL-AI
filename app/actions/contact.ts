@@ -131,6 +131,9 @@ export async function submitContactForm(formData: {
   subject: string;
   message: string;
 }): Promise<{ success: boolean; id?: string; message?: string; error?: string }> {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/contact.ts:125',message:'submitContactForm entry',data:{firstName:formData.firstName,email:formData.email},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
   console.log("📝 [CONTACT] Form submitted:", { firstName: formData.firstName, email: formData.email });
   
   try {
@@ -165,12 +168,19 @@ export async function submitContactForm(formData: {
     savePosts(posts);
     console.log("✅ [CONTACT] Post saved successfully!");
     
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/contact.ts:166',message:'Returning success',data:{id:post.id,success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
+    
     return {
       success: true,
       id: post.id,
       message: "Ihre Anfrage wurde erfolgreich übermittelt. Wir werden uns schnellstmöglich bei Ihnen melden.",
     };
   } catch (error: any) {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/contact.ts:174',message:'Error in submitContactForm',data:{error:error?.message||String(error),stack:error?.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
     console.error("❌ [CONTACT] Error in submitContactForm:", error);
     try {
       const fallbackPost = {

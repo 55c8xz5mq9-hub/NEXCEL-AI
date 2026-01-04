@@ -536,13 +536,7 @@ export default function KontaktPage() {
       newErrors.email = "Ungültige E-Mail-Adresse";
     }
 
-    if (!formData.telefon.trim()) {
-      newErrors.telefon = "Telefonnummer ist erforderlich";
-    }
-
-    if (!formData.unternehmen.trim()) {
-      newErrors.unternehmen = "Unternehmen ist erforderlich";
-    }
+    // telefon und unternehmen sind OPTIONAL - keine Validierung!
 
     if (!formData.betreff.trim()) {
       newErrors.betreff = "Betreff ist erforderlich";
@@ -566,8 +560,14 @@ export default function KontaktPage() {
 
     // GARANTIERT: IMMER Erfolg zeigen, auch bei Fehlern!
     // Post wird IMMER erstellt, auch wenn Server Action fehlschlägt
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/kontakt/page.tsx:567',message:'Form submission started',data:{vorname:formData.vorname,email:formData.email},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     try {
       // Versuche Server Action aufzurufen
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/kontakt/page.tsx:571',message:'Calling submitContactForm',data:{formData},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
       const result = await submitContactForm({
         firstName: formData.vorname,
         lastName: formData.nachname,
@@ -578,12 +578,29 @@ export default function KontaktPage() {
         message: formData.nachricht,
       });
       
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/kontakt/page.tsx:582',message:'submitContactForm result',data:{result,success:result?.success,id:result?.id,error:result?.error},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
+      
       // Post wurde erstellt (auch wenn result fehlschlägt)
       console.log("✅ [KONTAKT FORM] Post created:", result?.id || "unknown");
-    } catch (error) {
+      
+      // #region agent log
+      if (result?.error) {
+        fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/kontakt/page.tsx:586',message:'Result contains error',data:{error:result.error},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+      }
+      // #endregion
+    } catch (error: any) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/kontakt/page.tsx:588',message:'Exception caught in handleSubmit',data:{error:error?.message||String(error),stack:error?.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+      // #endregion
       // Post wurde trotzdem erstellt (im Fallback)
       console.log("✅ [KONTAKT FORM] Post created (fallback)");
     }
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/kontakt/page.tsx:591',message:'Setting success state',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+    // #endregion
     
     // IMMER Erfolg zeigen!
     setSuccess(true);

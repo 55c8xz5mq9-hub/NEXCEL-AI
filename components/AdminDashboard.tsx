@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
+const IS_PRODUCTION = process.env.NEXT_PUBLIC_VERCEL === "1" || process.env.NODE_ENV === "production";
+
 interface Stats {
   analytics: {
     total: { pageViews: number; contacts: number; demoRequests: number };
@@ -83,7 +85,11 @@ export default function AdminDashboard() {
       
       if (statsRes.ok) setStats(await statsRes.json());
       
-      // Kontakte aus Server Action - VEREINFACHT!
+      // Kontakte aus Server Action - MIT DETAILLIERTER FEHLERANZEIGE!
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/AdminDashboard.tsx:87',message:'Processing contactsData',data:{hasData:!!contactsData,hasContacts:!!contactsData?.contacts,isArray:Array.isArray(contactsData?.contacts),hasError:!!contactsData?.error,error:contactsData?.error},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'L'})}).catch(()=>{});
+      // #endregion
+      
       if (contactsData && contactsData.contacts && Array.isArray(contactsData.contacts)) {
         console.log("✅ [ADMIN DASHBOARD] Setting contacts:", contactsData.contacts.length);
         if (contactsData.contacts.length > 0) {
@@ -98,16 +104,25 @@ export default function AdminDashboard() {
         setError(null);
         setErrorDetails(null);
       } else if (contactsData && contactsData.error) {
-        // FEHLER ANZEIGEN!
-        setError(`Fehler beim Laden: ${contactsData.error}`);
-        setErrorDetails({
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/AdminDashboard.tsx:100',message:'Setting error state',data:{error:contactsData.error,fullData:contactsData},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'M'})}).catch(()=>{});
+        // #endregion
+        // FEHLER ANZEIGEN - DETAILLIERT!
+        const errorDetailsObj = {
           type: "contacts_load_error",
           message: contactsData.error,
           data: contactsData,
           timestamp: new Date().toISOString(),
-        });
+          storagePath: IS_PRODUCTION ? "/tmp/contact-posts.json" : "data/contact-posts.json",
+          environment: IS_PRODUCTION ? "production" : "development",
+        };
+        setError(`Fehler beim Laden der Posts: ${contactsData.error}`);
+        setErrorDetails(errorDetailsObj);
         setContacts([]);
       } else {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/AdminDashboard.tsx:115',message:'Unexpected data format',data:{contactsData},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'N'})}).catch(()=>{});
+        // #endregion
         // Keine Daten oder unerwartetes Format - aber kein Fehler setzen, nur leeres Array
         console.warn("⚠️ [ADMIN DASHBOARD] Unexpected data format:", contactsData);
         setContacts([]);
