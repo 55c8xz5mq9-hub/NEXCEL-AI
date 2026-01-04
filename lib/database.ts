@@ -92,47 +92,9 @@ export async function getContacts(): Promise<ContactSubmission[]> {
 }
 
 export async function saveContact(contact: Omit<ContactSubmission, "id" | "createdAt" | "read" | "archived" | "emailSent" | "emailSentAt" | "emailVerified" | "verificationToken" | "verificationTokenExpiresAt">): Promise<ContactSubmission> {
-  // DIREKT ÜBER PRISMA - KEINE API, KEIN DUMMY!
-  try {
-    const { prisma } = await import("@/lib/prisma");
-    
-    const saved = await prisma.contactRequest.create({
-      data: {
-        vorname: contact.vorname,
-        nachname: contact.nachname,
-        email: contact.email,
-        telefon: contact.telefon || null,
-        unternehmen: contact.unternehmen || null,
-        betreff: contact.betreff,
-        nachricht: contact.nachricht,
-        status: "open",
-        read: false,
-        archived: false,
-      },
-    });
-    
-    console.log("✅ [DATABASE] Contact saved via Prisma:", saved.id);
-    
-    return {
-      id: saved.id,
-      vorname: saved.vorname,
-      nachname: saved.nachname,
-      email: saved.email,
-      telefon: saved.telefon || "",
-      unternehmen: saved.unternehmen || "",
-      betreff: saved.betreff,
-      nachricht: saved.nachricht,
-      createdAt: saved.createdAt.toISOString(),
-      read: saved.read,
-      archived: saved.archived,
-      emailSent: false,
-      emailVerified: false,
-    };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("❌ [DATABASE] Error saving contact:", errorMessage);
-    throw new Error(`Kontakt konnte nicht gespeichert werden: ${errorMessage}`);
-  }
+  // NICHT MEHR VERWENDET - Server Actions verwenden!
+  console.warn("⚠️ [DATABASE] saveContact() wird nicht mehr verwendet - Server Actions verwenden!");
+  throw new Error("saveContact() wird nicht mehr verwendet - Server Actions verwenden!");
 }
 
 export async function verifyContactEmail(token: string): Promise<ContactSubmission | null> {
@@ -154,59 +116,15 @@ export async function markContactEmailSent(id: string): Promise<ContactSubmissio
 }
 
 export async function updateContact(id: string, updates: Partial<ContactSubmission>): Promise<ContactSubmission | null> {
-  // DIREKT ÜBER PRISMA - KEINE API, KEIN FILE-SYSTEM!
-  try {
-    const { prisma } = await import("@/lib/prisma");
-    
-    const updated = await prisma.contactRequest.update({
-      where: { id },
-      data: {
-        read: updates.read !== undefined ? updates.read : undefined,
-        archived: updates.archived !== undefined ? updates.archived : undefined,
-        status: updates.read === true ? "read" : updates.archived === true ? "archived" : "open",
-      },
-    });
-    
-    console.log("✅ [DATABASE] Contact updated via Prisma:", id);
-    
-    return {
-      id: updated.id,
-      vorname: updated.vorname,
-      nachname: updated.nachname,
-      email: updated.email,
-      telefon: updated.telefon || "",
-      unternehmen: updated.unternehmen || "",
-      betreff: updated.betreff,
-      nachricht: updated.nachricht,
-      createdAt: updated.createdAt.toISOString(),
-      read: updated.read,
-      archived: updated.archived,
-      emailSent: false,
-      emailVerified: false,
-    };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("❌ [DATABASE] Error updating contact:", errorMessage);
-    return null;
-  }
+  // NICHT MEHR VERWENDET - Server Actions verwenden!
+  console.warn("⚠️ [DATABASE] updateContact() wird nicht mehr verwendet - Server Actions verwenden!");
+  return null;
 }
 
 export async function deleteContact(id: string): Promise<boolean> {
-  // DIREKT ÜBER PRISMA - KEINE API, KEIN FILE-SYSTEM!
-  try {
-    const { prisma } = await import("@/lib/prisma");
-    
-    await prisma.contactRequest.delete({
-      where: { id },
-    });
-    
-    console.log("✅ [DATABASE] Contact deleted via Prisma:", id);
-    return true;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("❌ [DATABASE] Error deleting contact:", errorMessage);
-    return false;
-  }
+  // NICHT MEHR VERWENDET - Server Actions verwenden!
+  console.warn("⚠️ [DATABASE] deleteContact() wird nicht mehr verwendet - Server Actions verwenden!");
+  return false;
 }
 
 // Demo Requests
