@@ -26,17 +26,24 @@ declare global {
   }> | undefined;
 }
 
-// Lade Posts - IMMER aus File!
+// Lade Posts - IMMER aus File! Sortiert nach createdAt DESC
 function loadPosts() {
   try {
+    // IMMER aus Datei laden - kein Memory-Fallback!
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
       if (data && data.trim()) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
-          globalThis.__contactPosts = parsed;
-          console.log(`✅ [ADMIN] Loaded ${parsed.length} posts from file: ${STORAGE_PATH}`);
-          return parsed;
+          // Sortiere nach createdAt DESC (neueste zuerst)
+          const sorted = parsed.sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return dateB - dateA; // DESC
+          });
+          globalThis.__contactPosts = sorted;
+          console.log(`✅ [ADMIN] Loaded ${sorted.length} posts from file: ${STORAGE_PATH}`);
+          return sorted;
         } else {
           console.warn("⚠️ [ADMIN] File data is not an array");
         }
@@ -50,10 +57,15 @@ function loadPosts() {
     console.error("❌ [ADMIN] Error loading posts:", error?.message || error);
   }
   
-  // Fallback: Memory
+  // Fallback: Memory (nur wenn Datei nicht existiert)
   if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
-    console.log(`✅ [ADMIN] Using ${globalThis.__contactPosts.length} posts from memory (fallback)`);
-    return globalThis.__contactPosts;
+    const sorted = globalThis.__contactPosts.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // DESC
+    });
+    console.log(`✅ [ADMIN] Using ${sorted.length} posts from memory (fallback)`);
+    return sorted;
   }
   
   console.log("ℹ️ [ADMIN] Returning empty array");
@@ -97,14 +109,8 @@ function savePosts(posts: Array<any>): void {
 }
 
 export async function getAdminContacts() {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/admin.ts:99',message:'getAdminContacts entry',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'})}).catch(()=>{});
-  // #endregion
   try {
     const session = await verifySession();
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/admin.ts:102',message:'Session check',data:{hasSession:!!session,role:session?.role},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H'})}).catch(()=>{});
-    // #endregion
     if (!session || session.role !== "admin") {
       console.log("❌ [ADMIN] Unauthorized access");
       return { error: "Unauthorized", contacts: [] };
@@ -112,11 +118,9 @@ export async function getAdminContacts() {
 
     console.log("✅ [ADMIN] Loading posts...");
     const posts = loadPosts();
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/admin.ts:109',message:'Posts loaded',data:{count:posts.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'I'})}).catch(()=>{});
-    // #endregion
     console.log(`✅ [ADMIN] Loaded ${posts.length} posts from file`);
     
+    // Transformiere Posts - KEINE Filterung, ALLE Posts werden zurückgegeben!
     const transformedContacts = posts.map((post) => ({
       id: post.id,
       name: `${post.vorname} ${post.nachname}`,
@@ -131,15 +135,9 @@ export async function getAdminContacts() {
       status: post.status,
     }));
 
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/admin.ts:125',message:'Returning contacts',data:{count:transformedContacts.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'J'})}).catch(()=>{});
-    // #endregion
     console.log(`✅ [ADMIN] Returning ${transformedContacts.length} contacts`);
     return { contacts: transformedContacts };
   } catch (error: any) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/admin.ts:128',message:'Error in getAdminContacts',data:{error:error?.message||String(error),stack:error?.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'K'})}).catch(()=>{});
-    // #endregion
     console.error("❌ [ADMIN] Error in getAdminContacts:", error);
     return { error: `Failed to fetch posts: ${error?.message || String(error)}`, contacts: [] };
   }

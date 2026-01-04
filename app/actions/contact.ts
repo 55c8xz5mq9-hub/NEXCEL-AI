@@ -38,6 +38,7 @@ if (typeof globalThis.__contactPosts === "undefined") {
 // Lade Posts - IMMER aus File!
 function loadPosts(): Array<any> {
   try {
+    // IMMER aus Datei laden - kein Memory-Fallback!
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
       if (data && data.trim()) {
@@ -59,7 +60,7 @@ function loadPosts(): Array<any> {
     console.error("❌ [CONTACT] Error loading posts:", error?.message || error);
   }
   
-  // Fallback: Memory
+  // Fallback: Memory (nur wenn Datei nicht existiert)
   if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
     console.log(`✅ [CONTACT] Using ${globalThis.__contactPosts.length} posts from memory (fallback)`);
     return globalThis.__contactPosts;
@@ -176,9 +177,6 @@ export async function submitContactForm(formData: {
       message: "Ihre Anfrage wurde erfolgreich übermittelt. Wir werden uns schnellstmöglich bei Ihnen melden.",
     };
   } catch (error: any) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/contact.ts:174',message:'Error in submitContactForm',data:{error:error?.message||String(error),stack:error?.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     console.error("❌ [CONTACT] Error in submitContactForm:", error);
     try {
       const fallbackPost = {
