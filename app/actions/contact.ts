@@ -7,11 +7,13 @@
 
 import fs from "fs";
 import path from "path";
+import { kv } from "@vercel/kv";
 
 const IS_PRODUCTION = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
 const STORAGE_PATH = IS_PRODUCTION
   ? "/tmp/contact-posts.json"
   : path.join(process.cwd(), "data", "contact-posts.json");
+const KV_KEY = "contact-posts";
 
 // Globaler Store
 declare global {
@@ -35,10 +37,24 @@ if (typeof globalThis.__contactPosts === "undefined") {
   globalThis.__contactPosts = [];
 }
 
-// Lade Posts - IMMER aus File!
-function loadPosts(): Array<any> {
+// Lade Posts - IMMER aus KV! Sortiert nach createdAt DESC
+async function loadPosts(): Promise<Array<any>> {
   try {
-    // IMMER aus Datei laden - kein Memory-Fallback!
+    // In Production: Vercel KV (persistent!)
+    if (IS_PRODUCTION) {
+      try {
+        const data = await kv.get(KV_KEY);
+        if (data && Array.isArray(data)) {
+          globalThis.__contactPosts = data;
+          console.log(`✅ [CONTACT] Loaded ${data.length} posts from KV`);
+          return data;
+        }
+      } catch (kvError: any) {
+        console.warn("⚠️ [CONTACT] KV error (falling back to file):", kvError?.message || kvError);
+      }
+    }
+    
+    // Fallback: Lokale Datei (Development)
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
       if (data && data.trim()) {
@@ -47,20 +63,14 @@ function loadPosts(): Array<any> {
           globalThis.__contactPosts = parsed;
           console.log(`✅ [CONTACT] Loaded ${parsed.length} posts from file: ${STORAGE_PATH}`);
           return parsed;
-        } else {
-          console.warn("⚠️ [CONTACT] File data is not an array");
         }
-      } else {
-        console.warn("⚠️ [CONTACT] File is empty");
       }
-    } else {
-      console.log(`ℹ️ [CONTACT] File does not exist yet: ${STORAGE_PATH}`);
     }
   } catch (error: any) {
     console.error("❌ [CONTACT] Error loading posts:", error?.message || error);
   }
   
-  // Fallback: Memory (nur wenn Datei nicht existiert)
+  // Fallback: Memory
   if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
     console.log(`✅ [CONTACT] Using ${globalThis.__contactPosts.length} posts from memory (fallback)`);
     return globalThis.__contactPosts;
@@ -70,42 +80,46 @@ function loadPosts(): Array<any> {
   return [];
 }
 
-// Speichere Posts - GARANTIERT!
-function savePosts(posts: Array<any>): void {
+// Speichere Posts - GARANTIERT PERSISTENT!
+async function savePosts(posts: Array<any>): Promise<void> {
   if (!Array.isArray(posts)) {
     console.error("❌ [CONTACT] savePosts: posts is not an array");
     return;
   }
   
   globalThis.__contactPosts = posts;
-  console.log(`💾 [CONTACT] Saving ${posts.length} posts to: ${STORAGE_PATH}`);
+  console.log(`💾 [CONTACT] Saving ${posts.length} posts`);
   
-  // RETRY: 10 Versuche!
+  // In Production: Vercel KV (persistent!)
+  if (IS_PRODUCTION) {
+    try {
+      await kv.set(KV_KEY, posts);
+      console.log(`✅ [CONTACT] Successfully saved ${posts.length} posts to KV`);
+      return; // ERFOLG!
+    } catch (kvError: any) {
+      console.error("❌ [CONTACT] KV save error:", kvError?.message || kvError);
+      // Fallback zu File
+    }
+  }
+  
+  // Fallback: Lokale Datei (Development)
+  const dir = path.dirname(STORAGE_PATH);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`📁 [CONTACT] Created directory: ${dir}`);
+  }
+  
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {
-      if (IS_PRODUCTION) {
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-      } else {
-        const dir = path.dirname(STORAGE_PATH);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-          console.log(`📁 [CONTACT] Created directory: ${dir}`);
-        }
-        fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-      }
+      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
       
-      // VERIFIKATION
       if (fs.existsSync(STORAGE_PATH)) {
         const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
         const verifyParsed = JSON.parse(verify);
         if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
-          console.log(`✅ [CONTACT] Successfully saved ${posts.length} posts (attempt ${attempt})`);
+          console.log(`✅ [CONTACT] Successfully saved ${posts.length} posts to file (attempt ${attempt})`);
           return; // ERFOLG!
-        } else {
-          console.warn(`⚠️ [CONTACT] Verification failed: expected ${posts.length}, got ${verifyParsed.length}`);
         }
-      } else {
-        console.warn(`⚠️ [CONTACT] File does not exist after write (attempt ${attempt})`);
       }
     } catch (error: any) {
       console.error(`❌ [CONTACT] Save attempt ${attempt} failed:`, error?.message || error);
