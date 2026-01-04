@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify the email
-    const contact = verifyContactEmail(token);
+    const contact = await verifyContactEmail(token);
 
     if (!contact) {
       return NextResponse.redirect(

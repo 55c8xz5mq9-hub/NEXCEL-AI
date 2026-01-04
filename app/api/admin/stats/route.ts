@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
     }
 
     const analytics = getAnalyticsStats();
-    const contacts = getContacts();
-    const demoRequests = getDemoRequests();
+    const contacts = await getContacts();
+    const demoRequests = getDemoRequests(); // sync function
 
     const unreadContacts = contacts.filter((c) => !c.read && !c.archived).length;
     const unreadDemoRequests = demoRequests.filter((r) => !r.read && !r.archived).length;
