@@ -72,10 +72,11 @@ export default function RootLayout({
     <html lang="de" className={`dark ${generalSans.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="apple-touch-icon" href="/apple-icon.svg" />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#1B8F6A" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#1B8F6A" />
+        <meta name="msapplication-TileColor" content="#1B8F6A" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
