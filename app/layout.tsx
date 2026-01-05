@@ -71,12 +71,38 @@ export default function RootLayout({
   return (
     <html lang="de" className={`dark ${generalSans.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-icon.svg" />
+        {/* Standard Favicons */}
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon-16x16.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon-32x32.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="96x96" href="/favicon-96x96.svg" />
+        
+        {/* Apple Touch Icons - Alle Größen */}
+        <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.svg" />
+        <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.svg" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.svg" />
+        <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.svg" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.svg" />
+        <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.svg" />
+        <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.svg" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.svg" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon.svg" />
+        
+        {/* Android Chrome Icons */}
+        <link rel="icon" type="image/svg+xml" sizes="192x192" href="/android-chrome-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="512x512" href="/android-chrome-512x512.svg" />
+        
+        {/* Safari */}
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#6B2DB8" />
+        
+        {/* Manifest */}
         <link rel="manifest" href="/manifest.json" />
+        
+        {/* Theme Colors */}
         <meta name="theme-color" content="#6B2DB8" />
         <meta name="msapplication-TileColor" content="#6B2DB8" />
+        <meta name="msapplication-TileImage" content="/android-chrome-192x192.svg" />
+        
         <script
           dangerouslySetInnerHTML={{
             __html: `
