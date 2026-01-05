@@ -186,10 +186,6 @@ export async function submitContactForm(formData: {
     await savePosts(posts);
     console.log("✅ [CONTACT] Post saved successfully!");
     
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/contact.ts:166',message:'Returning success',data:{id:post.id,success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    
     return {
       success: true,
       id: post.id,
