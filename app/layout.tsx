@@ -51,6 +51,7 @@ export const metadata: Metadata = {
   description: "Intelligente Software. Maßgeschneiderte KI. Zukunft, die funktioniert. Individuelle KI-Systeme, Automationen und digitale Produkte für Unternehmen.",
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/favicon-16x16.svg', sizes: '16x16', type: 'image/svg+xml' },
       { url: '/favicon-32x32.svg', sizes: '32x32', type: 'image/svg+xml' },
@@ -82,7 +83,8 @@ export default function RootLayout({
   return (
     <html lang="de" className={`dark ${generalSans.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
-        {/* Standard Favicons */}
+        {/* Standard Favicons - ICO für ältere Browser/Crawler */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon-16x16.svg" />
         <link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon-32x32.svg" />
