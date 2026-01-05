@@ -152,9 +152,6 @@ export async function submitContactForm(formData: {
   subject: string;
   message: string;
 }): Promise<{ success: boolean; id?: string; message?: string; error?: string }> {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/actions/contact.ts:125',message:'submitContactForm entry',data:{firstName:formData.firstName,email:formData.email},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
   console.log("📝 [CONTACT] Form submitted:", { firstName: formData.firstName, email: formData.email });
   
   try {
