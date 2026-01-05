@@ -83,9 +83,9 @@ export default function RootLayout({
   return (
     <html lang="de" className={`dark ${generalSans.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
-        {/* Standard Favicons - ICO für ältere Browser/Crawler */}
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        {/* Standard Favicons - SVG wird bevorzugt, ICO als Fallback */}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon-16x16.svg" />
         <link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon-32x32.svg" />
         <link rel="icon" type="image/svg+xml" sizes="96x96" href="/favicon-96x96.svg" />
