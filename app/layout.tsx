@@ -66,7 +66,7 @@ export const metadata: Metadata = {
       { url: '/apple-touch-icon-120x120.svg', sizes: '120x120', type: 'image/svg+xml' },
       { url: '/apple-touch-icon-144x144.svg', sizes: '144x144', type: 'image/svg+xml' },
       { url: '/apple-touch-icon-152x152.svg', sizes: '152x152', type: 'image/svg+xml' },
-      { url: '/apple-icon.svg', sizes: '180x180', type: 'image/svg+xml' },
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
     ],
     other: [
       { rel: 'mask-icon', url: '/safari-pinned-tab.svg', color: '#6B2DB8' },
@@ -99,7 +99,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.svg" />
         <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.svg" />
         <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.svg" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon.svg" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon.png" />
         
         {/* Android Chrome Icons */}
         <link rel="icon" type="image/svg+xml" sizes="192x192" href="/android-chrome-192x192.svg" />
