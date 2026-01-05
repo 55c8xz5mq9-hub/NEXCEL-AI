@@ -3,21 +3,9 @@
 import { verifySession } from "@/lib/auth";
 import fs from "fs";
 import path from "path";
-import { Redis } from "@upstash/redis";
 
-const IS_PRODUCTION = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
-const STORAGE_PATH = IS_PRODUCTION
-  ? "/tmp/contact-posts.json"
-  : path.join(process.cwd(), "data", "contact-posts.json");
-const KV_KEY = "contact-posts";
-
-// Upstash Redis Client (nur wenn Umgebungsvariablen gesetzt sind)
-const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-  ? new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    })
-  : null;
+// IMMER lokale Datei verwenden - auch in Production!
+const STORAGE_PATH = path.join(process.cwd(), "data", "contact-posts.json");
 
 declare global {
   var __contactPosts: Array<{
@@ -36,42 +24,30 @@ declare global {
   }> | undefined;
 }
 
-// Lade Posts - IMMER aus KV! Sortiert nach createdAt DESC
+// Lade Posts - IMMER aus lokaler Datei! Sortiert nach createdAt DESC
 async function loadPosts() {
   try {
-    // In Production: Upstash Redis (persistent!)
-    if (IS_PRODUCTION && redis) {
-      try {
-        const data = await redis.get(KV_KEY);
-        if (data && Array.isArray(data)) {
-          // Sortiere nach createdAt DESC (neueste zuerst)
-          const sorted = data.sort((a: any, b: any) => {
-            const dateA = new Date(a.createdAt).getTime();
-            const dateB = new Date(b.createdAt).getTime();
-            return dateB - dateA; // DESC
-          });
-          globalThis.__contactPosts = sorted;
-          console.log(`✅ [ADMIN] Loaded ${sorted.length} posts from Redis`);
-          return sorted;
-        }
-      } catch (redisError: any) {
-        console.warn("⚠️ [ADMIN] Redis error (falling back to file):", redisError?.message || redisError);
-      }
+    // Stelle sicher, dass das Verzeichnis existiert
+    const dir = path.dirname(STORAGE_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`📁 [ADMIN] Created directory: ${dir}`);
     }
     
-    // Fallback: Lokale Datei (Development)
+    // Lade aus lokaler Datei
     if (fs.existsSync(STORAGE_PATH)) {
       const data = fs.readFileSync(STORAGE_PATH, "utf-8");
       if (data && data.trim()) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
+          // Sortiere nach createdAt DESC (neueste zuerst)
           const sorted = parsed.sort((a, b) => {
             const dateA = new Date(a.createdAt).getTime();
             const dateB = new Date(b.createdAt).getTime();
             return dateB - dateA; // DESC
           });
           globalThis.__contactPosts = sorted;
-          console.log(`✅ [ADMIN] Loaded ${sorted.length} posts from file: ${STORAGE_PATH}`);
+          console.log(`✅ [ADMIN] Loaded ${sorted.length} posts from local file: ${STORAGE_PATH}`);
           return sorted;
         }
       }
@@ -80,7 +56,7 @@ async function loadPosts() {
     console.error("❌ [ADMIN] Error loading posts:", error?.message || error);
   }
   
-  // Fallback: Memory
+  // Fallback: Memory (nur wenn Datei nicht existiert)
   if (globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts)) {
     const sorted = globalThis.__contactPosts.sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
@@ -91,49 +67,43 @@ async function loadPosts() {
     return sorted;
   }
   
-  console.log("ℹ️ [ADMIN] Returning empty array");
+  console.log("ℹ️ [ADMIN] Returning empty array (no file found)");
   return [];
 }
 
-// Speichere Posts - GARANTIERT PERSISTENT!
+// Speichere Posts - IMMER LOKAL!
 async function savePosts(posts: Array<any>): Promise<void> {
   if (!Array.isArray(posts)) return;
   
   globalThis.__contactPosts = posts;
+  console.log(`💾 [ADMIN] Saving ${posts.length} posts to local file`);
   
-  // In Production: Upstash Redis (persistent!)
-  if (IS_PRODUCTION && redis) {
-    try {
-      await redis.set(KV_KEY, posts);
-      console.log(`✅ [ADMIN] Saved ${posts.length} posts to Redis`);
-      return; // Erfolg!
-    } catch (redisError: any) {
-      console.error("❌ [ADMIN] Redis save error:", redisError?.message || redisError);
-      // Fallback zu File
-    }
+  // Stelle sicher, dass das Verzeichnis existiert
+  const dir = path.dirname(STORAGE_PATH);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`📁 [ADMIN] Created directory: ${dir}`);
   }
   
-  // Fallback: Lokale Datei (Development)
+  // Speichere in lokale Datei mit Retry-Logik
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {
-      const dir = path.dirname(STORAGE_PATH);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
       fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
       
+      // Verifiziere dass die Datei korrekt geschrieben wurde
       if (fs.existsSync(STORAGE_PATH)) {
         const verify = fs.readFileSync(STORAGE_PATH, "utf-8");
         const verifyParsed = JSON.parse(verify);
         if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
-          console.log(`✅ [ADMIN] Saved ${posts.length} posts to file (attempt ${attempt})`);
-          return;
+          console.log(`✅ [ADMIN] Successfully saved ${posts.length} posts to local file: ${STORAGE_PATH}`);
+          return; // Erfolg!
         }
       }
-    } catch (error) {
-      // Retry
+    } catch (error: any) {
+      console.error(`❌ [ADMIN] Save attempt ${attempt} failed:`, error?.message || error);
     }
     
+    // Kurze Pause vor Retry
     if (attempt < 10) {
       const start = Date.now();
       while (Date.now() - start < 200) {}
