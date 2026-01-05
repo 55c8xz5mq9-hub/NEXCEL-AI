@@ -1,0 +1,24 @@
+{
+  "name": "NEXCEL AI",
+  "short_name": "NEXCEL AI",
+  "description": "Individuelle KI-Systeme & Softwarelösungen",
+  "icons": [
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#1B8F6A",
+  "background_color": "#0C0F1A",
+  "display": "standalone",
+  "start_url": "/"
+}
+
