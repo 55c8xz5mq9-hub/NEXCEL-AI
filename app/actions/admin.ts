@@ -34,26 +34,51 @@ async function loadPosts() {
       console.log(`📁 [ADMIN] Created directory: ${dir}`);
     }
     
+    // Erstelle Datei wenn sie nicht existiert
+    if (!fs.existsSync(STORAGE_PATH)) {
+      console.log(`📄 [ADMIN] Creating new file: ${STORAGE_PATH}`);
+      fs.writeFileSync(STORAGE_PATH, JSON.stringify([], null, 2), "utf-8");
+      globalThis.__contactPosts = [];
+      return [];
+    }
+    
     // Lade aus lokaler Datei
-    if (fs.existsSync(STORAGE_PATH)) {
-      const data = fs.readFileSync(STORAGE_PATH, "utf-8");
-      if (data && data.trim()) {
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-          // Sortiere nach createdAt DESC (neueste zuerst)
-          const sorted = parsed.sort((a, b) => {
-            const dateA = new Date(a.createdAt).getTime();
-            const dateB = new Date(b.createdAt).getTime();
-            return dateB - dateA; // DESC
-          });
-          globalThis.__contactPosts = sorted;
-          console.log(`✅ [ADMIN] Loaded ${sorted.length} posts from local file: ${STORAGE_PATH}`);
-          return sorted;
-        }
+    const data = fs.readFileSync(STORAGE_PATH, "utf-8");
+    if (data && data.trim()) {
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) {
+        // Sortiere nach createdAt DESC (neueste zuerst)
+        const sorted = parsed.sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return dateB - dateA; // DESC
+        });
+        globalThis.__contactPosts = sorted;
+        console.log(`✅ [ADMIN] Loaded ${sorted.length} posts from local file: ${STORAGE_PATH}`);
+        return sorted;
+      } else {
+        console.warn(`⚠️ [ADMIN] File exists but is not an array, resetting...`);
+        fs.writeFileSync(STORAGE_PATH, JSON.stringify([], null, 2), "utf-8");
+        globalThis.__contactPosts = [];
+        return [];
       }
+    } else {
+      // Leere Datei - initialisiere mit leerem Array
+      console.log(`📄 [ADMIN] File is empty, initializing...`);
+      fs.writeFileSync(STORAGE_PATH, JSON.stringify([], null, 2), "utf-8");
+      globalThis.__contactPosts = [];
+      return [];
     }
   } catch (error: any) {
     console.error("❌ [ADMIN] Error loading posts:", error?.message || error);
+    // Bei Fehler: Versuche Datei neu zu erstellen
+    try {
+      fs.writeFileSync(STORAGE_PATH, JSON.stringify([], null, 2), "utf-8");
+      globalThis.__contactPosts = [];
+      return [];
+    } catch (writeError) {
+      console.error("❌ [ADMIN] Failed to create file:", writeError);
+    }
   }
   
   // Fallback: Memory (nur wenn Datei nicht existiert)
@@ -73,10 +98,13 @@ async function loadPosts() {
 
 // Speichere Posts - IMMER LOKAL!
 async function savePosts(posts: Array<any>): Promise<void> {
-  if (!Array.isArray(posts)) return;
+  if (!Array.isArray(posts)) {
+    console.error("❌ [ADMIN] savePosts: posts is not an array");
+    return;
+  }
   
   globalThis.__contactPosts = posts;
-  console.log(`💾 [ADMIN] Saving ${posts.length} posts to local file`);
+  console.log(`💾 [ADMIN] Saving ${posts.length} posts to local file: ${STORAGE_PATH}`);
   
   // Stelle sicher, dass das Verzeichnis existiert
   const dir = path.dirname(STORAGE_PATH);
@@ -88,6 +116,7 @@ async function savePosts(posts: Array<any>): Promise<void> {
   // Speichere in lokale Datei mit Retry-Logik
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {
+      // Schreibe synchron - garantiert sofortiges Speichern
       fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
       
       // Verifiziere dass die Datei korrekt geschrieben wurde
@@ -96,21 +125,39 @@ async function savePosts(posts: Array<any>): Promise<void> {
         const verifyParsed = JSON.parse(verify);
         if (Array.isArray(verifyParsed) && verifyParsed.length === posts.length) {
           console.log(`✅ [ADMIN] Successfully saved ${posts.length} posts to local file: ${STORAGE_PATH}`);
+          // Zusätzliche Verifizierung: Prüfe ob Datei wirklich geschrieben wurde
+          const stats = fs.statSync(STORAGE_PATH);
+          console.log(`📊 [ADMIN] File size: ${stats.size} bytes, modified: ${stats.mtime}`);
           return; // Erfolg!
+        } else {
+          console.warn(`⚠️ [ADMIN] Verification failed: expected ${posts.length} posts, got ${verifyParsed.length}`);
         }
+      } else {
+        console.warn(`⚠️ [ADMIN] File does not exist after write (attempt ${attempt})`);
       }
     } catch (error: any) {
       console.error(`❌ [ADMIN] Save attempt ${attempt} failed:`, error?.message || error);
+      if (error?.code === 'ENOENT') {
+        // Verzeichnis existiert nicht - erstelle es
+        try {
+          fs.mkdirSync(dir, { recursive: true });
+          console.log(`📁 [ADMIN] Created directory after error: ${dir}`);
+        } catch (mkdirError) {
+          console.error(`❌ [ADMIN] Failed to create directory:`, mkdirError);
+        }
+      }
     }
     
     // Kurze Pause vor Retry
     if (attempt < 10) {
-      const start = Date.now();
-      while (Date.now() - start < 200) {}
+      await new Promise(resolve => setTimeout(resolve, 200));
     }
   }
   
   console.error("❌ [ADMIN] Failed to save after 10 attempts");
+  // Versuche trotzdem im Memory zu speichern
+  globalThis.__contactPosts = posts;
+  console.log(`💾 [ADMIN] Saved ${posts.length} posts to memory as fallback`);
 }
 
 export async function getAdminContacts() {
