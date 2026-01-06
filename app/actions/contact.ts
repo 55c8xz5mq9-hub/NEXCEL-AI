@@ -101,6 +101,7 @@ async function savePosts(posts: Array<any>): Promise<void> {
     return;
   }
   
+  // Aktualisiere globalen Store IMMER zuerst
   globalThis.__contactPosts = posts;
   console.log(`💾 [CONTACT] Saving ${posts.length} posts to local file: ${STORAGE_PATH}`);
   
@@ -112,10 +113,15 @@ async function savePosts(posts: Array<any>): Promise<void> {
   }
   
   // Speichere in lokale Datei mit Retry-Logik
+  let savedSuccessfully = false;
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {
       // Schreibe synchron - garantiert sofortiges Speichern
-      fs.writeFileSync(STORAGE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+      const jsonData = JSON.stringify(posts, null, 2);
+      fs.writeFileSync(STORAGE_PATH, jsonData, "utf-8");
+      
+      // Warte kurz, damit das Dateisystem synchronisiert wird
+      await new Promise(resolve => setTimeout(resolve, 50));
       
       // Verifiziere dass die Datei korrekt geschrieben wurde
       if (fs.existsSync(STORAGE_PATH)) {
@@ -126,7 +132,8 @@ async function savePosts(posts: Array<any>): Promise<void> {
           // Zusätzliche Verifizierung: Prüfe ob Datei wirklich geschrieben wurde
           const stats = fs.statSync(STORAGE_PATH);
           console.log(`📊 [CONTACT] File size: ${stats.size} bytes, modified: ${stats.mtime}`);
-          return; // ERFOLG!
+          savedSuccessfully = true;
+          break; // ERFOLG!
         } else {
           console.warn(`⚠️ [CONTACT] Verification failed: expected ${posts.length} posts, got ${verifyParsed.length}`);
         }
@@ -152,10 +159,12 @@ async function savePosts(posts: Array<any>): Promise<void> {
     }
   }
   
-  console.error("❌ [CONTACT] Failed to save after 10 attempts");
-  // Versuche trotzdem im Memory zu speichern
-  globalThis.__contactPosts = posts;
-  console.log(`💾 [CONTACT] Saved ${posts.length} posts to memory as fallback`);
+  if (!savedSuccessfully) {
+    console.error("❌ [CONTACT] Failed to save after 10 attempts");
+    // Versuche trotzdem im Memory zu speichern
+    globalThis.__contactPosts = posts;
+    console.log(`💾 [CONTACT] Saved ${posts.length} posts to memory as fallback`);
+  }
 }
 
 // POST-FUNKTION - 1000% GARANTIERT!
@@ -199,7 +208,12 @@ export async function submitContactForm(formData: {
     console.log("📝 [CONTACT] Created post:", post.id);
     posts.unshift(post);
     console.log(`📝 [CONTACT] Saving ${posts.length} posts...`);
+    
+    // Speichere sofort und warte auf Bestätigung
     await savePosts(posts);
+    
+    // Warte kurz, damit das Dateisystem synchronisiert wird
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     // Zusätzliche Verifizierung: Lade die Datei direkt nach dem Speichern
     const verifyPosts = await loadPosts();
@@ -207,7 +221,17 @@ export async function submitContactForm(formData: {
     if (savedPost) {
       console.log("✅ [CONTACT] Post saved and verified successfully!");
     } else {
-      console.warn("⚠️ [CONTACT] Post saved but not found in verification - may need to wait for file sync");
+      console.warn("⚠️ [CONTACT] Post saved but not found in verification - retrying...");
+      // Retry: Speichere nochmal
+      await savePosts(posts);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const retryPosts = await loadPosts();
+      const retryPost = retryPosts.find(p => p.id === post.id);
+      if (retryPost) {
+        console.log("✅ [CONTACT] Post saved after retry!");
+      } else {
+        console.error("❌ [CONTACT] Post still not found after retry!");
+      }
     }
     
     return {

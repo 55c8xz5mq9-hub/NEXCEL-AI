@@ -168,9 +168,38 @@ export async function getAdminContacts() {
       return { error: "Unauthorized", contacts: [] };
     }
 
-    console.log("✅ [ADMIN] Loading posts...");
+    console.log("✅ [ADMIN] Loading posts from:", STORAGE_PATH);
     const posts = await loadPosts();
-    console.log(`✅ [ADMIN] Loaded ${posts.length} posts`);
+    console.log(`✅ [ADMIN] Loaded ${posts.length} posts from file`);
+    
+    // Prüfe auch den globalen Store als Fallback
+    if (posts.length === 0 && globalThis.__contactPosts && Array.isArray(globalThis.__contactPosts) && globalThis.__contactPosts.length > 0) {
+      console.log(`⚠️ [ADMIN] File is empty but memory has ${globalThis.__contactPosts.length} posts - using memory`);
+      // Versuche Memory-Daten in Datei zu speichern
+      await savePosts(globalThis.__contactPosts);
+      const memoryPosts = globalThis.__contactPosts.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA; // DESC
+      });
+      
+      const transformedContacts = memoryPosts.map((post) => ({
+        id: post.id,
+        name: `${post.vorname} ${post.nachname}`,
+        email: post.email,
+        telefon: post.telefon || undefined,
+        unternehmen: post.unternehmen || undefined,
+        betreff: post.betreff,
+        nachricht: post.nachricht,
+        createdAt: post.createdAt,
+        read: post.read,
+        archived: post.archived,
+        status: post.status,
+      }));
+      
+      console.log(`✅ [ADMIN] Returning ${transformedContacts.length} contacts from memory`);
+      return { contacts: transformedContacts };
+    }
     
     // Transformiere Posts - KEINE Filterung, ALLE Posts werden zurückgegeben!
     const transformedContacts = posts.map((post) => ({
