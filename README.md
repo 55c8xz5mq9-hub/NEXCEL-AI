@@ -22,7 +22,7 @@ npm install
 npm run dev
 ```
 
-Die Webseite läuft dann auf [http://localhost:3001](http://localhost:3001)
+Die Webseite läuft dann auf [http://localhost:3001](http://localhost:3001) (Port 3000 ist für Immostripe belegt)
 
 ## Build
 
