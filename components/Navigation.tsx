@@ -373,12 +373,14 @@ export default function Navigation() {
                 }}
               />
 
-              {/* Content Container - Ultra Responsive */}
-              <div className="relative z-10 flex flex-col md:flex-row items-stretch md:items-center justify-between md:justify-start gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
-                {/* Top Row - Mobile: Logo + Buttons, Desktop: Logo + Search + Nav */}
+              {/* Content Container - 3-Spalten Grid für echtes Zentrieren */}
+              <div className="relative z-10 flex flex-col md:grid md:grid-cols-[auto_1fr_auto] items-stretch md:items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
+                {/* Mobile: Logo + Buttons Row */}
                 <div className="flex items-center justify-between md:contents gap-2 sm:gap-3">
-                  {/* Left Section - Logo (Mobile & Desktop) */}
-                  <div className="flex-shrink-0">
+                  {/* Left Section - Logo + Search (Desktop) / Logo (Mobile) */}
+                  <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-shrink-0 justify-start">
+                    {/* Logo */}
+                    <div className="flex-shrink-0">
                   <Link href="/" className="block">
                   <motion.div
                     className="relative flex items-center cursor-pointer group/logo"
@@ -430,8 +432,8 @@ export default function Navigation() {
                   </Link>
                   </div>
 
-                  {/* Right Section - Theme Toggle + Mobile Menu (Mobile) / Desktop Navigation (Desktop) */}
-                  <div className="flex items-center gap-2 md:hidden flex-shrink-0">
+                    {/* Mobile Menu Button - Mobile Only */}
+                    <div className="flex items-center gap-2 md:hidden flex-shrink-0">
                     {/* Theme Toggle - Mobile */}
                     <motion.button
                       onClick={toggleTheme}
@@ -555,11 +557,11 @@ export default function Navigation() {
                         transition={{ duration: 0.3 }}
                       />
                     </motion.button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Apple Intelligence Search Bar - Ultra Responsive - Desktop Only */}
-                <div className="hidden md:flex flex-1 min-w-0 md:max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px] md:mx-auto md:px-0 md:order-none">
+                  {/* Search Bar - Desktop Only, Left Section */}
+                  <div className="hidden md:flex min-w-0 max-w-[400px] lg:max-w-[500px] xl:max-w-[600px] flex-shrink-0">
                   <motion.div
                     ref={searchContainerRef}
                     className="relative group/search"
@@ -877,10 +879,11 @@ export default function Navigation() {
                       )}
                     </div>
                   </motion.div>
+                  </div>
                 </div>
 
-                {/* Navigation Links - Desktop - Ultra Responsive */}
-                <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 2xl:gap-3">
+                {/* Center Section - Nav Links (ECHT ZENTRIERT) - Desktop Only */}
+                <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 2xl:gap-3 justify-self-center">
                   {[
                     { label: "Home", href: "/", showOn: "lg" },
                     { label: "Leistungen", href: "/leistungen", showOn: "lg" },
@@ -926,8 +929,8 @@ export default function Navigation() {
                   ))}
                 </div>
 
-                {/* Right Section - Theme Toggle + Mobile Menu (Desktop Only) */}
-                <div className="hidden md:flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-6 flex-shrink-0">
+                {/* Right Section - Theme Toggle + CTA (Desktop Only) */}
+                <div className="hidden md:flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-6 flex-shrink-0 justify-end">
                   {/* Theme Toggle - Ultra High-End - Responsive */}
                   <motion.button
                     onClick={toggleTheme}

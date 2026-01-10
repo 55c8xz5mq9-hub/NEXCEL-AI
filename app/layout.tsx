@@ -194,9 +194,10 @@ export default function RootLayout({
         />
       </head>
       <body className={`min-h-screen relative transition-colors duration-500 ${inter.className}`} style={{ 
-        background: "linear-gradient(180deg, #0C0F1A 0%, #111622 50%, #0C0F1A 100%)",
+        background: "linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 50%, var(--bg-0) 100%)",
         position: "relative",
         fontFamily: "var(--font-body)",
+        color: "var(--text-0)",
       }}>
         <ThemeProvider>
           {/* Neural AI Energy Background - Premium Dark Mode */}
