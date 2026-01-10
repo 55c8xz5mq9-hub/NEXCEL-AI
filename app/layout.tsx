@@ -210,7 +210,6 @@ export default function RootLayout({
             minHeight: "100vh",
             position: "relative",
             zIndex: 1,
-            background: "transparent",
           }}>
             {children}
           </div>
