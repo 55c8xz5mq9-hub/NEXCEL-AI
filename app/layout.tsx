@@ -194,7 +194,6 @@ export default function RootLayout({
         />
       </head>
       <body className={`min-h-screen relative transition-colors duration-500 ${inter.className}`} style={{ 
-        background: "linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 50%, var(--bg-0) 100%)",
         position: "relative",
         fontFamily: "var(--font-body)",
         color: "var(--text-0)",

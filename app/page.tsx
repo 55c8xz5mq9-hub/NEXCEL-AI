@@ -1507,20 +1507,8 @@ function ManualProblemsSlider({ problems }: { problems: ManualProblem[] }) {
 export default function Home() {
   const { theme } = useTheme();
   
-  // Memoize background style to avoid recalculation
-  const bodyBackground = useMemo(() => 
-    theme === "dark" 
-      ? "linear-gradient(180deg, #0C0F1A 0%, #111622 50%, #0C0F1A 100%)"
-      : "linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 100%)",
-    [theme]
-  );
-  
-  // Ensure background is always visible
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      document.body.style.background = bodyBackground;
-    }
-  }, [bodyBackground]);
+  // Background wird jetzt über CSS Variablen in globals.css gesteuert
+  // Kein JavaScript-Override mehr nötig
 
   // Manual Problems Data - defined inside component to avoid scope issues
   const manualProblemsData = useMemo(() => [

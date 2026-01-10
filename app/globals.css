@@ -67,9 +67,10 @@
    ============================================ */
 
 body {
-  background: linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 50%, var(--bg-0) 100%);
+  background: linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 50%, var(--bg-0) 100%) !important;
   position: relative;
   min-height: 100vh;
+  color: var(--text-0);
 }
 
 body::before {
