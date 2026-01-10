@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'nav-mobile': {'max': '980px'}, // Breakpoint für Mobile Navigation
+      },
       colors: {
         purple: {
           neon: "#6B2DB8",
