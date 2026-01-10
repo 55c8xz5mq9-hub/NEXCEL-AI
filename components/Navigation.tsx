@@ -374,13 +374,13 @@ export default function Navigation() {
               />
 
               {/* Content Container - 3-Spalten Grid für echtes Zentrieren */}
-              <div className="relative z-10 flex flex-col md:grid md:grid-cols-[auto_1fr_auto] items-stretch md:items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
-                {/* Mobile: Logo + Buttons Row */}
-                <div className="flex items-center justify-between md:contents gap-2 sm:gap-3">
-                  {/* Left Section - Logo + Search (Desktop) / Logo (Mobile) */}
-                  <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-shrink-0 justify-start">
-                    {/* Logo */}
-                    <div className="flex-shrink-0">
+              {/* Mobile: Flex Layout (Logo + Buttons) */}
+              {/* Desktop: Grid mit 3 Spalten für echte Zentrierung */}
+              <div className="relative z-10 flex flex-col lg:grid lg:grid-cols-[1fr_auto_1fr] items-stretch lg:items-center gap-3 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8">
+                {/* Mobile: Top Row - Logo + Buttons */}
+                <div className="flex items-center justify-between lg:hidden gap-2 sm:gap-3">
+                  {/* Mobile: Logo */}
+                  <div className="flex-shrink-0">
                   <Link href="/" className="block">
                   <motion.div
                     className="relative flex items-center cursor-pointer group/logo"
@@ -558,13 +558,68 @@ export default function Navigation() {
                       />
                     </motion.button>
                     </div>
+                </div>
+
+                {/* Desktop: Left Section - Logo + Search */}
+                <div className="hidden lg:flex items-center gap-3 xl:gap-4 2xl:gap-5 justify-start w-full">
+                  {/* Logo */}
+                  <div className="flex-shrink-0">
+                  <Link href="/" className="block">
+                  <motion.div
+                    className="relative flex items-center cursor-pointer group/logo"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{ willChange: "transform, opacity" }}
+                  >
+                    {/* Logo Glow */}
+                    <div
+                      className="absolute inset-0 rounded-xl opacity-0 group-hover/logo:opacity-100 transition-opacity duration-500 -z-10"
+                      style={{
+                        background: theme === "dark"
+                          ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
+                          : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
+                        filter: "blur(20px)",
+                        padding: "8px",
+                      }}
+                    />
+                    <span
+                      className="text-base lg:text-lg xl:text-xl 2xl:text-2xl font-bold tracking-tight transition-all duration-300"
+                      style={{
+                        fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
+                        letterSpacing: "-0.02em",
+                        background: "linear-gradient(to right, #C0C0C0, #808080)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
+                      NEXCEL
+                    </span>
+                    <span
+                      className="ml-0.5 lg:ml-1 text-base lg:text-lg xl:text-xl 2xl:text-2xl font-bold tracking-tight transition-all duration-300"
+                      style={{
+                        fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
+                        letterSpacing: "-0.02em",
+                        background: "linear-gradient(to right, #A855F7, #8B5CF6)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
+                      AI
+                    </span>
+                  </motion.div>
+                  </Link>
                   </div>
 
-                  {/* Search Bar - Desktop Only, Left Section */}
-                  <div className="hidden md:flex min-w-0 max-w-[400px] lg:max-w-[500px] xl:max-w-[600px] flex-shrink-0">
+                  {/* Search Bar - Desktop */}
+                  <div className="flex min-w-0 max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] 2xl:max-w-[600px] flex-shrink-0">
                   <motion.div
                     ref={searchContainerRef}
-                    className="relative group/search"
+                    className="relative group/search w-full"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -882,8 +937,8 @@ export default function Navigation() {
                   </div>
                 </div>
 
-                {/* Center Section - Nav Links (ECHT ZENTRIERT) - Desktop Only */}
-                <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 2xl:gap-3 justify-self-center">
+                {/* Desktop: Center Section - Nav Links (ECHT ZENTRIERT) */}
+                <div className="hidden lg:flex items-center justify-center gap-1.5 xl:gap-2 2xl:gap-3 place-self-center w-full">
                   {[
                     { label: "Home", href: "/", showOn: "lg" },
                     { label: "Leistungen", href: "/leistungen", showOn: "lg" },
@@ -929,81 +984,10 @@ export default function Navigation() {
                   ))}
                 </div>
 
-                {/* Right Section - Theme Toggle + CTA (Desktop Only) */}
-                <div className="hidden md:flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-6 flex-shrink-0 justify-end">
-                  {/* Theme Toggle - Ultra High-End - Responsive */}
-                  <motion.button
-                    onClick={toggleTheme}
-                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/theme flex-shrink-0"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                  whileHover={{ scale: 1.15, y: -3, rotate: 15 }}
-                  whileTap={{ scale: 0.85 }}
-                  style={{
-                    background: theme === "dark"
-                      ? "rgba(255, 255, 255, 0.12)"
-                      : "rgba(0, 0, 0, 0.08)",
-                    backdropFilter: "blur(30px)",
-                    WebkitBackdropFilter: "blur(30px)",
-                    border: theme === "dark"
-                      ? "1px solid rgba(255, 255, 255, 0.18)"
-                      : "1px solid rgba(0, 0, 0, 0.12)",
-                    boxShadow: theme === "dark"
-                      ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
-                      : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
-                    willChange: "transform",
-                  }}
-                  aria-label="Toggle theme"
-                >
-                  <div
-                    className="absolute inset-0 rounded-xl opacity-0 group-hover/theme:opacity-100 transition-opacity duration-300 -z-10"
-                    style={{
-                      background: theme === "dark"
-                        ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
-                        : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
-                      filter: "blur(16px)",
-                    }}
-                  />
-                  <AnimatePresence mode="wait">
-                    {theme === "dark" ? (
-                      <motion.svg
-                        key="sun"
-                        className="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2.5}
-                        initial={{ rotate: -90, opacity: 0 }}
-                        animate={{ rotate: 0, opacity: 1 }}
-                        exit={{ rotate: 90, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        style={{ color: "rgba(255, 255, 255, 0.95)" }}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                      </motion.svg>
-                    ) : (
-                      <motion.svg
-                        key="moon"
-                        className="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2.5}
-                        initial={{ rotate: 90, opacity: 0 }}
-                        animate={{ rotate: 0, opacity: 1 }}
-                        exit={{ rotate: -90, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        style={{ color: "rgba(0, 0, 0, 0.9)" }}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                      </motion.svg>
-                    )}
-                  </AnimatePresence>
-                  </motion.button>
-
-                  {/* Demo Button - Apple Intelligence Ultra High-End - Responsive */}
-                <Link href="/demo-anfordern" prefetch={true} className="hidden lg:block flex-shrink-0">
+                {/* Desktop: Right Section - Demo anfordern + Theme Toggle */}
+                <div className="hidden lg:flex items-center gap-3 xl:gap-4 2xl:gap-5 justify-end">
+                  {/* Demo Button */}
+                  <Link href="/demo-anfordern" prefetch={true} className="flex-shrink-0">
                   <motion.button
                     className="ai-demo-button relative px-3 lg:px-4 xl:px-5 2xl:px-6 py-2 lg:py-2.5 xl:py-3 rounded-[16px] lg:rounded-[18px] xl:rounded-[20px] font-semibold text-xs lg:text-xs xl:text-sm tracking-wide overflow-hidden group/demo whitespace-nowrap"
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -1127,53 +1111,75 @@ export default function Navigation() {
                   </motion.button>
                   </Link>
 
-                  {/* Mobile Menu Button */}
+                  {/* Theme Toggle - Ganz rechts */}
                   <motion.button
-                    className="md:hidden relative w-11 h-11 flex flex-col justify-center items-center gap-1.5 p-2 rounded-xl transition-all duration-300 flex-shrink-0"
-                  style={{
-                    background: theme === "dark"
-                      ? "rgba(255, 255, 255, 0.12)"
-                      : "rgba(0, 0, 0, 0.08)",
-                    backdropFilter: "blur(30px)",
-                    WebkitBackdropFilter: "blur(30px)",
-                    border: theme === "dark"
-                      ? "1px solid rgba(255, 255, 255, 0.18)"
-                      : "1px solid rgba(0, 0, 0, 0.12)",
-                    boxShadow: theme === "dark"
-                      ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset"
-                      : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
-                  }}
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  aria-label="Menu"
-                >
-                  <motion.span
-                    className="w-5 h-0.5 rounded-full"
-                    style={{ backgroundColor: theme === "dark" ? "#FFFFFF" : "#000000" }}
-                    animate={{
-                      rotate: mobileMenuOpen ? 45 : 0,
-                      y: mobileMenuOpen ? 6 : 0,
+                    onClick={toggleTheme}
+                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/theme flex-shrink-0"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ scale: 1.15, y: -3, rotate: 15 }}
+                    whileTap={{ scale: 0.85 }}
+                    style={{
+                      background: theme === "dark"
+                        ? "rgba(255, 255, 255, 0.12)"
+                        : "rgba(0, 0, 0, 0.08)",
+                      backdropFilter: "blur(30px)",
+                      WebkitBackdropFilter: "blur(30px)",
+                      border: theme === "dark"
+                        ? "1px solid rgba(255, 255, 255, 0.18)"
+                        : "1px solid rgba(0, 0, 0, 0.12)",
+                      boxShadow: theme === "dark"
+                        ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
+                        : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
+                      willChange: "transform",
                     }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  <motion.span
-                    className="w-5 h-0.5 rounded-full"
-                    style={{ backgroundColor: theme === "dark" ? "#FFFFFF" : "#000000" }}
-                    animate={{
-                      opacity: mobileMenuOpen ? 0 : 1,
-                    }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  <motion.span
-                    className="w-5 h-0.5 rounded-full"
-                    style={{ backgroundColor: theme === "dark" ? "#FFFFFF" : "#000000" }}
-                    animate={{
-                      rotate: mobileMenuOpen ? -45 : 0,
-                      y: mobileMenuOpen ? -6 : 0,
-                    }}
-                    transition={{ duration: 0.3 }}
-                  />
+                    aria-label="Toggle theme"
+                  >
+                    <div
+                      className="absolute inset-0 rounded-xl opacity-0 group-hover/theme:opacity-100 transition-opacity duration-300 -z-10"
+                      style={{
+                        background: theme === "dark"
+                          ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
+                          : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
+                        filter: "blur(16px)",
+                      }}
+                    />
+                    <AnimatePresence mode="wait">
+                      {theme === "dark" ? (
+                        <motion.svg
+                          key="sun"
+                          className="w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          initial={{ rotate: -90, opacity: 0 }}
+                          animate={{ rotate: 0, opacity: 1 }}
+                          exit={{ rotate: 90, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          style={{ color: "rgba(255, 255, 255, 0.95)" }}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </motion.svg>
+                      ) : (
+                        <motion.svg
+                          key="moon"
+                          className="w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          initial={{ rotate: 90, opacity: 0 }}
+                          animate={{ rotate: 0, opacity: 1 }}
+                          exit={{ rotate: -90, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          style={{ color: "rgba(0, 0, 0, 0.9)" }}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </motion.svg>
+                      )}
+                    </AnimatePresence>
                   </motion.button>
                 </div>
               </div>
