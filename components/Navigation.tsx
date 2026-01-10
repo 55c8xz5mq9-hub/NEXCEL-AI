@@ -888,7 +888,56 @@ export default function Navigation() {
                   </motion.button>
                   </Link>
 
-                  {/* Theme Toggle - Ganz rechts (Search Icon entfernt) */}
+                  {/* Search Icon Button - Desktop (zwischen Demo und Theme Toggle) */}
+                  <motion.button
+                    onClick={() => setSearchModalOpen(true)}
+                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/search-btn flex-shrink-0 hidden lg:flex"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ scale: 1.15, y: -3, rotate: 15 }}
+                    whileTap={{ scale: 0.85 }}
+                    style={{
+                      background: theme === "dark"
+                        ? "rgba(255, 255, 255, 0.12)"
+                        : "rgba(0, 0, 0, 0.08)",
+                      backdropFilter: "blur(30px)",
+                      WebkitBackdropFilter: "blur(30px)",
+                      border: theme === "dark"
+                        ? "1px solid rgba(255, 255, 255, 0.18)"
+                        : "1px solid rgba(0, 0, 0, 0.12)",
+                      boxShadow: theme === "dark"
+                        ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
+                        : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
+                      willChange: "transform",
+                    }}
+                    aria-label="Suche öffnen"
+                  >
+                    <div
+                      className="absolute inset-0 rounded-xl opacity-0 group-hover/search-btn:opacity-100 transition-opacity duration-300 -z-10"
+                      style={{
+                        background: theme === "dark"
+                          ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
+                          : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
+                        filter: "blur(16px)",
+                      }}
+                    />
+                    <motion.svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      style={{
+                        color: theme === "dark" ? "rgba(255, 255, 255, 0.95)" : "rgba(0, 0, 0, 0.9)",
+                      }}
+                      whileHover={{ scale: 1.1 }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </motion.svg>
+                  </motion.button>
+
+                  {/* Theme Toggle - Ganz rechts */}
                   <motion.button
                     onClick={toggleTheme}
                     className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/theme flex-shrink-0"
