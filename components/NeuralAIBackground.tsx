@@ -101,17 +101,8 @@ export default function NeuralAIBackground() {
       // Clear canvas - optimized
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Background gradient - Theme aware
-      const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      if (theme === "dark") {
-        bgGradient.addColorStop(0, "#06070D");
-        bgGradient.addColorStop(1, "#0A0D16");
-      } else {
-        bgGradient.addColorStop(0, "#FAFBFC");
-        bgGradient.addColorStop(1, "#F5F7FA");
-      }
-      ctx.fillStyle = bgGradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Background wird jetzt über CSS gesteuert (globals.css)
+      // Kein Canvas-Background mehr nötig
 
       // LAYER 1: Background Layer - Small Particles
       particlesRef.current.forEach((particle) => {
@@ -360,10 +351,8 @@ export default function NeuralAIBackground() {
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none transition-all duration-500"
       style={{
-        zIndex: -1,
-        background: theme === "dark" 
-          ? "linear-gradient(180deg, #06070D 0%, #0A0D16 100%)"
-          : "linear-gradient(180deg, #FAFBFC 0%, #F5F7FA 100%)",
+        zIndex: 0,
+        background: "transparent",
         willChange: "transform",
         transform: "translateZ(0)",
       }}
