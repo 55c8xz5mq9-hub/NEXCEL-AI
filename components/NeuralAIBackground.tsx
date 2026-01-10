@@ -351,7 +351,7 @@ export default function NeuralAIBackground() {
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none transition-all duration-500"
       style={{
-        zIndex: 0,
+        zIndex: -1,
         background: "transparent",
         willChange: "transform",
         transform: "translateZ(0)",
