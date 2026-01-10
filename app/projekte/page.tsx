@@ -483,15 +483,6 @@ export default function ProjektePage() {
       <section 
         className="relative min-h-[60vh] flex items-center justify-center pt-[144px] md:pt-[152px] lg:pt-[168px] pb-32 px-6"
       >
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-20"
-            style={{
-              background: "radial-gradient(circle, rgba(164, 92, 255, 0.3) 0%, transparent 70%)",
-              filter: "blur(80px)",
-            }}
-          />
-        </div>
         <div className="relative z-10 max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -518,15 +509,6 @@ export default function ProjektePage() {
         </div>
       </section>
       <section className="relative pt-[60px] md:pt-[52px] lg:pt-[40px] pb-20 md:pb-32 px-6">
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-20"
-            style={{
-              background: "radial-gradient(circle, rgba(164, 92, 255, 0.3) 0%, transparent 70%)",
-              filter: "blur(60px)",
-            }}
-          />
-        </div>
         <div className="relative z-10 max-w-7xl mx-auto space-y-16 md:space-y-24">
           {projects.map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} isFeatured={index === 0} />

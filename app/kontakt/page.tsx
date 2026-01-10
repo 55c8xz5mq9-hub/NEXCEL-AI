@@ -6,48 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, FormEvent } from "react";
 import { submitContactForm } from "@/app/actions/contact";
 
-// Premium Floating Particle Background Component
-const FloatingParticles = () => {
-  const particles = Array.from({ length: 30 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 4 + 2,
-    duration: Math.random() * 20 + 15,
-    delay: Math.random() * 5,
-  }));
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          className="absolute rounded-full"
-          style={{
-            left: `${particle.x}%`,
-            top: `${particle.y}%`,
-            width: particle.size,
-            height: particle.size,
-            background: `radial-gradient(circle, rgba(164, 92, 255, 0.6) 0%, rgba(198, 168, 255, 0.3) 50%, transparent 100%)`,
-            boxShadow: `0 0 ${particle.size * 2}px rgba(164, 92, 255, 0.4)`,
-          }}
-          animate={{
-            y: [0, -30, 0],
-            x: [0, Math.random() * 20 - 10, 0],
-            opacity: [0.3, 0.8, 0.3],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            delay: particle.delay,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+// FloatingParticles is now provided globally via AppBackground component
 
 // Premium Input Field Component - Fixed Labels (Always Visible)
 const PremiumInput = ({
@@ -628,47 +587,8 @@ export default function KontaktPage() {
     <main className="relative overflow-hidden min-h-screen">
       <Navigation />
       
-      {/* Premium Background with Particles */}
+      {/* Premium Background with Particles - Now provided globally via AppBackground */}
       <section className="relative py-24 md:py-32 px-6 overflow-hidden min-h-screen">
-        {/* Animated Gradient Background */}
-        <div className="absolute inset-0 z-0">
-          <motion.div
-            className="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-30 blur-3xl"
-            style={{
-              background: "radial-gradient(circle, rgba(164, 92, 255, 0.4), transparent 70%)",
-            }}
-            animate={{
-              x: [0, 100, 0],
-              y: [0, 50, 0],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full opacity-30 blur-3xl"
-            style={{
-              background: "radial-gradient(circle, rgba(198, 168, 255, 0.4), transparent 70%)",
-            }}
-            animate={{
-              x: [0, -100, 0],
-              y: [0, -50, 0],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 25,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        </div>
-
-        {/* Floating Particles */}
-        <FloatingParticles />
-
         <div className="relative z-10 max-w-7xl mx-auto">
           {/* Premium Header */}
           <motion.div

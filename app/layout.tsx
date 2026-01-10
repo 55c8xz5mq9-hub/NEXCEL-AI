@@ -24,7 +24,7 @@ const inter = Inter({
 });
 
 // Lazy load heavy components
-const NeuralAIBackground = dynamic(() => import("@/components/NeuralAIBackground"), {
+const AppBackground = dynamic(() => import("@/components/background/AppBackground"), {
   ssr: false,
   loading: () => null,
 });
@@ -199,8 +199,8 @@ export default function RootLayout({
         color: "var(--text-0)",
       }}>
         <ThemeProvider>
-          {/* Neural AI Energy Background - Premium Dark Mode */}
-          <NeuralAIBackground />
+          {/* Unified App Background - Consistent across all pages */}
+          <AppBackground />
           
           {/* Neural Cursor */}
           <NeuralCursor />
