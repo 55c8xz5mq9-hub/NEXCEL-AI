@@ -891,7 +891,7 @@ export default function Navigation() {
                   {/* Search Icon Button - Desktop (zwischen Demo und Theme Toggle) */}
                   <motion.button
                     onClick={() => setSearchModalOpen(true)}
-                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/search-btn flex-shrink-0 hidden lg:flex"
+                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/search-btn flex-shrink-0"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
