@@ -466,12 +466,12 @@ export default function Navigation() {
                   </Link>
                   </div>
 
-                    {/* Mobile Menu Button + Demo Button - Sichtbar bei <= 980px */}
+                    {/* Mobile: Demo Button + Search Icon + Theme Toggle - Sichtbar bei <= 980px */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      {/* Demo Button - Mobile - Kompakt */}
+                      {/* Demo Button - Mobile - VOLLSTÄNDIG */}
                       <Link href="/demo-anfordern" prefetch={true} className="flex-shrink-0">
                         <motion.button
-                          className="relative px-3 py-2 rounded-xl font-semibold text-[10px] sm:text-xs tracking-wide overflow-hidden group/demo-mobile whitespace-nowrap"
+                          className="relative px-2.5 sm:px-3 py-2 rounded-xl font-semibold text-[9px] sm:text-[10px] tracking-wide overflow-hidden group/demo-mobile whitespace-nowrap"
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.3, delay: 0.3 }}
@@ -492,10 +492,49 @@ export default function Navigation() {
                           }}
                         >
                           <span className="relative z-10 block" style={{ color: "#FFFFFF" }}>
-                            Demo
+                            Demo anfordern
                           </span>
                         </motion.button>
                       </Link>
+                      
+                      {/* Search Icon - Mobile */}
+                      <motion.button
+                        onClick={() => setSearchModalOpen(true)}
+                        className="relative w-9 h-9 rounded-xl flex items-center justify-center group/search-btn-mobile flex-shrink-0"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, delay: 0.35 }}
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        whileTap={{ scale: 0.9 }}
+                        style={{
+                          background: theme === "dark"
+                            ? "rgba(255, 255, 255, 0.12)"
+                            : "rgba(0, 0, 0, 0.08)",
+                          backdropFilter: "blur(30px)",
+                          WebkitBackdropFilter: "blur(30px)",
+                          border: theme === "dark"
+                            ? "1px solid rgba(255, 255, 255, 0.18)"
+                            : "1px solid rgba(0, 0, 0, 0.12)",
+                          boxShadow: theme === "dark"
+                            ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
+                            : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
+                        }}
+                        aria-label="Suche öffnen"
+                      >
+                        <motion.svg
+                          className="w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          style={{
+                            color: theme === "dark" ? "rgba(255, 255, 255, 0.95)" : "rgba(0, 0, 0, 0.9)",
+                          }}
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </motion.svg>
+                      </motion.button>
                       
                       {/* Theme Toggle - Mobile */}
                       <motion.button
@@ -503,7 +542,7 @@ export default function Navigation() {
                         className="relative w-9 h-9 rounded-xl flex items-center justify-center group/theme flex-shrink-0"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5, delay: 0.4 }}
+                        transition={{ duration: 0.3, delay: 0.4 }}
                         whileHover={{ scale: 1.1, y: -2 }}
                         whileTap={{ scale: 0.9 }}
                         style={{
@@ -696,8 +735,7 @@ export default function Navigation() {
                     </div>
                 </div>
 
-                {/* Desktop: Left Section - Logo + Search Icon */}
-                {/* Bei <= 980px: Logo bleibt sichtbar, Search Icon bleibt */}
+                {/* Desktop: Left Section - Logo */}
                 <div className="hidden lg:flex items-center gap-2 lg:gap-3 xl:gap-4 2xl:gap-5 justify-start w-full">
                   {/* Logo */}
                   <div className="flex-shrink-0">
@@ -751,55 +789,6 @@ export default function Navigation() {
                   </motion.div>
                   </Link>
                   </div>
-
-                  {/* Search Icon Button - Desktop (kompakt, nur Lupe) */}
-                  <motion.button
-                    onClick={() => setSearchModalOpen(true)}
-                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/search-btn flex-shrink-0"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    whileHover={{ scale: 1.15, y: -3, rotate: 15 }}
-                    whileTap={{ scale: 0.85 }}
-                    style={{
-                      background: theme === "dark"
-                        ? "rgba(255, 255, 255, 0.12)"
-                        : "rgba(0, 0, 0, 0.08)",
-                      backdropFilter: "blur(30px)",
-                      WebkitBackdropFilter: "blur(30px)",
-                      border: theme === "dark"
-                        ? "1px solid rgba(255, 255, 255, 0.18)"
-                        : "1px solid rgba(0, 0, 0, 0.12)",
-                      boxShadow: theme === "dark"
-                        ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
-                        : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
-                      willChange: "transform",
-                    }}
-                    aria-label="Suche öffnen"
-                  >
-                    <div
-                      className="absolute inset-0 rounded-xl opacity-0 group-hover/search-btn:opacity-100 transition-opacity duration-300 -z-10"
-                      style={{
-                        background: theme === "dark"
-                          ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
-                          : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
-                        filter: "blur(16px)",
-                      }}
-                    />
-                    <motion.svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                      style={{
-                        color: theme === "dark" ? "rgba(255, 255, 255, 0.95)" : "rgba(0, 0, 0, 0.9)",
-                      }}
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </motion.svg>
-                  </motion.button>
                 </div>
 
                 {/* Desktop: Center Section - Pill Navigation (ECHT ZENTRIERT) - ALLE IMMER SICHTBAR */}
@@ -879,7 +868,7 @@ export default function Navigation() {
                   </motion.nav>
                 </div>
 
-                {/* Desktop: Right Section - Demo anfordern + Theme Toggle */}
+                {/* Desktop: Right Section - Demo anfordern + Search Icon + Theme Toggle */}
                 {/* Bei <= 980px: Demo Button bleibt sichtbar, Theme Toggle bleibt */}
                 <div className="hidden lg:flex items-center gap-2 lg:gap-3 xl:gap-4 2xl:gap-4 justify-end">
                   {/* Demo Button - IMMER VOLLSTÄNDIG */}
@@ -1005,6 +994,55 @@ export default function Navigation() {
                     />
                   </motion.button>
                   </Link>
+
+                  {/* Search Icon Button - Zwischen Demo und Theme Toggle */}
+                  <motion.button
+                    onClick={() => setSearchModalOpen(true)}
+                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/search-btn flex-shrink-0"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ scale: 1.15, y: -3, rotate: 15 }}
+                    whileTap={{ scale: 0.85 }}
+                    style={{
+                      background: theme === "dark"
+                        ? "rgba(255, 255, 255, 0.12)"
+                        : "rgba(0, 0, 0, 0.08)",
+                      backdropFilter: "blur(30px)",
+                      WebkitBackdropFilter: "blur(30px)",
+                      border: theme === "dark"
+                        ? "1px solid rgba(255, 255, 255, 0.18)"
+                        : "1px solid rgba(0, 0, 0, 0.12)",
+                      boxShadow: theme === "dark"
+                        ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
+                        : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
+                      willChange: "transform",
+                    }}
+                    aria-label="Suche öffnen"
+                  >
+                    <div
+                      className="absolute inset-0 rounded-xl opacity-0 group-hover/search-btn:opacity-100 transition-opacity duration-300 -z-10"
+                      style={{
+                        background: theme === "dark"
+                          ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
+                          : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
+                        filter: "blur(16px)",
+                      }}
+                    />
+                    <motion.svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      style={{
+                        color: theme === "dark" ? "rgba(255, 255, 255, 0.95)" : "rgba(0, 0, 0, 0.9)",
+                      }}
+                      whileHover={{ scale: 1.1 }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </motion.svg>
+                  </motion.button>
 
                   {/* Theme Toggle - Ganz rechts */}
                   <motion.button
@@ -1398,6 +1436,7 @@ export default function Navigation() {
               aria-expanded={mobileMenuOpen}
             >
               <div className="flex flex-col h-full p-6">
+                {/* Logo + X-Button oben */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="text-xl font-bold tracking-tight">
                     <span style={{ color: theme === "dark" ? "#FFFFFF" : "#0C0F1A" }}>NEXCEL</span>
@@ -1418,6 +1457,7 @@ export default function Navigation() {
                     onClick={() => setMobileMenuOpen(false)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    aria-label="Menü schließen"
                   >
                     <svg
                       className="w-6 h-6"
@@ -1434,8 +1474,60 @@ export default function Navigation() {
                   </motion.button>
                 </div>
 
+                {/* Suchleiste darunter */}
+                <motion.div
+                  className="mb-6"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                >
+                  <motion.button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setSearchModalOpen(true);
+                    }}
+                    className="relative w-full px-4 py-3 rounded-xl flex items-center gap-3 group/search-drawer"
+                    style={{
+                      background: theme === "dark"
+                        ? "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%)"
+                        : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.90) 100%)",
+                      backdropFilter: "blur(20px) saturate(180%)",
+                      WebkitBackdropFilter: "blur(20px) saturate(180%)",
+                      border: theme === "dark"
+                        ? "1px solid rgba(255, 255, 255, 0.2)"
+                        : "1px solid rgba(0, 0, 0, 0.12)",
+                      boxShadow: theme === "dark"
+                        ? "0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.1) inset"
+                        : "0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.05) inset",
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <motion.svg
+                      className="w-5 h-5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      style={{
+                        color: theme === "dark" ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.5)",
+                      }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </motion.svg>
+                    <span
+                      className="flex-1 text-left text-sm font-medium"
+                      style={{
+                        color: theme === "dark" ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.5)",
+                      }}
+                    >
+                      Suche. Entscheiden. Autopilot.
+                    </span>
+                  </motion.button>
+                </motion.div>
 
-                <nav className="flex-1 space-y-2">
+                {/* Navigation Links */}
+                <nav className="flex-1 space-y-2 mb-4">
                   {[
                     { label: "Home", href: "/" },
                     { label: "Leistungen", href: "/leistungen" },
@@ -1483,9 +1575,9 @@ export default function Navigation() {
                   ))}
                 </nav>
 
-                {/* Demo anfordern CTA im Mobile Drawer */}
+                {/* Demo anfordern CTA im Mobile Drawer - Nicht ganz unten, etwas höher */}
                 <motion.div
-                  className="mt-6"
+                  className="mt-auto pt-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.3 }}
