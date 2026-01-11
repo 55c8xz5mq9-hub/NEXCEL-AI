@@ -151,8 +151,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
       onClick={onClick}
       style={{ 
         willChange: "transform, opacity",
-        width: "100%",
-        height: "320px",
+        minHeight: "280px",
         marginTop: "0",
         marginBottom: "0",
         zIndex: 1,
@@ -563,17 +562,14 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
 
           {/* Title */}
           <h3
-            className="title text-center text-base md:text-lg lg:text-xl font-bold tracking-tight leading-tight mb-2 md:mb-3 line-clamp-2"
+            className="title text-center text-base md:text-lg lg:text-xl font-bold tracking-tight leading-tight mb-2 md:mb-3"
             style={{
               color: theme === "dark" ? "#FFFFFF" : "#000000",
               textShadow: theme === "dark" ? "0 0 30px rgba(168, 85, 247, 0.3)" : "none",
               minHeight: "48px",
-              maxHeight: "56px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
             }}
           >
             {service.title}
@@ -581,14 +577,13 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
 
           {/* Text */}
           <p
-            className="text text-center text-xs md:text-sm lg:text-base font-light leading-relaxed w-full line-clamp-3"
+            className="text text-center text-xs md:text-sm lg:text-base font-light leading-relaxed w-full"
             style={{
               color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
+              minHeight: "90px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
             }}
           >
             {service.description}
