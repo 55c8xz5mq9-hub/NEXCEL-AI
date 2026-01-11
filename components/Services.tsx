@@ -655,10 +655,12 @@ export default function Services() {
   }, []);
 
 
-  // Disable body scroll when modal is open
+  // Disable body scroll when modal is open and scroll to top
   useEffect(() => {
     if (selectedService) {
       document.body.style.overflow = 'hidden';
+      // Scroll to top when modal opens to prevent it from being cut off
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -1040,7 +1042,7 @@ export default function Services() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex items-start justify-center pt-24"
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6"
             onClick={closePopover}
           >
             {/* Dark Overlay Backdrop */}
@@ -1059,7 +1061,7 @@ export default function Services() {
                 e.preventDefault();
                 e.stopPropagation();
               }}
-              className="fixed top-28 right-6 z-[100000] w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border-2 border-white/30 flex items-center justify-center hover:bg-white/20 active:bg-white/30 hover:scale-110 transition-all duration-300 cursor-pointer shadow-lg"
+              className="fixed top-4 right-4 md:top-6 md:right-6 z-[100000] w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border-2 border-white/30 flex items-center justify-center hover:bg-white/20 active:bg-white/30 hover:scale-110 transition-all duration-300 cursor-pointer shadow-lg"
               aria-label="Modal schließen"
               style={{ pointerEvents: 'auto' }}
             >
@@ -1074,18 +1076,18 @@ export default function Services() {
               </svg>
             </button>
             
-            {/* Centered Modal Content - Below Navigation */}
+            {/* Centered Modal Content */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-              className="relative z-10 w-full max-w-xl max-h-[70vh] mx-4 mt-14"
+              className="relative z-10 w-full max-w-xl max-h-[85vh] mx-auto"
               onClick={(e) => e.stopPropagation()}
             >
 
               <div 
-                className="relative rounded-2xl overflow-y-auto max-h-[70vh] border border-white/20 bg-white/5 p-6 shadow-2xl"
+                className="relative rounded-2xl overflow-y-auto max-h-[85vh] border border-white/20 bg-white/5 p-6 shadow-2xl"
                 style={{
                   background: theme === "dark"
                     ? "linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 30%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.03) 100%)"
