@@ -1310,9 +1310,17 @@ type ManualProblem = {
 
 function ManualProblemsSlider({ problems }: { problems: ManualProblem[] }) {
   return (
-    <div className="md:hidden mt-10 relative w-full">
-      {/* Mobile: High-End Vertical List - NO SLIDER */}
-      <div className="flex flex-col gap-6 w-full" style={{ overflow: 'visible' }}>
+    <div className="md:hidden mt-10 w-full" style={{ overflow: 'visible', position: 'relative' }}>
+      {/* Mobile: High-End Vertical List - NO SLIDER, NO ARROWS, NO DOTS */}
+      <div 
+        className="flex flex-col gap-6 w-full" 
+        style={{ 
+          overflow: 'visible',
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+        }}
+      >
         {problems.map((problem, index) => (
           <motion.div
             key={problem.id}
@@ -1325,11 +1333,19 @@ function ManualProblemsSlider({ problems }: { problems: ManualProblem[] }) {
               delay: index * 0.1,
               ease: [0.25, 0.1, 0.25, 1],
             }}
-            style={{ width: '100%', maxWidth: '100%' }}
+            style={{ 
+              width: '100%', 
+              maxWidth: '100%',
+              flexShrink: 0,
+            }}
           >
             <div 
               className="rounded-[32px] border border-white/8 bg-gradient-to-b from-[#2d2450]/80 to-[#120f26]/90 p-6 pb-7 text-center shadow-[0_0_40px_rgba(0,0,0,0.6)]"
-              style={{ width: '100%', maxWidth: '100%' }}
+              style={{ 
+                width: '100%', 
+                maxWidth: '100%',
+                display: 'block',
+              }}
             >
               <h3 className="mt-6 text-lg font-semibold text-white">
                 {problem.title}
