@@ -747,7 +747,7 @@ export default function Services() {
   
   // Update mobile card index based on scroll position
   useEffect(() => {
-    if (!isMobile || !mobileScrollRef.current) return;
+    if (!isMobile || !mobileScrollRef.current) return undefined;
     
     const handleScroll = () => {
       if (mobileScrollRef.current) {
@@ -781,8 +781,11 @@ export default function Services() {
     const scrollContainer = mobileScrollRef.current;
     if (scrollContainer) {
       scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
-      return () => scrollContainer.removeEventListener('scroll', handleScroll);
+      return () => {
+        scrollContainer.removeEventListener('scroll', handleScroll);
+      };
     }
+    return undefined;
   }, [isMobile, services, mobileCardIndex]);
 
   const neonColors = {
