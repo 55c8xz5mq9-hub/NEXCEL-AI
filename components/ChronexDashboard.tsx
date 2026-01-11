@@ -35,9 +35,9 @@ export default function ChronexDashboard() {
   ];
 
   return (
-    <div className="w-full p-3 sm:p-4 lg:p-5" style={{ minHeight: "700px" }}>
+    <div className="w-full p-3 sm:p-4 lg:p-5" style={{ minHeight: "800px" }}>
       <motion.div
-        className="relative w-full rounded-[32px] overflow-hidden"
+        className="relative w-full rounded-[32px]"
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
