@@ -744,6 +744,7 @@ export default function Services() {
         });
       }
     }
+    return undefined;
   }, [mobileCardIndex, isMobile]);
   
   // Update mobile card index based on scroll position
