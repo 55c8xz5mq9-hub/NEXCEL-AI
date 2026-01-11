@@ -696,7 +696,7 @@ export default function Services() {
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [selectedService]);
+  }, [selectedService, closePopover]);
 
   const nextSlide = () => {
     setCurrentIndex((prev) => {
@@ -749,7 +749,9 @@ export default function Services() {
   
   // Update mobile card index based on scroll position
   useEffect(() => {
-    if (!isMobile || !mobileScrollRef.current) return undefined;
+    if (!isMobile || !mobileScrollRef.current) {
+      return;
+    }
     
     const handleScroll = () => {
       if (mobileScrollRef.current) {
@@ -781,13 +783,10 @@ export default function Services() {
     };
     
     const scrollContainer = mobileScrollRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
-      return () => {
-        scrollContainer.removeEventListener('scroll', handleScroll);
-      };
-    }
-    return undefined;
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+    };
   }, [isMobile, services, mobileCardIndex]);
 
   const neonColors = {
