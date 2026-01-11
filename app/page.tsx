@@ -203,8 +203,8 @@ const ProjectCard = memo(({ project, index, onClick }: { project: Project; index
 
           {/* Dashboard Image - Main Focus - Mobile Optimized */}
           <div className="mb-0 md:mb-3 md:mb-4 flex-1 min-h-0">
-            <div className="w-full h-full rounded-xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
-              <div className="w-full h-full">
+            <div className="w-full rounded-xl">
+              <div className="w-full">
                 <project.dashboard />
               </div>
             </div>

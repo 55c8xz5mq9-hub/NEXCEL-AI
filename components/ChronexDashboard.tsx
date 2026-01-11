@@ -35,7 +35,7 @@ export default function ChronexDashboard() {
   ];
 
   return (
-    <div className="w-full p-3 sm:p-4 lg:p-5" style={{ minHeight: "800px" }}>
+    <div className="w-full p-3 sm:p-4 lg:p-5">
       <motion.div
         className="relative w-full rounded-[32px]"
         initial={{ opacity: 0, scale: 0.98 }}
