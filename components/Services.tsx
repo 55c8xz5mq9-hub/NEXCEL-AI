@@ -153,6 +153,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
         willChange: "transform, opacity",
         minHeight: "380px",
         width: "100%",
+        maxWidth: "100%",
         marginTop: "0",
         marginBottom: "0",
         zIndex: 1,
@@ -816,10 +817,37 @@ export default function Services() {
           </p>
         </motion.div>
 
-        {/* High-End Slider */}
-        <div className="relative" style={{ pointerEvents: "auto", overflow: "visible" }}>
+        {/* Mobile: High-End Vertical List */}
+        <div className="md:hidden relative" style={{ pointerEvents: "auto", overflow: "visible" }}>
+          <div className="flex flex-col gap-6 md:gap-8 w-full" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
+            {services.map((service, index) => (
+              <motion.div
+                key={index}
+                data-card-index={index}
+                className="w-full"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.08,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
+              >
+                <ServiceCard 
+                  service={service} 
+                  index={index} 
+                  onClick={() => handleCardClick(service)}
+                />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop: High-End Slider */}
+        <div className="hidden md:block relative" style={{ pointerEvents: "auto", overflow: "visible" }}>
           <div className="flex items-center gap-2 sm:gap-4 md:gap-6" style={{ position: "relative", zIndex: 10, overflow: "visible" }}>
-          {/* Left Navigation Button - Only visible on Desktop */}
+          {/* Left Navigation Button - Desktop Only */}
           <button
             type="button"
             onClick={(e) => {
@@ -836,7 +864,7 @@ export default function Services() {
               prevSlide();
             }}
             disabled={clampedIndex === 0}
-            className={`hidden md:flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
               clampedIndex === 0
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
@@ -875,37 +903,13 @@ export default function Services() {
             </svg>
           </button>
 
-          {/* Slider Container */}
+          {/* Desktop Slider Container */}
           <div 
             ref={sliderRef}
             className="flex-1"
             data-debug="services-carousel-v2"
             style={{ paddingTop: '16px', paddingBottom: '16px', overflowX: 'hidden', overflowY: 'visible' }}
           >
-            {/* Mobile: Vertical List (no swipe) */}
-            <div 
-              ref={mobileScrollRef}
-              className="md:hidden"
-              style={{
-                overflowY: 'visible',
-              }}
-            >
-              <div className="flex flex-col gap-6" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
-                {services.map((service, index) => (
-                  <div
-                    key={index}
-                    data-card-index={index}
-                    className="w-full"
-                  >
-                    <ServiceCard 
-                      service={service} 
-                      index={index} 
-                      onClick={() => handleCardClick(service)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
 
             {/* Desktop: Motion-based Slider */}
             <div className="hidden md:block" style={{ overflowX: 'hidden', overflowY: 'visible', width: '100%', position: 'relative' }}>
@@ -940,7 +944,7 @@ export default function Services() {
             </div>
           </div>
 
-          {/* Right Navigation Button - Only visible on Desktop */}
+          {/* Right Navigation Button - Desktop Only */}
           <button
             type="button"
             onClick={(e) => {
@@ -957,7 +961,7 @@ export default function Services() {
               nextSlide();
             }}
             disabled={clampedIndex === maxSlides - 1}
-            className={`hidden md:flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
               clampedIndex === maxSlides - 1
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
@@ -997,6 +1001,7 @@ export default function Services() {
           </button>
 
           </div>
+        </div>
 
           {/* Mobile: No dots pager (vertical list, no navigation needed) */}
 
