@@ -254,14 +254,6 @@ export default function MonolithCard({
                       display: "block",
                     }}
                   >
-                    <span
-                      style={{
-                        color: theme === "dark" ? "rgba(168, 85, 247, 0.8)" : "rgba(124, 58, 237, 0.8)",
-                        marginRight: "8px",
-                      }}
-                    >
-                      •
-                    </span>
                     {bullet}
                   </li>
                 ))}
