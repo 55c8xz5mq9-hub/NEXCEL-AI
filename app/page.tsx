@@ -1309,93 +1309,31 @@ type ManualProblem = {
 };
 
 function ManualProblemsSlider({ problems }: { problems: ManualProblem[] }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-
-  const lastIndex = problems.length - 1;
-
-  const goNext = () => {
-    setActiveIndex(prev => (prev === lastIndex ? 0 : prev + 1));
-  };
-
-  const goPrev = () => {
-    setActiveIndex(prev => (prev === 0 ? lastIndex : prev - 1));
-  };
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (touchStartX.current === null) return;
-    const diff = e.changedTouches[0].clientX - touchStartX.current;
-
-    if (Math.abs(diff) > 40) {
-      if (diff < 0) goNext();
-      else goPrev();
-    }
-    touchStartX.current = null;
-  };
-
   return (
     <div className="md:hidden mt-10 relative">
-      {/* Karten-Viewport */}
-      <div
-        className="relative overflow-hidden rounded-[32px]"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div
-          className="flex transition-transform duration-300 ease-out"
-          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
-        >
-          {problems.map(problem => (
-            <div
-              key={problem.id}
-              className="min-w-full px-4"
-            >
-              <div className="rounded-[32px] border border-white/8 bg-gradient-to-b from-[#2d2450]/80 to-[#120f26]/90 p-6 pb-7 text-center shadow-[0_0_40px_rgba(0,0,0,0.6)]">
-                <h3 className="mt-6 text-lg font-semibold text-white">
-                  {problem.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/70">
-                  {problem.text}
-                </p>
-              </div>
+      {/* Mobile: High-End Vertical List */}
+      <div className="flex flex-col gap-6 w-full">
+        {problems.map((problem, index) => (
+          <motion.div
+            key={problem.id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.1,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+          >
+            <div className="rounded-[32px] border border-white/8 bg-gradient-to-b from-[#2d2450]/80 to-[#120f26]/90 p-6 pb-7 text-center shadow-[0_0_40px_rgba(0,0,0,0.6)]">
+              <h3 className="mt-6 text-lg font-semibold text-white">
+                {problem.title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-white/70">
+                {problem.text}
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Pfeile */}
-      <button
-        type="button"
-        onClick={goPrev}
-        className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur hover:bg-white/10 text-white text-xl"
-      >
-        ‹
-      </button>
-      <button
-        type="button"
-        onClick={goNext}
-        className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur hover:bg-white/10 text-white text-xl"
-      >
-        ›
-      </button>
-
-      {/* Dots */}
-      <div className="mt-5 flex justify-center gap-2">
-        {problems.map((p, index) => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => setActiveIndex(index)}
-            className={`h-2.5 rounded-full transition-all ${
-              index === activeIndex
-                ? 'w-6 bg-gradient-to-r from-[#b26dff] to-[#ff5fd2]'
-                : 'w-2.5 bg-white/20'
-            }`}
-          />
+          </motion.div>
         ))}
       </div>
     </div>
