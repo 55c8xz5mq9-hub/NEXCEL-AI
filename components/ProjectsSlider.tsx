@@ -196,7 +196,7 @@ const ProjectCard = memo(({ project, index }: { project: Project; index: number 
             {project.description}
           </p>
 
-          <div className="mb-4 md:mb-6" style={{ minHeight: "300px", height: "300px" }}>
+          <div className="mb-4 md:mb-6" style={{ minHeight: "700px" }}>
             <project.dashboard />
           </div>
 
