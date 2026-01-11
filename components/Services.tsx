@@ -892,6 +892,7 @@ export default function Services() {
           <div 
             ref={sliderRef}
             className="flex-1"
+            data-debug="services-carousel-v2"
             style={{ paddingTop: '16px', paddingBottom: '16px', overflowX: 'hidden', overflowY: 'visible' }}
           >
             {/* Mobile: Horizontal Scroll with Snap */}
@@ -940,7 +941,7 @@ export default function Services() {
                 {Array.from({ length: Math.ceil(services.length / 4) }).map((_, slideIndex) => (
                   <div 
                     key={slideIndex} 
-                    className="flex-shrink-0 px-2" 
+                    className="flex-none px-2" 
                     style={{ 
                       width: viewportWidth > 0 ? `${viewportWidth}px` : '100%',
                       minWidth: viewportWidth > 0 ? `${viewportWidth}px` : '100%',
