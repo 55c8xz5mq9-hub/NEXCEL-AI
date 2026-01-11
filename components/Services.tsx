@@ -147,7 +147,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
         delay: index * 0.05,
         ease: [0.25, 0.1, 0.25, 1],
       }}
-      whileHover={{ scale: 1.02, y: -4 }}
+      whileHover={{ scale: 1.02 }}
       onClick={onClick}
       style={{ 
         willChange: "transform, opacity",
@@ -160,7 +160,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
     >
       {/* Main Card Container - Ultra High-End Apple Design */}
       <div
-        className="relative rounded-[28px] overflow-hidden isolation-isolate h-full flex flex-col"
+        className="relative rounded-[28px] isolation-isolate h-full flex flex-col"
         style={{
           background: theme === "dark"
             ? "linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 30%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.03) 100%)"
@@ -775,7 +775,7 @@ export default function Services() {
   return (
     <section 
       id="services" 
-      className="relative pt-[72px] md:pt-[104px] lg:pt-[150px] pb-12 md:pb-16 px-4 sm:px-6 overflow-hidden"
+      className="relative pt-[72px] md:pt-[104px] lg:pt-[150px] pb-12 md:pb-16 px-4 sm:px-6"
     >
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
@@ -870,7 +870,8 @@ export default function Services() {
           {/* Slider Container */}
           <div 
             ref={sliderRef}
-            className="flex-1 overflow-hidden rounded-3xl"
+            className="flex-1 rounded-3xl"
+            style={{ paddingTop: '8px', paddingBottom: '8px' }}
           >
             {/* Mobile: Horizontal Scroll with Snap */}
             <div 
@@ -884,7 +885,7 @@ export default function Services() {
                 paddingRight: '4%',
               }}
             >
-              <div className="flex gap-4">
+              <div className="flex gap-4" style={{ paddingTop: '8px', paddingBottom: '8px' }}>
                 {services.map((service, index) => (
                   <div
                     key={index}
@@ -914,7 +915,7 @@ export default function Services() {
             >
               {Array.from({ length: Math.ceil(services.length / 4) }).map((_, slideIndex) => (
                 <div key={slideIndex} className="min-w-full px-2">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch" style={{ paddingTop: '8px', paddingBottom: '8px' }}>
                     {services.slice(slideIndex * 4, slideIndex * 4 + 4).map((service, cardIndex) => (
                       <ServiceCard 
                         key={slideIndex * 4 + cardIndex} 
