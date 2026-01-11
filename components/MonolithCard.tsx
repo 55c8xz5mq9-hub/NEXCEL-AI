@@ -240,19 +240,19 @@ export default function MonolithCard({
           </p>
 
           {/* Row 4: Bullets/Description - Flexible Bereich */}
-          <div className="flex items-start">
+          <div className="flex items-start justify-center">
             {bullets && bullets.length > 0 ? (
-              <ul className="space-y-2 text-left w-full">
+              <ul className="space-y-2 text-center w-full">
                 {bullets.map((bullet, i) => (
                   <li
                     key={i}
-                    className="text-sm font-light leading-relaxed flex items-start"
+                    className="text-sm font-light leading-relaxed flex items-center justify-center"
                     style={{
                       color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
                     }}
                   >
                     <span
-                      className="mr-2 mt-1.5 flex-shrink-0"
+                      className="mr-2 flex-shrink-0"
                       style={{
                         color: theme === "dark" ? "rgba(168, 85, 247, 0.8)" : "rgba(124, 58, 237, 0.8)",
                       }}
