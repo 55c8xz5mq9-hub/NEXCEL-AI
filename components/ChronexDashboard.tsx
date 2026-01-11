@@ -35,9 +35,9 @@ export default function ChronexDashboard() {
   ];
 
   return (
-    <div className="w-full h-full p-4 sm:p-6 lg:p-8" style={{ minHeight: "500px" }}>
+    <div className="w-full p-3 sm:p-4 lg:p-5" style={{ minHeight: "700px" }}>
       <motion.div
-        className="relative w-full h-full rounded-[32px] overflow-hidden"
+        className="relative w-full rounded-[32px] overflow-hidden"
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
@@ -65,7 +65,7 @@ export default function ChronexDashboard() {
         />
 
         {/* Header */}
-        <div className="relative z-10 px-6 pt-6 pb-4">
+        <div className="relative z-10 px-4 sm:px-5 lg:px-6 pt-4 sm:pt-5 lg:pt-6 pb-3 sm:pb-4">
           <div className="flex items-center justify-between">
             <div>
               <motion.h3
@@ -117,8 +117,8 @@ export default function ChronexDashboard() {
         </div>
 
         {/* Stats Cards Grid */}
-        <div className="relative z-10 px-6 pb-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="relative z-10 px-4 sm:px-5 lg:px-6 pb-4 sm:pb-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -182,10 +182,10 @@ export default function ChronexDashboard() {
         </div>
 
         {/* Main Content Area */}
-        <div className="relative z-10 px-6 pb-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="relative z-10 px-4 sm:px-5 lg:px-6 pb-4 sm:pb-5 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
           {/* Chart Section */}
           <motion.div
-            className="rounded-[24px] p-6 overflow-hidden"
+            className="rounded-[24px] p-4 sm:p-5 lg:p-6 overflow-hidden"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -201,12 +201,12 @@ export default function ChronexDashboard() {
             }}
           >
             <h4
-              className="text-base font-bold mb-6"
+              className="text-sm sm:text-base font-bold mb-4 sm:mb-5"
               style={{ color: isDark ? "#00F5FF" : "#0066CC" }}
             >
               Tourenverlauf (7 Tage)
             </h4>
-            <div className="relative h-48 flex items-end justify-between gap-2">
+            <div className="relative h-40 sm:h-44 lg:h-48 flex items-end justify-between gap-2">
               {chartData.map((value, index) => {
                 const height = (value / maxValue) * 100;
                 return (
@@ -237,7 +237,7 @@ export default function ChronexDashboard() {
 
           {/* Tours List Section */}
           <motion.div
-            className="rounded-[24px] p-6 overflow-hidden"
+            className="rounded-[24px] p-4 sm:p-5 lg:p-6 overflow-hidden"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -253,12 +253,12 @@ export default function ChronexDashboard() {
             }}
           >
             <h4
-              className="text-base font-bold mb-6"
+              className="text-sm sm:text-base font-bold mb-4 sm:mb-5"
               style={{ color: isDark ? "#00F5FF" : "#0066CC" }}
             >
               Aktive Touren
             </h4>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {tours.map((tour, index) => (
                 <motion.div
                   key={tour.id}
@@ -305,8 +305,8 @@ export default function ChronexDashboard() {
         </div>
 
         {/* Action Buttons */}
-        <div className="relative z-10 px-6 pb-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="relative z-10 px-4 sm:px-5 lg:px-6 pb-4 sm:pb-5 lg:pb-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             {actions.map((action, index) => (
               <motion.button
                 key={action}
