@@ -768,8 +768,8 @@ function ProjectsSection() {
                   </p>
                   
                   {/* Dashboard Image - Larger */}
-                  <div className="mb-6 rounded-xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
-                    <div className="w-full h-full">
+                  <div className="mb-6 rounded-xl">
+                    <div className="w-full">
                       <selectedProject.dashboard />
                     </div>
                   </div>
