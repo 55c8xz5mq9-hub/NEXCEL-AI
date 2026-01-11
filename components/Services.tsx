@@ -819,17 +819,13 @@ export default function Services() {
         {/* High-End Slider */}
         <div className="relative" style={{ pointerEvents: "auto", overflow: "visible" }}>
           <div className="flex items-center gap-2 sm:gap-4 md:gap-6" style={{ position: "relative", zIndex: 10, overflow: "visible" }}>
-          {/* Left Navigation Button - Outside Cards */}
+          {/* Left Navigation Button - Only visible on Desktop */}
           <button
             type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (isMobile) {
-                prevMobileCard();
-              } else {
-                prevSlide();
-              }
+              prevSlide();
             }}
             onTouchStart={(e) => {
               e.stopPropagation();
@@ -837,15 +833,11 @@ export default function Services() {
             onTouchEnd={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (isMobile) {
-                prevMobileCard();
-              } else {
-                prevSlide();
-              }
+              prevSlide();
             }}
-            disabled={isMobile ? mobileCardIndex === 0 : clampedIndex === 0}
-            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
-              (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
+            disabled={clampedIndex === 0}
+            className={`hidden md:flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+              clampedIndex === 0
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
             }`}
@@ -854,7 +846,7 @@ export default function Services() {
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
               border: "1px solid rgba(194, 107, 255, 0.3)",
-              boxShadow: (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
+              boxShadow: clampedIndex === 0
                 ? "none"
                 : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
               pointerEvents: "auto",
@@ -862,12 +854,12 @@ export default function Services() {
               position: "relative",
             }}
             onMouseEnter={(e) => {
-              if (!(isMobile ? mobileCardIndex === 0 : clampedIndex === 0)) {
+              if (clampedIndex !== 0) {
                 e.currentTarget.style.boxShadow = "0 0 30px rgba(194, 107, 255, 0.4), 0 0 60px rgba(194, 107, 255, 0.2)";
               }
             }}
             onMouseLeave={(e) => {
-              if (!(isMobile ? mobileCardIndex === 0 : clampedIndex === 0)) {
+              if (clampedIndex !== 0) {
                 e.currentTarget.style.boxShadow = "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)";
               }
             }}
@@ -890,30 +882,20 @@ export default function Services() {
             data-debug="services-carousel-v2"
             style={{ paddingTop: '16px', paddingBottom: '16px', overflowX: 'hidden', overflowY: 'visible' }}
           >
-            {/* Mobile: Horizontal Scroll with Snap */}
+            {/* Mobile: Vertical List (no swipe) */}
             <div 
               ref={mobileScrollRef}
-              className="md:hidden overflow-x-auto scrollbar-hide"
+              className="md:hidden"
               style={{
-                scrollSnapType: 'x mandatory',
-                WebkitOverflowScrolling: 'touch',
-                scrollBehavior: 'smooth',
-                paddingLeft: '4%',
-                paddingRight: '4%',
                 overflowY: 'visible',
               }}
             >
-              <div className="flex gap-4" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
+              <div className="flex flex-col gap-6" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
                 {services.map((service, index) => (
                   <div
                     key={index}
                     data-card-index={index}
-                    className="flex-shrink-0"
-                    style={{ 
-                      scrollSnapAlign: 'center',
-                      width: '92%',
-                      maxWidth: '400px',
-                    }}
+                    className="w-full"
                   >
                     <ServiceCard 
                       service={service} 
@@ -958,17 +940,13 @@ export default function Services() {
             </div>
           </div>
 
-          {/* Right Navigation Button - Outside Cards */}
+          {/* Right Navigation Button - Only visible on Desktop */}
           <button
             type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (isMobile) {
-                nextMobileCard();
-              } else {
-                nextSlide();
-              }
+              nextSlide();
             }}
             onTouchStart={(e) => {
               e.stopPropagation();
@@ -976,15 +954,11 @@ export default function Services() {
             onTouchEnd={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (isMobile) {
-                nextMobileCard();
-              } else {
-                nextSlide();
-              }
+              nextSlide();
             }}
-            disabled={isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1}
-            className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
-              (isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)
+            disabled={clampedIndex === maxSlides - 1}
+            className={`hidden md:flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
+              clampedIndex === maxSlides - 1
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
             }`}
@@ -993,7 +967,7 @@ export default function Services() {
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
               border: "1px solid rgba(194, 107, 255, 0.3)",
-              boxShadow: (isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)
+              boxShadow: clampedIndex === maxSlides - 1
                 ? "none"
                 : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
               pointerEvents: "auto",
@@ -1001,12 +975,12 @@ export default function Services() {
               position: "relative",
             }}
             onMouseEnter={(e) => {
-              if (!(isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)) {
+              if (clampedIndex !== maxSlides - 1) {
                 e.currentTarget.style.boxShadow = "0 0 30px rgba(194, 107, 255, 0.4), 0 0 60px rgba(194, 107, 255, 0.2)";
               }
             }}
             onMouseLeave={(e) => {
-              if (!(isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)) {
+              if (clampedIndex !== maxSlides - 1) {
                 e.currentTarget.style.boxShadow = "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)";
               }
             }}
@@ -1024,28 +998,7 @@ export default function Services() {
 
           </div>
 
-          {/* Mobile: Dots Pager - One dot per card (8 dots) - NEXCEL Style */}
-          <div className="flex md:hidden justify-center gap-2 mt-6 px-4">
-            {services.map((_, index) => {
-              const isActive = index === mobileCardIndex;
-              
-              return (
-                <button
-                  key={index}
-                  onClick={() => goToMobileCard(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    isActive
-                      ? "w-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 shadow-lg shadow-purple-500/50" 
-                      : "w-2 bg-white/20 active:bg-white/40"
-                  }`}
-                  aria-label={`Go to card ${index + 1}`}
-                  style={{
-                    boxShadow: isActive ? "0 0 12px rgba(168, 85, 247, 0.4)" : "none",
-                  }}
-                />
-              );
-            })}
-          </div>
+          {/* Mobile: No dots pager (vertical list, no navigation needed) */}
 
           {/* Desktop: Slider Indicators */}
           <div className="hidden sm:flex justify-center gap-2 mt-8">
