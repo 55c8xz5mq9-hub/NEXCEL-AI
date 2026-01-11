@@ -779,8 +779,10 @@ export default function Services() {
     };
     
     const scrollContainer = mobileScrollRef.current;
-    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
-    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+      return () => scrollContainer.removeEventListener('scroll', handleScroll);
+    }
   }, [isMobile, services, mobileCardIndex]);
 
   const neonColors = {
