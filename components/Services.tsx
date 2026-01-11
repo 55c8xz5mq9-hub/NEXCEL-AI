@@ -151,7 +151,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
       onClick={onClick}
       style={{ 
         willChange: "transform, opacity",
-        minHeight: "280px",
+        minHeight: "380px",
         marginTop: "0",
         marginBottom: "0",
         zIndex: 1,
@@ -159,7 +159,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
     >
       {/* Main Card Container - Ultra High-End Apple Design */}
       <div
-        className="relative rounded-[28px] isolation-isolate h-full flex flex-col overflow-hidden"
+        className="relative rounded-[28px] isolation-isolate h-full flex flex-col"
         style={{
           background: theme === "dark"
             ? "linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 30%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.03) 100%)"
@@ -580,7 +580,6 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
             className="text text-center text-xs md:text-sm lg:text-base font-light leading-relaxed w-full"
             style={{
               color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
-              minHeight: "90px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
