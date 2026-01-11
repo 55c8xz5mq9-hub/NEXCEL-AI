@@ -401,9 +401,7 @@ function ProjectsSection() {
       style={{ 
         paddingTop: "clamp(60px, 12vw, 120px)",
         paddingBottom: "clamp(60px, 12vw, 120px)",
-        background: theme === "dark" 
-          ? "linear-gradient(180deg, #0C0F1A 0%, #111622 100%)"
-          : "linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 100%)",
+        background: "transparent", // Hintergrund wird jetzt von AppBackground übernommen
       }}
     >
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -1709,9 +1707,7 @@ export default function Home() {
 
   return (
     <main className="relative overflow-hidden min-h-screen" style={{
-      background: theme === "dark"
-        ? "linear-gradient(180deg, #0C0F1A 0%, #111622 100%)"
-        : "linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 100%)",
+      background: "transparent", // Hintergrund wird jetzt von AppBackground übernommen
       color: theme === "dark" ? "#FFFFFF" : "#0C0F1A",
       position: "relative",
       zIndex: 1,
@@ -1728,9 +1724,7 @@ export default function Home() {
       <section id="warum" className="relative px-4 sm:px-6 overflow-hidden" style={{ 
         paddingTop: "clamp(60px, 12vw, 120px)",
         paddingBottom: "clamp(60px, 12vw, 120px)",
-        background: theme === "dark" 
-          ? "linear-gradient(180deg, #111622 0%, #0C0F1A 100%)"
-          : "linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%)",
+        background: "transparent", // Hintergrund wird jetzt von AppBackground übernommen
       }}>
         <div className="relative z-10 max-w-7xl mx-auto">
           <motion.div
@@ -1783,9 +1777,7 @@ export default function Home() {
       <section id="leistungen" className="relative px-4 sm:px-6 overflow-hidden" style={{ 
         paddingTop: "clamp(80px, 15vw, 140px)",
         paddingBottom: "clamp(60px, 12vw, 120px)",
-        background: theme === "dark" 
-          ? "linear-gradient(180deg, #111622 0%, #0C0F1A 100%)"
-          : "linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%)",
+        background: "transparent", // Hintergrund wird jetzt von AppBackground übernommen
       }}>
         <div className="relative z-10 max-w-7xl mx-auto">
           <motion.div
@@ -2042,9 +2034,7 @@ export default function Home() {
       <section className="relative px-4 sm:px-6 overflow-hidden" style={{ 
         paddingTop: "clamp(60px, 12vw, 120px)",
         paddingBottom: "clamp(60px, 12vw, 120px)",
-        background: theme === "dark" 
-          ? "linear-gradient(180deg, #111622 0%, #0C0F1A 100%)"
-          : "linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%)",
+        background: "transparent", // Hintergrund wird jetzt von AppBackground übernommen
       }}>
         <div className="relative z-10 max-w-7xl mx-auto">
           <motion.div
@@ -2379,9 +2369,7 @@ export default function Home() {
       <section className="relative px-4 sm:px-6 overflow-hidden" style={{ 
         paddingTop: "clamp(80px, 15vw, 140px)",
         paddingBottom: "clamp(80px, 15vw, 140px)",
-        background: theme === "dark" 
-          ? "linear-gradient(180deg, #111622 0%, #0C0F1A 100%)"
-          : "linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%)",
+        background: "transparent", // Hintergrund wird jetzt von AppBackground übernommen
       }}>
         <div className="relative z-10 max-w-7xl mx-auto">
           <motion.div
@@ -2560,9 +2548,7 @@ export default function Home() {
       <section className="relative px-4 sm:px-6 overflow-hidden" style={{ 
         paddingTop: "clamp(32px, 3.5vw, 52px)",
         paddingBottom: "clamp(80px, 15vw, 140px)",
-        background: theme === "dark" 
-          ? "linear-gradient(180deg, #0C0F1A 0%, #111622 100%)"
-          : "linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 100%)",
+        background: "transparent", // Hintergrund wird jetzt von AppBackground übernommen
       }}>
         <div className="relative z-10 max-w-7xl mx-auto">
           <motion.div
@@ -2731,9 +2717,7 @@ export default function Home() {
       <section className="relative px-4 sm:px-6 overflow-hidden" style={{ 
         paddingTop: "clamp(80px, 15vw, 140px)",
         paddingBottom: "clamp(60px, 12vw, 120px)",
-        background: theme === "dark" 
-          ? "linear-gradient(180deg, #111622 0%, #0C0F1A 100%)"
-          : "linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%)",
+        background: "transparent", // Hintergrund wird jetzt von AppBackground übernommen
       }}>
         <div className="relative z-10 max-w-7xl mx-auto">
           <motion.div
