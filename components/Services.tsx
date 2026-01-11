@@ -629,6 +629,7 @@ export default function Services() {
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileCardIndex, setMobileCardIndex] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
   
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -639,6 +640,20 @@ export default function Services() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Update viewport width for desktop slider
+  useEffect(() => {
+    if (!isMobile && sliderRef.current) {
+      const updateWidth = () => {
+        if (sliderRef.current) {
+          setViewportWidth(sliderRef.current.offsetWidth);
+        }
+      };
+      updateWidth();
+      window.addEventListener('resize', updateWidth);
+      return () => window.removeEventListener('resize', updateWidth);
+    }
+  }, [isMobile]);
   
   // Desktop: 4 cards per slide, Mobile: 1 card per slide
   const cardsPerSlide = isMobile ? 1 : 4;
@@ -915,27 +930,36 @@ export default function Services() {
             </div>
 
             {/* Desktop: Motion-based Slider */}
-            <motion.div
-              className="hidden md:flex"
-              animate={{ x: `-${clampedIndex * 100}%` }}
-              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-              style={{ overflowX: 'hidden', overflowY: 'visible' }}
-            >
-              {Array.from({ length: Math.ceil(services.length / 4) }).map((_, slideIndex) => (
-                <div key={slideIndex} className="min-w-full px-2" style={{ overflowX: 'hidden', overflowY: 'visible' }}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch" style={{ paddingTop: '16px', paddingBottom: '16px', overflowX: 'hidden', overflowY: 'visible' }}>
-                    {services.slice(slideIndex * 4, slideIndex * 4 + 4).map((service, cardIndex) => (
-                      <ServiceCard 
-                        key={slideIndex * 4 + cardIndex} 
-                        service={service} 
-                        index={slideIndex * 4 + cardIndex} 
-                        onClick={() => handleCardClick(service)}
-                      />
-                    ))}
+            <div className="hidden md:block" style={{ overflowX: 'hidden', overflowY: 'visible', width: '100%', position: 'relative' }}>
+              <motion.div
+                className="flex flex-nowrap"
+                style={{ width: 'max-content' }}
+                animate={{ x: viewportWidth > 0 ? `-${clampedIndex * viewportWidth}px` : `-${clampedIndex * 100}%` }}
+                transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                {Array.from({ length: Math.ceil(services.length / 4) }).map((_, slideIndex) => (
+                  <div 
+                    key={slideIndex} 
+                    className="flex-shrink-0 px-2" 
+                    style={{ 
+                      width: viewportWidth > 0 ? `${viewportWidth}px` : '100%',
+                      minWidth: viewportWidth > 0 ? `${viewportWidth}px` : '100%',
+                    }}
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
+                      {services.slice(slideIndex * 4, slideIndex * 4 + 4).map((service, cardIndex) => (
+                        <ServiceCard 
+                          key={slideIndex * 4 + cardIndex} 
+                          service={service} 
+                          index={slideIndex * 4 + cardIndex} 
+                          onClick={() => handleCardClick(service)}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </motion.div>
+                ))}
+              </motion.div>
+            </div>
           </div>
 
           {/* Right Navigation Button - Outside Cards */}
