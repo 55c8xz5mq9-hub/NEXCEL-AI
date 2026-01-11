@@ -649,6 +649,7 @@ export default function Services() {
       window.addEventListener('resize', updateWidth);
       return () => window.removeEventListener('resize', updateWidth);
     }
+    return undefined;
   }, [isMobile]);
   
   // Desktop: 4 cards per slide, Mobile: 1 card per slide
