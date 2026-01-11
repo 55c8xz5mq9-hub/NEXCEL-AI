@@ -151,7 +151,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
       onClick={onClick}
       style={{ 
         willChange: "transform, opacity",
-        height: "380px",
+        minHeight: "380px",
         width: "100%",
         marginTop: "0",
         marginBottom: "0",
