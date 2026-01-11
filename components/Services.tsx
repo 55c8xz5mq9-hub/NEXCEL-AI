@@ -817,43 +817,20 @@ export default function Services() {
           </p>
         </motion.div>
 
-        {/* Mobile: High-End Vertical List */}
-        <div className="md:hidden relative" style={{ pointerEvents: "auto", overflow: "visible" }}>
-          <div className="flex flex-col gap-6 md:gap-8 w-full" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
-            {services.map((service, index) => (
-              <motion.div
-                key={index}
-                data-card-index={index}
-                className="w-full"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{
-                  duration: 0.5,
-                  delay: index * 0.08,
-                  ease: [0.25, 0.1, 0.25, 1],
-                }}
-              >
-                <ServiceCard 
-                  service={service} 
-                  index={index} 
-                  onClick={() => handleCardClick(service)}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Desktop: High-End Slider */}
-        <div className="hidden md:block relative" style={{ pointerEvents: "auto", overflow: "visible" }}>
+        {/* High-End Slider - Mobile & Desktop */}
+        <div className="relative" style={{ pointerEvents: "auto", overflow: "visible" }}>
           <div className="flex items-center gap-2 sm:gap-4 md:gap-6" style={{ position: "relative", zIndex: 10, overflow: "visible" }}>
-          {/* Left Navigation Button - Desktop Only */}
+          {/* Left Navigation Button */}
           <button
             type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              prevSlide();
+              if (isMobile) {
+                prevMobileCard();
+              } else {
+                prevSlide();
+              }
             }}
             onTouchStart={(e) => {
               e.stopPropagation();
@@ -861,11 +838,15 @@ export default function Services() {
             onTouchEnd={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              prevSlide();
+              if (isMobile) {
+                prevMobileCard();
+              } else {
+                prevSlide();
+              }
             }}
-            disabled={clampedIndex === 0}
+            disabled={isMobile ? mobileCardIndex === 0 : clampedIndex === 0}
             className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
-              clampedIndex === 0
+              (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
             }`}
@@ -874,7 +855,7 @@ export default function Services() {
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
               border: "1px solid rgba(194, 107, 255, 0.3)",
-              boxShadow: clampedIndex === 0
+              boxShadow: (isMobile ? mobileCardIndex === 0 : clampedIndex === 0)
                 ? "none"
                 : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
               pointerEvents: "auto",
@@ -882,12 +863,12 @@ export default function Services() {
               position: "relative",
             }}
             onMouseEnter={(e) => {
-              if (clampedIndex !== 0) {
+              if (!(isMobile ? mobileCardIndex === 0 : clampedIndex === 0)) {
                 e.currentTarget.style.boxShadow = "0 0 30px rgba(194, 107, 255, 0.4), 0 0 60px rgba(194, 107, 255, 0.2)";
               }
             }}
             onMouseLeave={(e) => {
-              if (clampedIndex !== 0) {
+              if (!(isMobile ? mobileCardIndex === 0 : clampedIndex === 0)) {
                 e.currentTarget.style.boxShadow = "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)";
               }
             }}
@@ -903,13 +884,47 @@ export default function Services() {
             </svg>
           </button>
 
-          {/* Desktop Slider Container */}
+          {/* Slider Container */}
           <div 
             ref={sliderRef}
             className="flex-1"
             data-debug="services-carousel-v2"
             style={{ paddingTop: '16px', paddingBottom: '16px', overflowX: 'hidden', overflowY: 'visible' }}
           >
+            {/* Mobile: Horizontal Scroll with Snap */}
+            <div 
+              ref={mobileScrollRef}
+              className="md:hidden overflow-x-auto scrollbar-hide"
+              style={{
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch',
+                scrollBehavior: 'smooth',
+                paddingLeft: '4%',
+                paddingRight: '4%',
+                overflowY: 'visible',
+              }}
+            >
+              <div className="flex gap-4" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
+                {services.map((service, index) => (
+                  <div
+                    key={index}
+                    data-card-index={index}
+                    className="flex-shrink-0"
+                    style={{ 
+                      scrollSnapAlign: 'center',
+                      width: '92%',
+                      maxWidth: '400px',
+                    }}
+                  >
+                    <ServiceCard 
+                      service={service} 
+                      index={index} 
+                      onClick={() => handleCardClick(service)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* Desktop: Motion-based Slider */}
             <div className="hidden md:block" style={{ overflowX: 'hidden', overflowY: 'visible', width: '100%', position: 'relative' }}>
@@ -944,13 +959,17 @@ export default function Services() {
             </div>
           </div>
 
-          {/* Right Navigation Button - Desktop Only */}
+          {/* Right Navigation Button */}
           <button
             type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              nextSlide();
+              if (isMobile) {
+                nextMobileCard();
+              } else {
+                nextSlide();
+              }
             }}
             onTouchStart={(e) => {
               e.stopPropagation();
@@ -958,11 +977,15 @@ export default function Services() {
             onTouchEnd={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              nextSlide();
+              if (isMobile) {
+                nextMobileCard();
+              } else {
+                nextSlide();
+              }
             }}
-            disabled={clampedIndex === maxSlides - 1}
+            disabled={isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1}
             className={`flex flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full items-center justify-center transition-all duration-300 group ${
-              clampedIndex === maxSlides - 1
+              (isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)
                 ? "opacity-30 cursor-not-allowed" 
                 : "cursor-pointer hover:scale-105 active:scale-95"
             }`}
@@ -971,7 +994,7 @@ export default function Services() {
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
               border: "1px solid rgba(194, 107, 255, 0.3)",
-              boxShadow: clampedIndex === maxSlides - 1
+              boxShadow: (isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)
                 ? "none"
                 : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
               pointerEvents: "auto",
@@ -979,12 +1002,12 @@ export default function Services() {
               position: "relative",
             }}
             onMouseEnter={(e) => {
-              if (clampedIndex !== maxSlides - 1) {
+              if (!(isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)) {
                 e.currentTarget.style.boxShadow = "0 0 30px rgba(194, 107, 255, 0.4), 0 0 60px rgba(194, 107, 255, 0.2)";
               }
             }}
             onMouseLeave={(e) => {
-              if (clampedIndex !== maxSlides - 1) {
+              if (!(isMobile ? mobileCardIndex === services.length - 1 : clampedIndex === maxSlides - 1)) {
                 e.currentTarget.style.boxShadow = "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)";
               }
             }}
@@ -1003,7 +1026,28 @@ export default function Services() {
           </div>
         </div>
 
-          {/* Mobile: No dots pager (vertical list, no navigation needed) */}
+          {/* Mobile: Dots Pager - One dot per card */}
+          <div className="flex md:hidden justify-center gap-2 mt-6 px-4">
+            {services.map((_, index) => {
+              const isActive = index === mobileCardIndex;
+              
+              return (
+                <button
+                  key={index}
+                  onClick={() => goToMobileCard(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    isActive
+                      ? "w-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 shadow-lg shadow-purple-500/50" 
+                      : "w-2 bg-white/20 active:bg-white/40"
+                  }`}
+                  aria-label={`Go to card ${index + 1}`}
+                  style={{
+                    boxShadow: isActive ? "0 0 12px rgba(168, 85, 247, 0.4)" : "none",
+                  }}
+                />
+              );
+            })}
+          </div>
 
           {/* Desktop: Slider Indicators */}
           <div className="hidden sm:flex justify-center gap-2 mt-8">

@@ -1131,124 +1131,24 @@ function ProblemsSlider({ problemItems, theme }: { problemItems: any[]; theme: "
         ))}
       </div>
 
-      {/* Mobile: Slider */}
+      {/* Mobile: High-End Vertical List */}
       <div className="md:hidden relative">
-        <div className="flex items-center gap-3">
-          {/* Left Arrow */}
-          <button
-            type="button"
-            onClick={prevSlide}
-            disabled={activeIndex === 0}
-            className={`flex-shrink-0 w-10 h-10 rounded-full items-center justify-center transition-all duration-300 ${
-              activeIndex === 0
-                ? "opacity-30 cursor-not-allowed"
-                : "cursor-pointer hover:scale-105 active:scale-95"
-            }`}
-            style={{
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              border: "1px solid rgba(194, 107, 255, 0.3)",
-              boxShadow: activeIndex === 0
-                ? "none"
-                : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
-              pointerEvents: "auto",
-              zIndex: 50,
-            }}
-          >
-            <svg 
-              className="w-5 h-5 text-white pointer-events-none" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
+        <div className="flex flex-col gap-6 md:gap-8 w-full">
+          {problemItems.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{
+                duration: 0.5,
+                delay: index * 0.1,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-
-          {/* Slider Container */}
-          <div 
-            ref={sliderRef}
-            className="flex-1 overflow-x-auto scrollbar-hide"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            style={{
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch',
-              scrollBehavior: 'smooth',
-            }}
-          >
-            <div className="flex">
-              {problemItems.map((item, index) => (
-                <div
-                  key={index}
-                  data-card-index={index}
-                  className="flex-shrink-0 w-full flex justify-center"
-                  style={{ scrollSnapAlign: 'center' }}
-                >
-                  <div className="w-full max-w-[95%]">
-                    <ProblemCardMobile item={item} index={index} theme={theme} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right Arrow */}
-          <button
-            type="button"
-            onClick={nextSlide}
-            disabled={activeIndex === problemItems.length - 1}
-            className={`flex-shrink-0 w-10 h-10 rounded-full items-center justify-center transition-all duration-300 ${
-              activeIndex === problemItems.length - 1
-                ? "opacity-30 cursor-not-allowed"
-                : "cursor-pointer hover:scale-105 active:scale-95"
-            }`}
-            style={{
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              border: "1px solid rgba(194, 107, 255, 0.3)",
-              boxShadow: activeIndex === problemItems.length - 1
-                ? "none"
-                : "0 0 20px rgba(194, 107, 255, 0.2), 0 0 40px rgba(194, 107, 255, 0.1)",
-              pointerEvents: "auto",
-              zIndex: 50,
-            }}
-          >
-            <svg 
-              className="w-5 h-5 text-white pointer-events-none" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Pagination Dots */}
-        <div className="flex justify-center gap-2 mt-6">
-          {problemItems.map((_, index) => {
-            const isActive = index === activeIndex;
-            return (
-              <button
-                key={index}
-                type="button"
-                onClick={() => goToSlide(index)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  isActive
-                    ? "w-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 shadow-lg shadow-purple-500/50"
-                    : "w-2 bg-white/20 active:bg-white/40"
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-                style={{
-                  boxShadow: isActive ? "0 0 12px rgba(168, 85, 247, 0.4)" : "none",
-                }}
-              />
-            );
-          })}
+              <ProblemCardMobile item={item} index={index} theme={theme} />
+            </motion.div>
+          ))}
         </div>
       </div>
     </div>
