@@ -175,11 +175,11 @@ export default function Navigation() {
     setSelectedIndex(0);
   }, []);
 
-  // Debounce search input
+  // Debounce search input - Ultra Fast
   useEffect(() => {
     const timer = setTimeout(() => {
       performSearch(searchQuery);
-    }, 150); // 150ms debounce for high performance
+    }, 50); // 50ms debounce for ultra-fast performance
 
     return () => clearTimeout(timer);
   }, [searchQuery, performSearch]);
@@ -331,23 +331,22 @@ export default function Navigation() {
     <>
       <motion.nav
         className="fixed top-0 left-0 right-0 z-50 group/nav"
-        initial={{ y: -100, opacity: 0 }}
+        initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        style={{ willChange: "transform, opacity" }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
       >
         {/* Ultra High-End Navigation Container */}
         <div className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 pt-4 sm:pt-5 md:pt-6" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top, 1rem))' }}>
           {/* Main Navigation Bar - Apple Intelligence Style */}
           <motion.div
             className="relative mx-auto max-w-[1600px]"
-            initial={{ scale: 0.98, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
           >
             {/* Ultra Glassmorphic Container - Highest Level */}
             <div
-              className="relative rounded-[32px] md:rounded-[36px] lg:rounded-[40px] px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-2.5 sm:py-3 md:py-4 lg:py-5 transition-all duration-700 ease-out overflow-hidden"
+              className="relative rounded-[32px] md:rounded-[36px] lg:rounded-[40px] px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-2.5 sm:py-3 md:py-4 lg:py-5 transition-all duration-200 ease-out overflow-hidden"
               style={{
                 background: theme === "dark"
                   ? scrolled
@@ -356,8 +355,8 @@ export default function Navigation() {
                   : scrolled
                   ? "linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.80) 50%, rgba(255, 255, 255, 0.85) 100%)"
                   : "linear-gradient(180deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.60) 50%, rgba(255, 255, 255, 0.65) 100%)",
-                backdropFilter: scrolled ? "blur(100px) saturate(200%)" : "blur(80px) saturate(180%)",
-                WebkitBackdropFilter: scrolled ? "blur(100px) saturate(200%)" : "blur(80px) saturate(180%)",
+                backdropFilter: scrolled ? "blur(60px) saturate(180%)" : "blur(50px) saturate(160%)",
+                WebkitBackdropFilter: scrolled ? "blur(60px) saturate(180%)" : "blur(50px) saturate(160%)",
                 border: theme === "dark"
                   ? scrolled
                     ? "1px solid rgba(255, 255, 255, 0.25)"
@@ -376,7 +375,7 @@ export default function Navigation() {
             >
               {/* Top Highlight - Ultra Refined */}
               <div
-                className="absolute top-0 left-0 right-0 h-[1.5px] rounded-t-[32px] md:rounded-t-[36px] lg:rounded-t-[40px] opacity-60 group-hover/nav:opacity-100 transition-opacity duration-700"
+                className="absolute top-0 left-0 right-0 h-[1.5px] rounded-t-[32px] md:rounded-t-[36px] lg:rounded-t-[40px] opacity-60 group-hover/nav:opacity-100 transition-opacity duration-200"
                 style={{
                   background: theme === "dark"
                     ? "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), rgba(168, 85, 247, 0.6), rgba(255, 255, 255, 0.5), transparent)"
@@ -389,7 +388,7 @@ export default function Navigation() {
 
               {/* Inner Glow - Multi-Layer */}
               <div
-                className="absolute inset-0 rounded-[32px] md:rounded-[36px] lg:rounded-[40px] opacity-0 group-hover/nav:opacity-100 transition-opacity duration-700 pointer-events-none"
+                className="absolute inset-0 rounded-[32px] md:rounded-[36px] lg:rounded-[40px] opacity-0 group-hover/nav:opacity-100 transition-opacity duration-200 pointer-events-none"
                 style={{
                   background: theme === "dark"
                     ? "radial-gradient(ellipse at center, rgba(168, 85, 247, 0.12) 0%, rgba(139, 92, 246, 0.08) 30%, transparent 70%)"
@@ -402,7 +401,7 @@ export default function Navigation() {
                 className="absolute top-0 left-0 w-full h-full rounded-[32px] md:rounded-[36px] lg:rounded-[40px] pointer-events-none overflow-hidden"
                 initial={{ x: "-100%", opacity: 0 }}
                 whileHover={{ x: "100%", opacity: 1 }}
-                transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 style={{
                   background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4), transparent)",
                 }}
@@ -423,14 +422,14 @@ export default function Navigation() {
                       className="relative flex items-center cursor-pointer group/logo"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
                       whileHover={{ scale: 1.1, y: -2 }}
                       whileTap={{ scale: 0.95 }}
                       style={{ willChange: "transform, opacity" }}
                     >
                       {/* Logo Glow */}
                       <div
-                        className="absolute inset-0 rounded-xl opacity-0 group-hover/logo:opacity-100 transition-opacity duration-500 -z-10"
+                        className="absolute inset-0 rounded-xl opacity-0 group-hover/logo:opacity-100 transition-opacity duration-200 -z-10"
                         style={{
                           background: theme === "dark"
                             ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
@@ -440,7 +439,7 @@ export default function Navigation() {
                         }}
                       />
                       <span
-                        className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-tight transition-all duration-300"
+                        className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-tight transition-all duration-150"
                         style={{
                           fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
                           letterSpacing: "-0.02em",
@@ -475,7 +474,7 @@ export default function Navigation() {
                         className="relative px-2.5 sm:px-3 py-2 rounded-xl font-semibold text-[9px] sm:text-[10px] tracking-wide overflow-hidden group/demo-mobile whitespace-nowrap"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3, delay: 0.3 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
                         whileHover={{ scale: 1.05, y: -1 }}
                         whileTap={{ scale: 0.95 }}
                         style={{
@@ -501,74 +500,150 @@ export default function Navigation() {
 
                     {/* Mobile: Theme Toggle + Burger Menu - Rechts */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      {/* Theme Toggle - Mobile */}
+                      {/* Premium Theme Toggle Switch - Mobile (Kompakt) */}
                       <motion.button
                         onClick={toggleTheme}
-                        className="relative w-9 h-9 rounded-xl flex items-center justify-center group/theme flex-shrink-0"
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        className="relative w-[48px] h-[28px] rounded-full flex items-center group/theme-switch-mobile flex-shrink-0 cursor-pointer"
+                        initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3, delay: 0.4 }}
-                        whileHover={{ scale: 1.1, y: -2 }}
-                        whileTap={{ scale: 0.9 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.98 }}
                         style={{
+                          padding: theme === "dark" ? "2.5px" : "2.5px",
                           background: theme === "dark"
-                            ? "rgba(255, 255, 255, 0.12)"
-                            : "rgba(0, 0, 0, 0.08)",
-                          backdropFilter: "blur(30px)",
-                          WebkitBackdropFilter: "blur(30px)",
+                            ? "linear-gradient(180deg, rgba(60, 60, 67, 0.95) 0%, rgba(45, 45, 50, 0.98) 100%)"
+                            : "linear-gradient(180deg, rgba(255, 214, 10, 0.95) 0%, rgba(255, 204, 0, 0.98) 100%)",
+                          backdropFilter: "blur(40px) saturate(180%)",
+                          WebkitBackdropFilter: "blur(40px) saturate(180%)",
                           border: theme === "dark"
-                            ? "1px solid rgba(255, 255, 255, 0.18)"
-                            : "1px solid rgba(0, 0, 0, 0.12)",
+                            ? "1px solid rgba(255, 255, 255, 0.12)"
+                            : "1px solid rgba(255, 255, 255, 0.4)",
                           boxShadow: theme === "dark"
-                            ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
-                            : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
+                            ? "inset 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset"
+                            : "inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset",
+                          willChange: "transform, background, padding",
                         }}
                         aria-label="Toggle theme"
                       >
-                        <div
-                          className="absolute inset-0 rounded-xl opacity-0 group-hover/theme:opacity-100 transition-opacity duration-300 -z-10"
+                        {/* Toggle Thumb (Circular Switch Button) */}
+                        <motion.div
+                          className="relative w-[23px] h-[23px] rounded-full flex items-center justify-center overflow-hidden"
+                          animate={{
+                            x: theme === "dark" ? 0 : "20px",
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 35,
+                            mass: 0.8,
+                          }}
                           style={{
                             background: theme === "dark"
-                              ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
-                              : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
-                            filter: "blur(16px)",
+                              ? "linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 245, 247, 0.95) 100%)"
+                              : "linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.98) 100%)",
+                            boxShadow: theme === "dark"
+                              ? "0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(0, 0, 0, 0.1) inset, 0 1px 2px rgba(255, 255, 255, 0.3) inset"
+                              : "0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 2px rgba(255, 255, 255, 0.6) inset",
+                            willChange: "transform",
+                          }}
+                        >
+                          {/* Inner Highlight */}
+                          <div
+                            className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full opacity-60"
+                            style={{
+                              background: theme === "dark"
+                                ? "linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent)"
+                                : "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent)",
+                            }}
+                          />
+
+                          {/* Icon Container */}
+                          <motion.div
+                            className="relative z-10 flex items-center justify-center w-full h-full"
+                            animate={{
+                              rotate: theme === "dark" ? 0 : 180,
+                            }}
+                            transition={{
+                              duration: 0.4,
+                              ease: [0.16, 1, 0.3, 1],
+                            }}
+                          >
+                            <AnimatePresence mode="wait" initial={false}>
+                              {theme === "dark" ? (
+                                <motion.svg
+                                  key="moon"
+                                  className="w-3.5 h-3.5"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                  exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                                  transition={{
+                                    duration: 0.3,
+                                    ease: [0.16, 1, 0.3, 1],
+                                  }}
+                                  style={{
+                                    color: "rgba(45, 45, 50, 0.9)",
+                                    strokeWidth: 2.5,
+                                  }}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                                  />
+                                </motion.svg>
+                              ) : (
+                                <motion.svg
+                                  key="sun"
+                                  className="w-3.5 h-3.5"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  initial={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                  exit={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                                  transition={{
+                                    duration: 0.3,
+                                    ease: [0.16, 1, 0.3, 1],
+                                  }}
+                                  style={{
+                                    color: "rgba(255, 204, 0, 0.95)",
+                                    strokeWidth: 2.5,
+                                  }}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                                  />
+                                </motion.svg>
+                              )}
+                            </AnimatePresence>
+                          </motion.div>
+
+                          {/* Subtle Inner Shadow */}
+                          <div
+                            className="absolute inset-0 rounded-full pointer-events-none opacity-30"
+                            style={{
+                              boxShadow: theme === "dark"
+                                ? "inset 0 1px 1px rgba(0, 0, 0, 0.2)"
+                                : "inset 0 1px 1px rgba(255, 255, 255, 0.4)",
+                            }}
+                          />
+                        </motion.div>
+
+                        {/* Background Pattern (Subtle Texture) */}
+                        <div
+                          className="absolute inset-0 rounded-full opacity-5 pointer-events-none"
+                          style={{
+                            backgroundImage: theme === "dark"
+                              ? "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%)"
+                              : "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 50%)",
                           }}
                         />
-                        <AnimatePresence mode="wait">
-                          {theme === "dark" ? (
-                            <motion.svg
-                              key="sun"
-                              className="w-5 h-5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2.5}
-                              initial={{ rotate: -90, opacity: 0 }}
-                              animate={{ rotate: 0, opacity: 1 }}
-                              exit={{ rotate: 90, opacity: 0 }}
-                              transition={{ duration: 0.3 }}
-                              style={{ color: "rgba(255, 255, 255, 0.95)" }}
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </motion.svg>
-                          ) : (
-                            <motion.svg
-                              key="moon"
-                              className="w-5 h-5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2.5}
-                              initial={{ rotate: 90, opacity: 0 }}
-                              animate={{ rotate: 0, opacity: 1 }}
-                              exit={{ rotate: -90, opacity: 0 }}
-                              transition={{ duration: 0.3 }}
-                              style={{ color: "rgba(0, 0, 0, 0.9)" }}
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                            </motion.svg>
-                          )}
-                        </AnimatePresence>
                       </motion.button>
 
                       {/* Mobile Menu Button - Hamburger */}
@@ -637,7 +712,7 @@ export default function Navigation() {
                     className="relative flex items-center cursor-pointer group/logo"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     style={{ willChange: "transform, opacity" }}
@@ -693,7 +768,7 @@ export default function Navigation() {
                     className="relative flex items-center gap-0 px-2 py-2 rounded-full"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
                     style={{
                       background: theme === "dark"
                         ? "linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.04) 100%)"
@@ -729,7 +804,7 @@ export default function Navigation() {
                             className="relative px-3 lg:px-4 xl:px-5 py-2 text-[11px] lg:text-xs xl:text-sm font-medium transition-all duration-300 block whitespace-nowrap flex-shrink-0"
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
+                            transition={{ duration: 0.15, ease: "easeOut" }}
                             style={{
                               color: theme === "dark" 
                                 ? isActive 
@@ -770,14 +845,14 @@ export default function Navigation() {
                     className="ai-demo-button relative px-3 lg:px-4 xl:px-5 2xl:px-6 py-2 lg:py-2.5 xl:py-3 rounded-[16px] lg:rounded-[18px] xl:rounded-[20px] font-semibold text-[11px] lg:text-xs xl:text-sm tracking-wide overflow-hidden group/demo whitespace-nowrap"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                     whileHover={{ scale: 1.06, y: -2 }}
                     whileTap={{ scale: 0.96 }}
                     style={{ willChange: "transform" }}
                   >
                     {/* Base Gradient Background - Apple Intelligence Style */}
                     <div
-                      className="absolute inset-0 rounded-[20px] transition-all duration-500"
+                      className="absolute inset-0 rounded-[20px] transition-all duration-200"
                       style={{
                         background: theme === "dark"
                           ? "linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 25%, rgba(99, 102, 241, 0.40) 50%, rgba(139, 92, 246, 0.45) 75%, rgba(168, 85, 247, 0.35) 100%)"
@@ -789,7 +864,7 @@ export default function Navigation() {
 
                     {/* Glassmorphic Overlay */}
                     <div
-                      className="absolute inset-0 rounded-[20px] transition-all duration-500"
+                      className="absolute inset-0 rounded-[20px] transition-all duration-200"
                       style={{
                         background: theme === "dark"
                           ? "linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 30%, rgba(255, 255, 255, 0.08) 60%, rgba(255, 255, 255, 0.04) 100%)"
@@ -894,7 +969,7 @@ export default function Navigation() {
                     className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/search-btn flex-shrink-0"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
                     whileHover={{ scale: 1.15, y: -3, rotate: 15 }}
                     whileTap={{ scale: 0.85 }}
                     style={{
@@ -937,75 +1012,170 @@ export default function Navigation() {
                     </motion.svg>
                   </motion.button>
 
-                  {/* Theme Toggle - Ganz rechts */}
+                  {/* Premium Theme Toggle Switch - Apple-Level Design */}
                   <motion.button
                     onClick={toggleTheme}
-                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/theme flex-shrink-0"
-                    initial={{ opacity: 0, scale: 0.8 }}
+                    className="relative w-[52px] h-[32px] lg:w-[56px] lg:h-[34px] rounded-full flex items-center group/theme-switch flex-shrink-0 cursor-pointer"
+                    initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                    whileHover={{ scale: 1.15, y: -3, rotate: 15 }}
-                    whileTap={{ scale: 0.85 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
                     style={{
+                      padding: theme === "dark" ? "3px" : "3px",
                       background: theme === "dark"
-                        ? "rgba(255, 255, 255, 0.12)"
-                        : "rgba(0, 0, 0, 0.08)",
-                      backdropFilter: "blur(30px)",
-                      WebkitBackdropFilter: "blur(30px)",
+                        ? "linear-gradient(180deg, rgba(60, 60, 67, 0.95) 0%, rgba(45, 45, 50, 0.98) 100%)"
+                        : "linear-gradient(180deg, rgba(255, 214, 10, 0.95) 0%, rgba(255, 204, 0, 0.98) 100%)",
+                      backdropFilter: "blur(40px) saturate(180%)",
+                      WebkitBackdropFilter: "blur(40px) saturate(180%)",
                       border: theme === "dark"
-                        ? "1px solid rgba(255, 255, 255, 0.18)"
-                        : "1px solid rgba(0, 0, 0, 0.12)",
+                        ? "1px solid rgba(255, 255, 255, 0.12)"
+                        : "1px solid rgba(255, 255, 255, 0.4)",
                       boxShadow: theme === "dark"
-                        ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
-                        : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
-                      willChange: "transform",
+                        ? "inset 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset"
+                        : "inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset",
+                      willChange: "transform, background, padding",
                     }}
                     aria-label="Toggle theme"
                   >
-                    <div
-                      className="absolute inset-0 rounded-xl opacity-0 group-hover/theme:opacity-100 transition-opacity duration-300 -z-10"
+                    {/* Outer Glow Effect */}
+                    <motion.div
+                      className="absolute inset-0 rounded-full opacity-0 group-hover/theme-switch:opacity-100 transition-opacity duration-500 -z-10"
+                      animate={{
+                        opacity: theme === "dark" ? [0, 0.3, 0] : [0, 0.4, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
                       style={{
                         background: theme === "dark"
-                          ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
-                          : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
-                        filter: "blur(16px)",
+                          ? "radial-gradient(circle, rgba(168, 85, 247, 0.3), transparent 70%)"
+                          : "radial-gradient(circle, rgba(255, 214, 10, 0.4), transparent 70%)",
+                        filter: "blur(12px)",
+                        padding: "4px",
                       }}
                     />
-                    <AnimatePresence mode="wait">
-                      {theme === "dark" ? (
-                        <motion.svg
-                          key="sun"
-                          className="w-5 h-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2.5}
-                          initial={{ rotate: -90, opacity: 0 }}
-                          animate={{ rotate: 0, opacity: 1 }}
-                          exit={{ rotate: 90, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          style={{ color: "rgba(255, 255, 255, 0.95)" }}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </motion.svg>
-                      ) : (
-                        <motion.svg
-                          key="moon"
-                          className="w-5 h-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2.5}
-                          initial={{ rotate: 90, opacity: 0 }}
-                          animate={{ rotate: 0, opacity: 1 }}
-                          exit={{ rotate: -90, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          style={{ color: "rgba(0, 0, 0, 0.9)" }}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </motion.svg>
-                      )}
-                    </AnimatePresence>
+
+                    {/* Toggle Thumb (Circular Switch Button) */}
+                    <motion.div
+                      className="relative w-[26px] h-[26px] lg:w-[28px] lg:h-[28px] rounded-full flex items-center justify-center overflow-hidden"
+                      animate={{
+                        x: theme === "dark" ? 0 : "22px",
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 35,
+                        mass: 0.8,
+                      }}
+                      style={{
+                        background: theme === "dark"
+                          ? "linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 245, 247, 0.95) 100%)"
+                          : "linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.98) 100%)",
+                        boxShadow: theme === "dark"
+                          ? "0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(0, 0, 0, 0.1) inset, 0 1px 2px rgba(255, 255, 255, 0.3) inset"
+                          : "0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 2px rgba(255, 255, 255, 0.6) inset",
+                        willChange: "transform",
+                      }}
+                    >
+                      {/* Inner Highlight */}
+                      <div
+                        className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full opacity-60"
+                        style={{
+                          background: theme === "dark"
+                            ? "linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent)"
+                            : "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent)",
+                        }}
+                      />
+
+                      {/* Icon Container */}
+                      <motion.div
+                        className="relative z-10 flex items-center justify-center w-full h-full"
+                        animate={{
+                          rotate: theme === "dark" ? 0 : 180,
+                        }}
+                        transition={{
+                          duration: 0.4,
+                          ease: [0.16, 1, 0.3, 1],
+                        }}
+                      >
+                        <AnimatePresence mode="wait" initial={false}>
+                          {theme === "dark" ? (
+                            <motion.svg
+                              key="moon"
+                              className="w-4 h-4 lg:w-[15px] lg:h-[15px]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                              exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                              transition={{
+                                duration: 0.3,
+                                ease: [0.16, 1, 0.3, 1],
+                              }}
+                              style={{
+                                color: "rgba(45, 45, 50, 0.9)",
+                                strokeWidth: 2.5,
+                              }}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                              />
+                            </motion.svg>
+                          ) : (
+                            <motion.svg
+                              key="sun"
+                              className="w-4 h-4 lg:w-[15px] lg:h-[15px]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              initial={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                              exit={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                              transition={{
+                                duration: 0.3,
+                                ease: [0.16, 1, 0.3, 1],
+                              }}
+                              style={{
+                                color: "rgba(255, 204, 0, 0.95)",
+                                strokeWidth: 2.5,
+                              }}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                              />
+                            </motion.svg>
+                          )}
+                        </AnimatePresence>
+                      </motion.div>
+
+                      {/* Subtle Inner Shadow */}
+                      <div
+                        className="absolute inset-0 rounded-full pointer-events-none opacity-30"
+                        style={{
+                          boxShadow: theme === "dark"
+                            ? "inset 0 1px 1px rgba(0, 0, 0, 0.2)"
+                            : "inset 0 1px 1px rgba(255, 255, 255, 0.4)",
+                        }}
+                      />
+                    </motion.div>
+
+                    {/* Background Pattern (Subtle Texture) */}
+                    <div
+                      className="absolute inset-0 rounded-full opacity-5 pointer-events-none"
+                      style={{
+                        backgroundImage: theme === "dark"
+                          ? "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%)"
+                          : "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 50%)",
+                      }}
+                    />
                   </motion.button>
                 </div>
               </div>
@@ -1580,7 +1750,7 @@ export default function Navigation() {
                       key={item.label}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1, duration: 0.3 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
                     >
                       <Link
                         href={item.href}
@@ -1614,51 +1784,51 @@ export default function Navigation() {
                       </Link>
                     </motion.div>
                   ))}
-                </nav>
 
-                {/* Demo anfordern CTA im Mobile Drawer - Nicht ganz unten, etwas höher */}
-                <motion.div
-                  className="mt-auto pt-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6, duration: 0.3 }}
-                >
-                  <Link href="/demo-anfordern" prefetch={true} onClick={() => setMobileMenuOpen(false)}>
-                    <motion.button
-                      className="relative w-full px-6 py-4 rounded-[20px] font-semibold text-sm tracking-wide overflow-hidden group/demo-mobile-drawer"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                      style={{
-                        background: theme === "dark"
-                          ? "linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 100%)"
-                          : "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(139, 92, 246, 0.5) 100%)",
-                        backdropFilter: "blur(40px) saturate(200%)",
-                        WebkitBackdropFilter: "blur(40px) saturate(200%)",
-                        border: theme === "dark"
-                          ? "1px solid rgba(255, 255, 255, 0.25)"
-                          : "1px solid rgba(255, 255, 255, 0.4)",
-                        boxShadow: theme === "dark"
-                          ? "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset, 0 0 40px rgba(168, 85, 247, 0.3)"
-                          : "0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset",
-                      }}
-                    >
-                      <span className="relative z-10 block flex items-center justify-center gap-2" style={{ color: "#FFFFFF" }}>
-                        <span>Demo anfordern</span>
-                        <motion.svg
-                          className="w-5 h-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2.5}
-                          animate={{ x: [0, 4, 0] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </motion.svg>
-                      </span>
-                    </motion.button>
-                  </Link>
-                </motion.div>
+                  {/* Demo anfordern CTA - Direkt unter Kontakt */}
+                  <motion.div
+                    className="mt-2"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                  >
+                    <Link href="/demo-anfordern" prefetch={true} onClick={() => setMobileMenuOpen(false)}>
+                      <motion.button
+                        className="relative w-full px-6 py-4 rounded-[20px] font-semibold text-sm tracking-wide overflow-hidden group/demo-mobile-drawer"
+                        whileHover={{ scale: 1.02, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          background: theme === "dark"
+                            ? "linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 100%)"
+                            : "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(139, 92, 246, 0.5) 100%)",
+                          backdropFilter: "blur(40px) saturate(200%)",
+                          WebkitBackdropFilter: "blur(40px) saturate(200%)",
+                          border: theme === "dark"
+                            ? "1px solid rgba(255, 255, 255, 0.25)"
+                            : "1px solid rgba(255, 255, 255, 0.4)",
+                          boxShadow: theme === "dark"
+                            ? "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset, 0 0 40px rgba(168, 85, 247, 0.3)"
+                            : "0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset",
+                        }}
+                      >
+                        <span className="relative z-10 block flex items-center justify-center gap-2" style={{ color: "#FFFFFF" }}>
+                          <span>Demo anfordern</span>
+                          <motion.svg
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            animate={{ x: [0, 4, 0] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                          </motion.svg>
+                        </span>
+                      </motion.button>
+                    </Link>
+                  </motion.div>
+                </nav>
               </div>
             </motion.div>
           </>
