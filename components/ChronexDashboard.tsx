@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/ThemeContext";
 
 // Chronex AI - Logistik Dashboard Visualisierung
-// Premium Apple/Tesla Design Level - Kompakt wie PflegeDashboard
+// Premium Apple/Tesla Design Level - Kompakt wie PflegeDashboard mit klaren Trennungen
 
 export default function ChronexDashboard() {
   const { theme } = useTheme();
@@ -64,8 +64,14 @@ export default function ChronexDashboard() {
           }}
         />
 
-        {/* Header */}
-        <div className="relative z-10 px-4 sm:px-5 pt-3 sm:pt-4 pb-2 sm:pb-3 border-b" style={{ borderColor: isDark ? "rgba(0, 245, 255, 0.2)" : "rgba(0, 245, 255, 0.15)" }}>
+        {/* Header - DEUTLICHE TRENNUNG */}
+        <div 
+          className="relative z-10 px-4 sm:px-5 pt-3 sm:pt-4 pb-3 sm:pb-4"
+          style={{ 
+            borderBottom: isDark ? "2px solid rgba(0, 245, 255, 0.3)" : "2px solid rgba(0, 245, 255, 0.25)",
+            background: isDark ? "rgba(0, 245, 255, 0.05)" : "rgba(0, 245, 255, 0.03)",
+          }}
+        >
           <div className="flex items-center justify-between">
             <h3
               className="text-base sm:text-lg font-bold tracking-tight"
@@ -99,9 +105,9 @@ export default function ChronexDashboard() {
           </div>
         </div>
 
-        {/* Stats Cards Grid */}
-        <div className="relative z-10 px-4 sm:px-5 py-3 sm:py-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+        {/* Stats Cards Grid - DEUTLICHE TRENNUNG */}
+        <div className="relative z-10 px-4 sm:px-5 py-4 sm:py-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -112,13 +118,13 @@ export default function ChronexDashboard() {
                 whileHover={{ y: -2, scale: 1.01 }}
                 style={{
                   background: isDark
-                    ? "linear-gradient(180deg, rgba(0, 245, 255, 0.12) 0%, rgba(0, 245, 255, 0.06) 100%)"
-                    : "linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
+                    ? "linear-gradient(180deg, rgba(0, 245, 255, 0.15) 0%, rgba(0, 245, 255, 0.08) 100%)"
+                    : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)",
                   backdropFilter: "blur(20px)",
                   WebkitBackdropFilter: "blur(20px)",
                   border: isDark
-                    ? "1px solid rgba(0, 245, 255, 0.2)"
-                    : "1px solid rgba(0, 245, 255, 0.15)",
+                    ? "2px solid rgba(0, 245, 255, 0.3)"
+                    : "2px solid rgba(0, 245, 255, 0.25)",
                   boxShadow: isDark
                     ? "0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(0, 245, 255, 0.1) inset"
                     : "0 4px 12px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04) inset",
@@ -127,7 +133,7 @@ export default function ChronexDashboard() {
                 <div className="relative z-10">
                   <p
                     className="text-[10px] sm:text-xs font-medium mb-1.5 tracking-wide uppercase"
-                    style={{ color: isDark ? "rgba(0, 245, 255, 0.6)" : "rgba(0, 0, 0, 0.5)" }}
+                    style={{ color: isDark ? "rgba(0, 245, 255, 0.7)" : "rgba(0, 0, 0, 0.6)" }}
                   >
                     {stat.label}
                   </p>
@@ -142,7 +148,7 @@ export default function ChronexDashboard() {
                   </p>
                   <p
                     className="text-[10px] sm:text-xs font-medium"
-                    style={{ color: isDark ? "rgba(0, 245, 255, 0.5)" : "rgba(0, 0, 0, 0.4)" }}
+                    style={{ color: isDark ? "rgba(0, 245, 255, 0.6)" : "rgba(0, 0, 0, 0.5)" }}
                   >
                     {stat.change}
                   </p>
@@ -152,122 +158,139 @@ export default function ChronexDashboard() {
           </div>
         </div>
 
-        {/* Main Content Area - Chart and Tours Side by Side */}
-        <div className="relative z-10 px-4 sm:px-5 pb-3 sm:pb-4 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-          {/* Chart Section */}
-          <div
-            className="rounded-[20px] p-3 sm:p-4 overflow-hidden"
-            style={{
-              background: isDark
-                ? "linear-gradient(180deg, rgba(0, 245, 255, 0.08) 0%, rgba(0, 245, 255, 0.04) 100%)"
-                : "linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: isDark
-                ? "1px solid rgba(0, 245, 255, 0.15)"
-                : "1px solid rgba(0, 245, 255, 0.12)",
-            }}
-          >
-            <h4
-              className="text-sm sm:text-base font-bold mb-3 sm:mb-4"
-              style={{ color: isDark ? "#00F5FF" : "#0066CC" }}
+        {/* Main Content Area - DEUTLICHE TRENNUNG */}
+        <div className="relative z-10 px-4 sm:px-5 pb-4 sm:pb-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+            {/* Chart Section */}
+            <div
+              className="rounded-[20px] p-3 sm:p-4 overflow-hidden"
+              style={{
+                background: isDark
+                  ? "linear-gradient(180deg, rgba(0, 245, 255, 0.12) 0%, rgba(0, 245, 255, 0.06) 100%)"
+                  : "linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: isDark
+                  ? "2px solid rgba(0, 245, 255, 0.3)"
+                  : "2px solid rgba(0, 245, 255, 0.25)",
+                boxShadow: isDark
+                  ? "0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(0, 245, 255, 0.1) inset"
+                  : "0 4px 12px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04) inset",
+              }}
             >
-              Tourenverlauf (7 Tage)
-            </h4>
-            <div className="relative h-32 sm:h-36 lg:h-40 flex items-end justify-between gap-1.5 sm:gap-2">
-              {chartData.map((value, index) => {
-                const height = (value / maxValue) * 100;
-                return (
-                  <motion.div
-                    key={index}
-                    className="flex-1 rounded-t-lg relative group/bar"
-                    initial={{ height: 0 }}
-                    animate={{ height: `${height}%` }}
-                    transition={{ duration: 0.6, delay: index * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
-                    whileHover={{ scale: 1.08, y: -2 }}
-                    style={{
-                      background: "linear-gradient(180deg, rgba(0, 245, 255, 0.9) 0%, rgba(0, 245, 255, 0.5) 100%)",
-                      boxShadow: "0 2px 8px rgba(0, 245, 255, 0.3), 0 0 0 1px rgba(0, 245, 255, 0.2) inset",
-                    }}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Tours List Section */}
-          <div
-            className="rounded-[20px] p-3 sm:p-4 overflow-hidden"
-            style={{
-              background: isDark
-                ? "linear-gradient(180deg, rgba(0, 245, 255, 0.08) 0%, rgba(0, 245, 255, 0.04) 100%)"
-                : "linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: isDark
-                ? "1px solid rgba(0, 245, 255, 0.15)"
-                : "1px solid rgba(0, 245, 255, 0.12)",
-            }}
-          >
-            <h4
-              className="text-sm sm:text-base font-bold mb-3 sm:mb-4"
-              style={{ color: isDark ? "#00F5FF" : "#0066CC" }}
-            >
-              Aktive Touren
-            </h4>
-            <div className="space-y-2">
-              {tours.map((tour, index) => (
-                <motion.div
-                  key={tour.id}
-                  className="group relative rounded-[12px] p-2.5 sm:p-3 overflow-hidden cursor-pointer"
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  whileHover={{ x: 2, scale: 1.01 }}
-                  style={{
-                    background: isDark
-                      ? "linear-gradient(90deg, rgba(0, 245, 255, 0.1) 0%, rgba(0, 245, 255, 0.05) 100%)"
-                      : "linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
-                    border: isDark
-                      ? "1px solid rgba(0, 245, 255, 0.15)"
-                      : "1px solid rgba(0, 245, 255, 0.1)",
-                  }}
-                >
-                  <div className="flex items-center gap-2.5">
+              <h4
+                className="text-sm sm:text-base font-bold mb-3 sm:mb-4"
+                style={{ color: isDark ? "#00F5FF" : "#0066CC" }}
+              >
+                Tourenverlauf (7 Tage)
+              </h4>
+              <div className="relative h-32 sm:h-36 lg:h-40 flex items-end justify-between gap-1.5 sm:gap-2">
+                {chartData.map((value, index) => {
+                  const height = (value / maxValue) * 100;
+                  return (
                     <motion.div
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{ background: "#00F5FF" }}
-                      animate={{ scale: [1, 1.15, 1], opacity: [1, 0.7, 1] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
+                      key={index}
+                      className="flex-1 rounded-t-lg relative group/bar"
+                      initial={{ height: 0 }}
+                      animate={{ height: `${height}%` }}
+                      transition={{ duration: 0.6, delay: index * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
+                      whileHover={{ scale: 1.08, y: -2 }}
+                      style={{
+                        background: "linear-gradient(180deg, rgba(0, 245, 255, 0.9) 0%, rgba(0, 245, 255, 0.5) 100%)",
+                        boxShadow: "0 2px 8px rgba(0, 245, 255, 0.3), 0 0 0 1px rgba(0, 245, 255, 0.2) inset",
+                      }}
                     />
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className="text-xs sm:text-sm font-semibold truncate"
-                        style={{ color: isDark ? "rgba(255, 255, 255, 0.95)" : "rgba(0, 0, 0, 0.9)" }}
-                      >
-                        Tour {tour.id} → {tour.destination}
-                      </p>
-                      <p
-                        className="text-[10px] sm:text-xs font-medium mt-0.5"
-                        style={{ color: isDark ? "rgba(0, 245, 255, 0.6)" : "rgba(0, 0, 0, 0.5)" }}
-                      >
-                        ETA: {tour.eta}
-                      </p>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Tours List Section */}
+            <div
+              className="rounded-[20px] p-3 sm:p-4 overflow-hidden"
+              style={{
+                background: isDark
+                  ? "linear-gradient(180deg, rgba(0, 245, 255, 0.12) 0%, rgba(0, 245, 255, 0.06) 100%)"
+                  : "linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: isDark
+                  ? "2px solid rgba(0, 245, 255, 0.3)"
+                  : "2px solid rgba(0, 245, 255, 0.25)",
+                boxShadow: isDark
+                  ? "0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(0, 245, 255, 0.1) inset"
+                  : "0 4px 12px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04) inset",
+              }}
+            >
+              <h4
+                className="text-sm sm:text-base font-bold mb-3 sm:mb-4"
+                style={{ color: isDark ? "#00F5FF" : "#0066CC" }}
+              >
+                Aktive Touren
+              </h4>
+              <div className="space-y-2.5">
+                {tours.map((tour, index) => (
+                  <motion.div
+                    key={tour.id}
+                    className="group relative rounded-[12px] p-2.5 sm:p-3 overflow-hidden cursor-pointer"
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    whileHover={{ x: 2, scale: 1.01 }}
+                    style={{
+                      background: isDark
+                        ? "linear-gradient(90deg, rgba(0, 245, 255, 0.15) 0%, rgba(0, 245, 255, 0.08) 100%)"
+                        : "linear-gradient(90deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)",
+                      border: isDark
+                        ? "1px solid rgba(0, 245, 255, 0.25)"
+                        : "1px solid rgba(0, 245, 255, 0.2)",
+                      boxShadow: isDark
+                        ? "0 2px 6px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 245, 255, 0.1) inset"
+                        : "0 2px 6px rgba(0, 0, 0, 0.05), 0 0 0 0.5px rgba(0, 0, 0, 0.03) inset",
+                    }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <motion.div
+                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                        style={{ background: "#00F5FF" }}
+                        animate={{ scale: [1, 1.15, 1], opacity: [1, 0.7, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className="text-xs sm:text-sm font-semibold truncate"
+                          style={{ color: isDark ? "rgba(255, 255, 255, 0.95)" : "rgba(0, 0, 0, 0.9)" }}
+                        >
+                          Tour {tour.id} → {tour.destination}
+                        </p>
+                        <p
+                          className="text-[10px] sm:text-xs font-medium mt-0.5"
+                          style={{ color: isDark ? "rgba(0, 245, 255, 0.6)" : "rgba(0, 0, 0, 0.5)" }}
+                        >
+                          ETA: {tour.eta}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Action Buttons - Compact */}
-        <div className="relative z-10 px-4 sm:px-5 pb-3 sm:pb-4 border-t" style={{ borderColor: isDark ? "rgba(0, 245, 255, 0.2)" : "rgba(0, 245, 255, 0.15)" }}>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 pt-3">
+        {/* Action Buttons - DEUTLICHE TRENNUNG */}
+        <div 
+          className="relative z-10 px-4 sm:px-5 pb-3 sm:pb-4 pt-3 sm:pt-4"
+          style={{ 
+            borderTop: isDark ? "2px solid rgba(0, 245, 255, 0.3)" : "2px solid rgba(0, 245, 255, 0.25)",
+            background: isDark ? "rgba(0, 245, 255, 0.03)" : "rgba(0, 245, 255, 0.02)",
+          }}
+        >
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
             {actions.map((action, index) => (
               <motion.button
                 key={action}
-                className="group relative rounded-[12px] px-3 py-2 overflow-hidden"
+                className="group relative rounded-[12px] px-3 py-2.5 overflow-hidden"
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.03 }}
@@ -275,13 +298,13 @@ export default function ChronexDashboard() {
                 whileTap={{ scale: 0.99 }}
                 style={{
                   background: isDark
-                    ? "linear-gradient(180deg, rgba(0, 245, 255, 0.15) 0%, rgba(0, 245, 255, 0.08) 100%)"
-                    : "linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
+                    ? "linear-gradient(180deg, rgba(0, 245, 255, 0.18) 0%, rgba(0, 245, 255, 0.1) 100%)"
+                    : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)",
                   backdropFilter: "blur(20px)",
                   WebkitBackdropFilter: "blur(20px)",
                   border: isDark
-                    ? "1px solid rgba(0, 245, 255, 0.2)"
-                    : "1px solid rgba(0, 245, 255, 0.15)",
+                    ? "2px solid rgba(0, 245, 255, 0.3)"
+                    : "2px solid rgba(0, 245, 255, 0.25)",
                   boxShadow: isDark
                     ? "0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(0, 245, 255, 0.1) inset"
                     : "0 2px 8px rgba(0, 0, 0, 0.05), 0 0 0 0.5px rgba(0, 0, 0, 0.03) inset",
