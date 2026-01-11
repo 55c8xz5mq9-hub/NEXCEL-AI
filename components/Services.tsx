@@ -147,7 +147,7 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
         delay: index * 0.05,
         ease: [0.25, 0.1, 0.25, 1],
       }}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.05 }}
       onClick={onClick}
       style={{ 
         willChange: "transform, opacity",
@@ -155,7 +155,10 @@ const ServiceCard = memo(({ service, index, onClick }: { service: typeof service
         maxWidth: isProcessCard ? "370px" : "none",
         marginLeft: isProcessCard ? "auto" : "0",
         marginRight: isProcessCard ? "auto" : "0",
-        width: isProcessCard ? "100%" : "auto"
+        width: isProcessCard ? "100%" : "auto",
+        marginTop: "0",
+        marginBottom: "0",
+        zIndex: 1,
       }}
     >
       {/* Main Card Container - Ultra High-End Apple Design */}
@@ -801,8 +804,8 @@ export default function Services() {
         </motion.div>
 
         {/* High-End Slider */}
-        <div className="relative" style={{ pointerEvents: "auto" }}>
-          <div className="flex items-center gap-2 sm:gap-4 md:gap-6" style={{ position: "relative", zIndex: 10 }}>
+        <div className="relative" style={{ pointerEvents: "auto", overflow: "visible" }}>
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-6" style={{ position: "relative", zIndex: 10, overflow: "visible" }}>
           {/* Left Navigation Button - Outside Cards */}
           <button
             type="button"
@@ -870,8 +873,8 @@ export default function Services() {
           {/* Slider Container */}
           <div 
             ref={sliderRef}
-            className="flex-1 rounded-3xl"
-            style={{ paddingTop: '8px', paddingBottom: '8px' }}
+            className="flex-1"
+            style={{ paddingTop: '16px', paddingBottom: '16px' }}
           >
             {/* Mobile: Horizontal Scroll with Snap */}
             <div 
@@ -885,7 +888,7 @@ export default function Services() {
                 paddingRight: '4%',
               }}
             >
-              <div className="flex gap-4" style={{ paddingTop: '8px', paddingBottom: '8px' }}>
+              <div className="flex gap-4" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
                 {services.map((service, index) => (
                   <div
                     key={index}
@@ -912,10 +915,11 @@ export default function Services() {
               className="hidden md:flex"
               animate={{ x: `-${clampedIndex * 100}%` }}
               transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+              style={{ overflow: "visible" }}
             >
               {Array.from({ length: Math.ceil(services.length / 4) }).map((_, slideIndex) => (
-                <div key={slideIndex} className="min-w-full px-2">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch" style={{ paddingTop: '8px', paddingBottom: '8px' }}>
+                <div key={slideIndex} className="min-w-full px-2" style={{ overflow: "visible" }}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch" style={{ paddingTop: '16px', paddingBottom: '16px', overflow: "visible" }}>
                     {services.slice(slideIndex * 4, slideIndex * 4 + 4).map((service, cardIndex) => (
                       <ServiceCard 
                         key={slideIndex * 4 + cardIndex} 
