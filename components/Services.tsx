@@ -1028,9 +1028,7 @@ export default function Services() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
-
           </div>
-        </div>
 
           {/* Mobile: Dots Pager - One dot per card */}
           <div className="flex md:hidden justify-center gap-2 mt-6 px-4">
