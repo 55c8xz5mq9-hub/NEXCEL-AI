@@ -1579,6 +1579,87 @@ export default function Home() {
         <Hero />
       </div>
 
+      {/* WAS WIR TUN SECTION */}
+      <section id="was-wir-tun" className="relative px-4 sm:px-6 overflow-hidden" style={{ 
+        paddingTop: "clamp(80px, 15vw, 140px)",
+        paddingBottom: "clamp(80px, 15vw, 140px)",
+      }}>
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <motion.div
+            className="text-center mb-12 md:mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <motion.h2 
+              className="font-bold tracking-tight typography-h1 typography-h1-gradient"
+              style={{ fontSize: "clamp(32px, 5vw, 64px)", lineHeight: "1.05", marginBottom: "clamp(16px, 3vw, 32px)" }}
+              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              Was wir tun
+            </motion.h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {[
+              {
+                title: "KI-gestützte Prozesse",
+                description: "Wir automatisieren wiederkehrende Abläufe durch intelligente KI-Workflows, die sich an reale Geschäftsprozesse anpassen.",
+              },
+              {
+                title: "Web- & Systemplattformen",
+                description: "Wir entwickeln leistungsfähige Web- und Desktop-Systeme, die als zentrale Steuerung für Daten, Prozesse und Nutzer dienen.",
+              },
+              {
+                title: "Automatisierung & Integration",
+                description: "Bestehende Tools und Systeme werden nahtlos verbunden – ohne Medienbrüche oder Insellösungen.",
+              },
+              {
+                title: "Individuelle Architektur",
+                description: "Keine Standardsoftware. Jedes System wird exakt auf den Anwendungsfall zugeschnitten.",
+              },
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                className="relative rounded-[28px] p-6 md:p-8"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                style={{
+                  background: theme === "dark"
+                    ? "linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 30%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.03) 100%)"
+                    : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)",
+                  backdropFilter: "blur(40px) saturate(200%)",
+                  WebkitBackdropFilter: "blur(40px) saturate(200%)",
+                  border: theme === "dark"
+                    ? "1px solid rgba(255, 255, 255, 0.25)"
+                    : "1px solid rgba(0, 0, 0, 0.12)",
+                  boxShadow: theme === "dark"
+                    ? "0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset"
+                    : "0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.08) inset",
+                }}
+              >
+                <h3 className="text-xl md:text-2xl font-bold mb-3 tracking-tight" style={{
+                  color: theme === "dark" ? "#FFFFFF" : "#000000",
+                }}>
+                  {item.title}
+                </h3>
+                <p className="text-sm md:text-base leading-relaxed" style={{
+                  color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
+                }}>
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* PROBLEM SECTION - Clean Minimal Design */}
       <section id="warum" className="relative px-4 sm:px-6 overflow-hidden" style={{ 
         paddingTop: "clamp(60px, 12vw, 120px)",
@@ -2220,6 +2301,128 @@ export default function Home() {
       }}>
         <Services />
       </div>
+
+      {/* UNSERE SYSTEME SECTION */}
+      <section id="unsere-systeme" className="relative px-4 sm:px-6 overflow-hidden" style={{ 
+        paddingTop: "clamp(80px, 15vw, 140px)",
+        paddingBottom: "clamp(80px, 15vw, 140px)",
+      }}>
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <motion.div
+            className="text-center mb-8 md:mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <motion.h2 
+              className="font-bold tracking-tight typography-h1 typography-h1-gradient mb-4"
+              style={{ fontSize: "clamp(32px, 5vw, 64px)", lineHeight: "1.05" }}
+              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              Unsere Systeme
+            </motion.h2>
+            <motion.p
+              className="text-base md:text-lg max-w-3xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              style={{
+                color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
+              }}
+            >
+              Unsere Lösungen entstehen aus realen Anforderungen und werden kontinuierlich weiterentwickelt.
+            </motion.p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {[
+              {
+                title: "ChronexAI",
+                description: "KI-basierte Prozessautomatisierung für administrative und operative Abläufe.",
+              },
+              {
+                title: "ImmoStripeAI",
+                description: "Digitale Plattform zur Automatisierung von Immobilien- und Verwaltungsprozessen.",
+              },
+              {
+                title: "CannaFlowAI",
+                description: "Prozess- und Systemlösung für strukturierte Produktions- und Betriebsabläufe.",
+              },
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                className="relative rounded-[28px] p-6 md:p-8"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                style={{
+                  background: theme === "dark"
+                    ? "linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 30%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.03) 100%)"
+                    : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)",
+                  backdropFilter: "blur(40px) saturate(200%)",
+                  WebkitBackdropFilter: "blur(40px) saturate(200%)",
+                  border: theme === "dark"
+                    ? "1px solid rgba(255, 255, 255, 0.25)"
+                    : "1px solid rgba(0, 0, 0, 0.12)",
+                  boxShadow: theme === "dark"
+                    ? "0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset"
+                    : "0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.08) inset",
+                }}
+              >
+                <h3 className="text-xl md:text-2xl font-bold mb-3 tracking-tight" style={{
+                  color: theme === "dark" ? "#FFFFFF" : "#000000",
+                }}>
+                  {item.title}
+                </h3>
+                <p className="text-sm md:text-base leading-relaxed" style={{
+                  color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
+                }}>
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            className="text-center mt-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <Link href="/systeme" prefetch={true}>
+              <motion.button
+                className="relative px-8 py-4 rounded-[20px] font-semibold text-sm md:text-base tracking-wide overflow-hidden group/cta"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: theme === "dark"
+                    ? "linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 100%)"
+                    : "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(139, 92, 246, 0.5) 100%)",
+                  backdropFilter: "blur(40px) saturate(200%)",
+                  WebkitBackdropFilter: "blur(40px) saturate(200%)",
+                  border: theme === "dark"
+                    ? "1px solid rgba(255, 255, 255, 0.25)"
+                    : "1px solid rgba(255, 255, 255, 0.4)",
+                  boxShadow: theme === "dark"
+                    ? "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset"
+                    : "0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset",
+                }}
+              >
+                <span className="relative z-10" style={{ color: "#FFFFFF" }}>
+                  Alle Systeme ansehen
+                </span>
+              </motion.button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
 
       {/* PROJEKTE SECTION - Slider */}
       <ProjectsSection />
@@ -3092,6 +3295,118 @@ export default function Home() {
             >
               Autonome KI-Systeme ersetzen manuelle Organisation.
             </motion.p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* PHILOSOPHIE SECTION */}
+      <section id="philosophie" className="relative px-4 sm:px-6 overflow-hidden" style={{ 
+        paddingTop: "clamp(80px, 15vw, 140px)",
+        paddingBottom: "clamp(80px, 15vw, 140px)",
+      }}>
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <motion.h2 
+              className="font-bold tracking-tight typography-h1 typography-h1-gradient mb-6"
+              style={{ fontSize: "clamp(32px, 5vw, 64px)", lineHeight: "1.05" }}
+              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              Philosophie
+            </motion.h2>
+            <motion.p
+              className="text-lg md:text-xl mb-6 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              style={{
+                color: theme === "dark" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.9)",
+                fontWeight: 500,
+              }}
+            >
+              Technologie sollte entlasten – nicht verkomplizieren.
+            </motion.p>
+            <motion.p
+              className="text-base md:text-lg leading-relaxed max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+              style={{
+                color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
+              }}
+            >
+              Wir entwickeln Systeme, die eigenständig arbeiten, mitdenken und sich in bestehende Strukturen einfügen.
+              Unser Fokus liegt auf Klarheit, Effizienz und langfristiger Skalierbarkeit.
+            </motion.p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ABSCHLUSS CTA SECTION */}
+      <section id="cta" className="relative px-4 sm:px-6 overflow-hidden" style={{ 
+        paddingTop: "clamp(80px, 15vw, 140px)",
+        paddingBottom: "clamp(80px, 15vw, 140px)",
+      }}>
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <motion.p
+              className="text-xl md:text-2xl mb-8 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+              style={{
+                color: theme === "dark" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.9)",
+                fontWeight: 500,
+              }}
+            >
+              Sie möchten Prozesse automatisieren oder ein eigenes System entwickeln?
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <Link href="/kontakt" prefetch={true}>
+                <motion.button
+                  className="relative px-8 md:px-12 py-4 md:py-5 rounded-[20px] font-semibold text-base md:text-lg tracking-wide overflow-hidden group/cta"
+                  whileHover={{ scale: 1.06, y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                  style={{
+                    background: theme === "dark"
+                      ? "linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 25%, rgba(99, 102, 241, 0.40) 50%, rgba(139, 92, 246, 0.45) 75%, rgba(168, 85, 247, 0.35) 100%)"
+                      : "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(139, 92, 246, 0.5) 25%, rgba(99, 102, 241, 0.45) 50%, rgba(139, 92, 246, 0.5) 75%, rgba(124, 58, 237, 0.4) 100%)",
+                    backdropFilter: "blur(40px) saturate(200%)",
+                    WebkitBackdropFilter: "blur(40px) saturate(200%)",
+                    border: theme === "dark"
+                      ? "1px solid rgba(255, 255, 255, 0.25)"
+                      : "1px solid rgba(255, 255, 255, 0.4)",
+                    boxShadow: theme === "dark"
+                      ? "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset"
+                      : "0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset",
+                  }}
+                >
+                  <span className="relative z-10" style={{ color: "#FFFFFF" }}>
+                    Kontakt aufnehmen
+                  </span>
+                </motion.button>
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>

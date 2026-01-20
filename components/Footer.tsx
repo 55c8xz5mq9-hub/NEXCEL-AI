@@ -14,16 +14,16 @@ const footerLinks = {
     { label: "Custom Web-Apps", href: "/leistungen" },
   ],
   losungen: [
-    { label: "Chronex AI", href: "/projekte" },
-    { label: "Pflege-CRM", href: "/projekte" },
-    { label: "Projektmanagement", href: "/projekte" },
-    { label: "Website-Systeme", href: "/projekte" },
-    { label: "Demo anfordern", href: "/demo-anfordern" },
+    { label: "ChronexAI", href: "/systeme" },
+    { label: "ImmoStripeAI", href: "/systeme" },
+    { label: "CannaFlowAI", href: "/systeme" },
+    { label: "Alle Systeme", href: "/systeme" },
   ],
   unternehmen: [
     { label: "Über uns", href: "/ueber-mich" },
-    { label: "Projekte", href: "/projekte" },
+    { label: "Systeme", href: "/systeme" },
     { label: "Leistungen", href: "/leistungen" },
+    { label: "Arbeitsweise", href: "/arbeitsweise" },
     { label: "Kontakt", href: "/kontakt" },
   ],
   rechtliches: [

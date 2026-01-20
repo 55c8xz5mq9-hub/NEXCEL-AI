@@ -27,11 +27,19 @@ const searchIndex = [
     category: "page",
   },
   {
-    id: "projekte",
-    title: "Projekte",
-    href: "/projekte",
-    description: "Unsere Projekte - Chronex AI, Pflege-CRM, KI-Lösungen",
-    keywords: ["projekte", "projects", "chronex", "pflege-crm", "ki-lösungen", "referenzen"],
+    id: "systeme",
+    title: "Systeme",
+    href: "/systeme",
+    description: "Unsere Systeme - Connex AI, ImmoStripe, CanaFlow",
+    keywords: ["systeme", "systems", "connex", "immostripe", "canaflow", "ki-lösungen"],
+    category: "page",
+  },
+  {
+    id: "arbeitsweise",
+    title: "Arbeitsweise",
+    href: "/arbeitsweise",
+    description: "Unsere Arbeitsweise - Wie wir Systeme entwickeln",
+    keywords: ["arbeitsweise", "workflow", "prozess", "entwicklung", "methodik"],
     category: "page",
   },
   {
@@ -49,14 +57,6 @@ const searchIndex = [
     description: "Kontakt - Kontaktieren Sie uns für eine Demo oder Beratung",
     keywords: ["kontakt", "contact", "demo", "beratung", "anfrage", "email"],
     category: "page",
-  },
-  {
-    id: "demo-anfordern",
-    title: "Demo anfordern",
-    href: "/demo-anfordern",
-    description: "Demo anfordern - Buchen Sie eine kostenlose Demo unserer KI-Lösungen",
-    keywords: ["demo", "anfordern", "request", "kostenlos", "testen", "vorschau", "trial"],
-    category: "action",
   },
   {
     id: "nexcel-core",
@@ -417,7 +417,7 @@ export default function Navigation() {
                   <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                     {/* Mobile: Logo */}
                     <div className="flex-shrink-0">
-                    <Link href="/" className="block">
+                    <Link href="/" prefetch={true} className="block">
                     <motion.div
                       className="relative flex items-center cursor-pointer group/logo"
                       initial={{ opacity: 0, x: -20 }}
@@ -468,34 +468,6 @@ export default function Navigation() {
                     </Link>
                     </div>
 
-                    {/* Demo Button - Mobile - Links neben Logo */}
-                    <Link href="/demo-anfordern" prefetch={true} className="flex-shrink-0">
-                      <motion.button
-                        className="relative px-2.5 sm:px-3 py-2 rounded-xl font-semibold text-[9px] sm:text-[10px] tracking-wide overflow-hidden group/demo-mobile whitespace-nowrap"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.15, ease: "easeOut" }}
-                        whileHover={{ scale: 1.05, y: -1 }}
-                        whileTap={{ scale: 0.95 }}
-                        style={{
-                          background: theme === "dark"
-                            ? "linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 100%)"
-                            : "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(139, 92, 246, 0.5) 100%)",
-                          backdropFilter: "blur(40px) saturate(200%)",
-                          WebkitBackdropFilter: "blur(40px) saturate(200%)",
-                          border: theme === "dark"
-                            ? "1px solid rgba(255, 255, 255, 0.25)"
-                            : "1px solid rgba(255, 255, 255, 0.4)",
-                          boxShadow: theme === "dark"
-                            ? "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset, 0 0 40px rgba(168, 85, 247, 0.3)"
-                            : "0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset",
-                        }}
-                      >
-                        <span className="relative z-10 block" style={{ color: "#FFFFFF" }}>
-                          Demo anfordern
-                        </span>
-                      </motion.button>
-                    </Link>
                   </div>
 
                     {/* Mobile: Theme Toggle + Burger Menu - Rechts */}
@@ -786,10 +758,10 @@ export default function Navigation() {
                     }}
                   >
                     {[
-                      { label: "Home", href: "/" },
+                      { label: "Start", href: "/" },
                       { label: "Leistungen", href: "/leistungen" },
-                      { label: "Projekte", href: "/projekte" },
-                      { label: "Über uns", href: "/ueber-mich" },
+                      { label: "Systeme", href: "/systeme" },
+                      { label: "Arbeitsweise", href: "/arbeitsweise" },
                       { label: "Kontakt", href: "/kontakt" },
                     ].map((item: { label: string; href: string }, index: number) => {
                       const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
@@ -836,134 +808,9 @@ export default function Navigation() {
                   </motion.nav>
                 </div>
 
-                {/* Desktop: Right Section - Demo anfordern + Search Icon + Theme Toggle */}
-                {/* Bei <= 980px: Demo Button bleibt sichtbar, Theme Toggle bleibt */}
+                {/* Desktop: Right Section - Search Icon + Theme Toggle */}
                 <div className="hidden lg:flex items-center gap-2 lg:gap-3 xl:gap-4 2xl:gap-4 justify-end">
-                  {/* Demo Button - IMMER VOLLSTÄNDIG */}
-                  <Link href="/demo-anfordern" prefetch={true} className="flex-shrink-0">
-                  <motion.button
-                    className="ai-demo-button relative px-3 lg:px-4 xl:px-5 2xl:px-6 py-2 lg:py-2.5 xl:py-3 rounded-[16px] lg:rounded-[18px] xl:rounded-[20px] font-semibold text-[11px] lg:text-xs xl:text-sm tracking-wide overflow-hidden group/demo whitespace-nowrap"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    whileHover={{ scale: 1.06, y: -2 }}
-                    whileTap={{ scale: 0.96 }}
-                    style={{ willChange: "transform" }}
-                  >
-                    {/* Base Gradient Background - Apple Intelligence Style */}
-                    <div
-                      className="absolute inset-0 rounded-[20px] transition-all duration-200"
-                      style={{
-                        background: theme === "dark"
-                          ? "linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 25%, rgba(99, 102, 241, 0.40) 50%, rgba(139, 92, 246, 0.45) 75%, rgba(168, 85, 247, 0.35) 100%)"
-                          : "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(139, 92, 246, 0.5) 25%, rgba(99, 102, 241, 0.45) 50%, rgba(139, 92, 246, 0.5) 75%, rgba(124, 58, 237, 0.4) 100%)",
-                        backdropFilter: "blur(40px) saturate(200%)",
-                        WebkitBackdropFilter: "blur(40px) saturate(200%)",
-                      }}
-                    />
-
-                    {/* Glassmorphic Overlay */}
-                    <div
-                      className="absolute inset-0 rounded-[20px] transition-all duration-200"
-                      style={{
-                        background: theme === "dark"
-                          ? "linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 30%, rgba(255, 255, 255, 0.08) 60%, rgba(255, 255, 255, 0.04) 100%)"
-                          : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.90) 30%, rgba(255, 255, 255, 0.85) 60%, rgba(255, 255, 255, 0.80) 100%)",
-                        border: theme === "dark"
-                          ? "1px solid rgba(255, 255, 255, 0.25)"
-                          : "1px solid rgba(255, 255, 255, 0.4)",
-                        boxShadow: theme === "dark"
-                          ? "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset, 0 1px 3px rgba(255, 255, 255, 0.1) inset"
-                          : "0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset, 0 1px 3px rgba(255, 255, 255, 0.2) inset",
-                      }}
-                    />
-
-                    {/* Pulsing Neon Outline - Ultra Subtle */}
-                    <motion.div
-                      className="absolute -inset-[2px] rounded-[22px] pointer-events-none -z-10"
-                      animate={{
-                        opacity: [0.5, 0.8, 0.5],
-                        boxShadow: [
-                          "0 0 20px rgba(168, 85, 247, 0.4), 0 0 40px rgba(139, 92, 246, 0.3), 0 0 60px rgba(99, 102, 241, 0.2)",
-                          "0 0 35px rgba(168, 85, 247, 0.6), 0 0 70px rgba(139, 92, 246, 0.5), 0 0 100px rgba(99, 102, 241, 0.4)",
-                          "0 0 20px rgba(168, 85, 247, 0.4), 0 0 40px rgba(139, 92, 246, 0.3), 0 0 60px rgba(99, 102, 241, 0.2)",
-                        ],
-                      }}
-                      transition={{
-                        duration: 3.5,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                      style={{
-                        background: theme === "dark"
-                          ? "linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(139, 92, 246, 0.4), rgba(99, 102, 241, 0.3))"
-                          : "linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(139, 92, 246, 0.45), rgba(99, 102, 241, 0.35))",
-                        filter: "blur(8px)",
-                      }}
-                    />
-
-                    {/* Horizontal Highlight - Lying Effect - Ultra Refined */}
-                    <motion.div
-                      className="absolute top-0 left-0 h-full rounded-[20px] pointer-events-none"
-                      animate={{
-                        opacity: [0.3, 0.5, 0.3],
-                        x: ["-50%", "150%", "-50%"],
-                      }}
-                      transition={{
-                        duration: 5,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                      style={{
-                        width: "40%",
-                        background: theme === "dark"
-                          ? "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.25), transparent)"
-                          : "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.4), transparent)",
-                        filter: "blur(6px)",
-                      }}
-                    />
-
-                    {/* Radial Glow from Center */}
-                    <motion.div
-                      className="absolute inset-0 rounded-[20px] pointer-events-none opacity-0 group-hover/demo:opacity-100 transition-opacity duration-500"
-                      style={{
-                        background: theme === "dark"
-                          ? "radial-gradient(ellipse at center, rgba(168, 85, 247, 0.25), transparent 70%)"
-                          : "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.2), transparent 70%)",
-                        filter: "blur(20px)",
-                      }}
-                    />
-
-                        {/* Content - IMMER VOLLSTÄNDIG */}
-                        <span className="relative z-10 flex items-center gap-1.5 lg:gap-2 xl:gap-2.5" style={{ color: "#FFFFFF" }}>
-                          <span className="font-semibold tracking-wide">Demo anfordern</span>
-                          <motion.svg
-                            className="w-3.5 h-3.5 lg:w-4 lg:h-4 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={3}
-                            initial={{ x: 0 }}
-                            whileHover={{ x: 3 }}
-                            transition={{ duration: 0.2, ease: "easeOut" }}
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                          </motion.svg>
-                        </span>
-
-                    {/* Hover State Enhancement */}
-                    <motion.div
-                      className="absolute inset-0 rounded-[20px] pointer-events-none opacity-0 group-hover/demo:opacity-100 transition-opacity duration-500"
-                      style={{
-                        boxShadow: theme === "dark"
-                          ? "0 12px 48px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.2) inset, 0 0 60px rgba(168, 85, 247, 0.3), 0 0 100px rgba(139, 92, 246, 0.2)"
-                          : "0 12px 48px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(255, 255, 255, 0.4) inset, 0 0 50px rgba(124, 58, 237, 0.25), 0 0 80px rgba(139, 92, 246, 0.15)",
-                      }}
-                    />
-                  </motion.button>
-                  </Link>
-
-                  {/* Search Icon Button - Desktop (zwischen Demo und Theme Toggle) */}
+                  {/* Search Icon Button - Desktop */}
                   <motion.button
                     onClick={() => setSearchModalOpen(true)}
                     className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/search-btn flex-shrink-0"
@@ -1353,6 +1200,7 @@ export default function Navigation() {
                         <Link
                           key={result.id}
                           href={result.href}
+                          prefetch={true}
                           onClick={() => {
                             setSearchQuery("");
                             setShowResults(false);
@@ -1740,10 +1588,10 @@ export default function Navigation() {
                 {/* Navigation Links */}
                 <nav className="flex-1 space-y-2 mb-4">
                   {[
-                    { label: "Home", href: "/" },
+                    { label: "Start", href: "/" },
                     { label: "Leistungen", href: "/leistungen" },
-                    { label: "Projekte", href: "/projekte" },
-                    { label: "Über uns", href: "/ueber-mich" },
+                    { label: "Systeme", href: "/systeme" },
+                    { label: "Arbeitsweise", href: "/arbeitsweise" },
                     { label: "Kontakt", href: "/kontakt" },
                   ].map((item: { label: string; href: string }, index: number) => (
                     <motion.div
@@ -1785,49 +1633,6 @@ export default function Navigation() {
                     </motion.div>
                   ))}
 
-                  {/* Demo anfordern CTA - Direkt unter Kontakt */}
-                  <motion.div
-                    className="mt-2"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
-                  >
-                    <Link href="/demo-anfordern" prefetch={true} onClick={() => setMobileMenuOpen(false)}>
-                      <motion.button
-                        className="relative w-full px-6 py-4 rounded-[20px] font-semibold text-sm tracking-wide overflow-hidden group/demo-mobile-drawer"
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          background: theme === "dark"
-                            ? "linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 100%)"
-                            : "linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(139, 92, 246, 0.5) 100%)",
-                          backdropFilter: "blur(40px) saturate(200%)",
-                          WebkitBackdropFilter: "blur(40px) saturate(200%)",
-                          border: theme === "dark"
-                            ? "1px solid rgba(255, 255, 255, 0.25)"
-                            : "1px solid rgba(255, 255, 255, 0.4)",
-                          boxShadow: theme === "dark"
-                            ? "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.15) inset, 0 0 40px rgba(168, 85, 247, 0.3)"
-                            : "0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset",
-                        }}
-                      >
-                        <span className="relative z-10 block flex items-center justify-center gap-2" style={{ color: "#FFFFFF" }}>
-                          <span>Demo anfordern</span>
-                          <motion.svg
-                            className="w-5 h-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2.5}
-                            animate={{ x: [0, 4, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity }}
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                          </motion.svg>
-                        </span>
-                      </motion.button>
-                    </Link>
-                  </motion.div>
                 </nav>
               </div>
             </motion.div>

@@ -30,10 +30,10 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
           >
             <span className="block text-white">
-              Autonome KI-Systeme.
+              Wir entwickeln digitale Systeme,
             </span>
             <span className="block mt-1 sm:mt-2 typography-h1-gradient">
-              Statt Abhängigkeit.
+              die Prozesse übernehmen.
             </span>
           </motion.h1>
 
@@ -43,7 +43,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            Manuelle Organisation und Personalabhängigkeit durch selbststeuernde KI-Infrastrukturen.
+            Von Webplattformen bis zu autonomen KI-Workflows – individuell, skalierbar und zukunftssicher.
           </motion.p>
 
           {/* Premium CTA Buttons */}

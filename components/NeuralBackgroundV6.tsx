@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+// Lazy load Three.js - only import when component mounts
+let THREE: typeof import("three") | null = null;
+
+const loadThree = async () => {
+  if (!THREE) {
+    THREE = await import("three");
+  }
+  return THREE;
+};
 
 // Simplex Noise function for shader
 const simplexNoise = `
@@ -219,9 +227,17 @@ export default function NeuralBackgroundV6() {
   const mountRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [threeLoaded, setThreeLoaded] = useState(false);
+
+  // Lazy load Three.js
+  useEffect(() => {
+    loadThree().then(() => {
+      setThreeLoaded(true);
+    });
+  }, []);
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    if (!mountRef.current || !threeLoaded || !THREE) return;
 
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -309,7 +325,7 @@ export default function NeuralBackgroundV6() {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
     };
-  }, [isMobile]);
+  }, [isMobile, threeLoaded]);
 
   return (
     <div

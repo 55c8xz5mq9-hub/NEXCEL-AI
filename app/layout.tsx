@@ -5,22 +5,27 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 
 // Headline Font - Future-Premium
-// General Sans ist eine kommerzielle Schrift (Fontshare)
-// Plus Jakarta Sans wird als hochwertige Alternative verwendet (ähnliche moderne Sans)
-// Falls General Sans verfügbar ist, kann es hier als localFont eingefügt werden
+// Optimiert für Performance: preload, display swap, subset optimization
 const generalSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-headline",
   display: "swap",
+  preload: true,
+  adjustFontFallback: true,
+  fallback: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'system-ui', 'sans-serif'],
 });
 
 // Body Font - Inter (Future-Premium)
+// Optimiert für Performance: preload, display swap, subset optimization
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-body",
   display: "swap",
+  preload: true,
+  adjustFontFallback: true,
+  fallback: ['-apple-system', 'BlinkMacSystemFont', 'Inter', 'system-ui', 'sans-serif'],
 });
 
 // Lazy load heavy components
@@ -43,6 +48,14 @@ const WhatsAppChat = dynamic(() => import("@/components/WhatsAppChat"), {
 });
 
 const AnalyticsTracker = dynamic(() => import("@/components/AnalyticsTracker"), {
+  ssr: false,
+});
+
+const PerformanceMonitor = dynamic(() => import("@/components/PerformanceMonitor"), {
+  ssr: false,
+});
+
+const PerformanceAuditor = dynamic(() => import("@/components/PerformanceAuditor"), {
   ssr: false,
 });
 
@@ -222,6 +235,12 @@ export default function RootLayout({
           
           {/* Analytics Tracker */}
           <AnalyticsTracker />
+          
+          {/* Performance Monitor (Development only) */}
+          <PerformanceMonitor />
+          
+          {/* Performance Auditor (PERF_AUDIT mode) */}
+          <PerformanceAuditor />
         </ThemeProvider>
       </body>
     </html>

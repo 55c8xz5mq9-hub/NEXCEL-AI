@@ -1,9 +1,18 @@
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   compress: true,
   poweredByHeader: false,
+  
+  // Output standalone für optimiertes Caching
+  output: 'standalone',
+  
+  // Optimierte Image-Konfiguration
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -13,12 +22,80 @@ const nextConfig = {
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  
+  // Experimentelle Features für Performance
   experimental: {
-    optimizePackageImports: ['framer-motion', 'lucide-react'],
+    optimizePackageImports: [
+      'framer-motion',
+      'lucide-react',
+      'three',
+      '@react-three/fiber',
+    ],
+    // Note: PPR requires Next.js canary - removed for stable version
   },
+  
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  
+  // Webpack-Optimierungen
+  webpack: (config, { isServer, dev }) => {
+    // Production-only Optimierungen
+    if (!dev && !isServer) {
+      // Aggressives Bundle-Splitting
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'deterministic',
+        runtimeChunk: 'single',
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // Framer Motion in eigenes Chunk
+            framerMotion: {
+              name: 'framer-motion',
+              test: /[\\/]node_modules[\\/](framer-motion)[\\/]/,
+              priority: 30,
+              reuseExistingChunk: true,
+            },
+            // Three.js in eigenes Chunk
+            three: {
+              name: 'three',
+              test: /[\\/]node_modules[\\/](three|@react-three)[\\/]/,
+              priority: 30,
+              reuseExistingChunk: true,
+            },
+            // React Vendor Chunk
+            react: {
+              name: 'react-vendor',
+              test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            // Andere Vendor Libraries
+            vendor: {
+              name: 'vendor',
+              test: /[\\/]node_modules[\\/]/,
+              priority: 10,
+              reuseExistingChunk: true,
+            },
+            // Common Chunk für geteilten Code
+            common: {
+              name: 'common',
+              minChunks: 2,
+              priority: 5,
+              reuseExistingChunk: true,
+            },
+          },
+        },
+      };
+    }
+    
+    return config;
+  },
+  
+  // Headers für Performance & Caching
   headers: async () => {
     return [
       {
@@ -40,11 +117,36 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
           },
+          // Performance Headers
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+        ],
+      },
+      {
+        // Statische Assets mit langem Caching
+        source: '/:all*(svg|jpg|jpeg|png|gif|ico|webp|avif|woff|woff2|ttf|eot)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // Fonts mit langem Caching
+        source: '/fonts/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
         ],
       },
     ];
   },
 };
 
-module.exports = nextConfig;
+module.exports = withBundleAnalyzer(nextConfig);
 
