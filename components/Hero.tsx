@@ -11,36 +11,36 @@ export default function Hero() {
   }, []);
   
   return (
-    <section id="hero" className="hero-bg relative min-h-screen flex items-center justify-center overflow-hidden" style={{ zIndex: 100 }}>
+    <section id="hero" className="hero-bg relative min-h-screen flex items-center justify-center overflow-hidden" style={{ zIndex: 1 }}>
       
       {/* Dedicated Background Layer */}
       <div className="hero-bg-layer" />
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 xl:px-16 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full">
         {/* Single motion wrapper for entrance animation - ONCE ONLY */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 xl:gap-32 items-center"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center"
         >
           {/* LEFT COLUMN: Text + CTAs - KEYNOTE LEVEL */}
-          <div className="text-center lg:text-left space-y-8 sm:space-y-10 lg:space-y-12">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-bold tracking-tight leading-[1.1] typography-h1">
+          <div className="text-center lg:text-left space-y-5 sm:space-y-6 lg:space-y-7">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-bold tracking-tight leading-[1.1] typography-h1">
               <span className="block text-white">
                 Wir entwickeln digitale Systeme,
               </span>
-              <span className="block mt-2 sm:mt-3 lg:mt-4 typography-h1-gradient">
+              <span className="block mt-1 sm:mt-2 lg:mt-2 typography-h1-gradient">
                 die Prozesse übernehmen.
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl typography-body max-w-3xl mx-auto lg:mx-0 leading-[1.6] opacity-90">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-xl typography-body max-w-3xl mx-auto lg:mx-0 leading-[1.6] opacity-90">
               Von Webplattformen bis zu autonomen KI-Workflows – individuell, skalierbar und zukunftssicher.
             </p>
 
             {/* CTA Buttons - CALM, AUTHORITATIVE */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center lg:justify-start pt-6 sm:pt-8 lg:pt-10">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start pt-4 sm:pt-5 lg:pt-6">
               <Link href="/kontakt" prefetch={true} className="w-full sm:w-auto">
                 <button className="btn-primary w-full sm:w-auto">
                   <span className="flex items-center justify-center gap-2">

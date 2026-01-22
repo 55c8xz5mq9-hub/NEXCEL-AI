@@ -222,8 +222,8 @@ export default function RootLayout({
           <div style={{ 
             minHeight: "100vh",
             position: "relative",
-            zIndex: 1,
-            background: "var(--bg-0, #0C0F1A)",
+            zIndex: 10,
+            background: "var(--bg-0, #0B0D12)",
           }}>
             {children}
           </div>

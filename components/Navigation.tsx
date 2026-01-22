@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useRouter, usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
+import FunctionsPanel from "@/components/FunctionsPanel";
 
 // Search Index - All Pages & Content
 const searchIndex = [
@@ -85,6 +86,10 @@ const searchIndex = [
 ];
 
 export default function Navigation() {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/Navigation.tsx:100',message:'Navigation function executing',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
+  
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -100,13 +105,60 @@ export default function Navigation() {
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const [mounted, setMounted] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [functionsPanelOpen, setFunctionsPanelOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const navRef = useRef<HTMLDivElement>(null);
+  const functionsButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Stable close handler for FunctionsPanel
+  const closeFunctionsPanel = useCallback(() => {
+    setFunctionsPanelOpen(false);
+  }, []);
 
   // Client-side mounting check
   useEffect(() => {
     setMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!functionsPanelOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        navRef.current &&
+        !navRef.current.contains(target) &&
+        functionsButtonRef.current &&
+        !functionsButtonRef.current.contains(target)
+      ) {
+        setFunctionsPanelOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setFunctionsPanelOpen(false);
+        functionsButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [functionsPanelOpen]);
 
   useEffect(() => {
     let ticking = false;
@@ -330,6 +382,7 @@ export default function Navigation() {
   return (
     <>
       <motion.nav
+        ref={navRef}
         className="fixed top-0 left-0 right-0 z-50 group/nav"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -407,269 +460,172 @@ export default function Navigation() {
                 }}
               />
 
-              {/* Content Container - 3-Spalten Grid für echtes Zentrieren */}
-              {/* Mobile: Flex Layout (Logo + Buttons) */}
+              {/* Content Container - 3-Zone Enterprise Layout */}
+              {/* Mobile: Flex Layout (Logo + Burger Menu) */}
               {/* Desktop: Grid mit 3 Spalten für echte Zentrierung */}
-              <div className="relative z-10 flex flex-col lg:grid lg:grid-cols-[1fr_auto_1fr] items-stretch lg:items-center gap-3 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8">
-                {/* Mobile: Top Row - Logo + Demo links, Theme rechts - Sichtbar bei <= 980px */}
-                <div className="flex items-center justify-between nav-mobile:flex lg:hidden gap-2 sm:gap-3 w-full">
-                  {/* Mobile: Logo + Demo anfordern links */}
-                  <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                    {/* Mobile: Logo */}
-                    <div className="flex-shrink-0">
+              <div className="nav-shell relative z-10 flex flex-col lg:grid lg:grid-cols-[1fr_auto_1fr] items-stretch lg:items-center gap-3 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8">
+                {/* Mobile: Top Row - Logo + Burger Menu - Sichtbar bei <= 1024px */}
+                <div className="flex items-center justify-between lg:hidden gap-3 sm:gap-4 w-full min-h-[52px] sm:min-h-[56px]">
+                  {/* Mobile: Logo - Premium */}
+                  <div className="flex items-center flex-shrink-0">
                     <Link href="/" prefetch={true} className="block">
-                    <motion.div
-                      className="relative flex items-center cursor-pointer group/logo"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.2, ease: "easeOut" }}
-                      whileHover={{ scale: 1.1, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      style={{ willChange: "transform, opacity" }}
-                    >
-                      {/* Logo Glow */}
-                      <div
-                        className="absolute inset-0 rounded-xl opacity-0 group-hover/logo:opacity-100 transition-opacity duration-200 -z-10"
-                        style={{
-                          background: theme === "dark"
-                            ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
-                            : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
-                          filter: "blur(20px)",
-                          padding: "8px",
-                        }}
-                      />
-                      <span
-                        className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-tight transition-all duration-150"
-                        style={{
-                          fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
-                          letterSpacing: "-0.02em",
-                          background: "linear-gradient(to right, #C0C0C0, #808080)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          backgroundClip: "text",
-                        }}
-                      >
-                        NEXCEL
-                      </span>
-                      <span
-                        className="ml-0.5 sm:ml-1 text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-tight transition-all duration-300"
-                        style={{
-                          fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
-                          letterSpacing: "-0.02em",
-                          background: "linear-gradient(to right, #A855F7, #8B5CF6)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          backgroundClip: "text",
-                        }}
-                      >
-                        AI
-                      </span>
-                    </motion.div>
-                    </Link>
-                    </div>
-
-                  </div>
-
-                    {/* Mobile: Theme Toggle + Burger Menu - Rechts */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {/* Premium Theme Toggle Switch - Mobile (Kompakt) */}
-                      <motion.button
-                        onClick={toggleTheme}
-                        className="relative w-[48px] h-[28px] rounded-full flex items-center group/theme-switch-mobile flex-shrink-0 cursor-pointer"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.15, ease: "easeOut" }}
+                      <motion.div
+                        className="relative flex items-center cursor-pointer group/logo"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
                         whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          padding: theme === "dark" ? "2.5px" : "2.5px",
-                          background: theme === "dark"
-                            ? "linear-gradient(180deg, rgba(60, 60, 67, 0.95) 0%, rgba(45, 45, 50, 0.98) 100%)"
-                            : "linear-gradient(180deg, rgba(255, 214, 10, 0.95) 0%, rgba(255, 204, 0, 0.98) 100%)",
-                          backdropFilter: "blur(40px) saturate(180%)",
-                          WebkitBackdropFilter: "blur(40px) saturate(180%)",
-                          border: theme === "dark"
-                            ? "1px solid rgba(255, 255, 255, 0.12)"
-                            : "1px solid rgba(255, 255, 255, 0.4)",
-                          boxShadow: theme === "dark"
-                            ? "inset 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset"
-                            : "inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(255, 255, 255, 0.3) inset",
-                          willChange: "transform, background, padding",
-                        }}
-                        aria-label="Toggle theme"
+                        whileTap={{ scale: 0.95 }}
+                        style={{ willChange: "transform, opacity" }}
                       >
-                        {/* Toggle Thumb (Circular Switch Button) */}
-                        <motion.div
-                          className="relative w-[23px] h-[23px] rounded-full flex items-center justify-center overflow-hidden"
-                          animate={{
-                            x: theme === "dark" ? 0 : "20px",
-                          }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 35,
-                            mass: 0.8,
-                          }}
+                        {/* Logo Glow */}
+                        <div
+                          className="absolute inset-0 rounded-xl opacity-0 group-hover/logo:opacity-100 transition-opacity duration-200 -z-10"
                           style={{
                             background: theme === "dark"
-                              ? "linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 245, 247, 0.95) 100%)"
-                              : "linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.98) 100%)",
-                            boxShadow: theme === "dark"
-                              ? "0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(0, 0, 0, 0.1) inset, 0 1px 2px rgba(255, 255, 255, 0.3) inset"
-                              : "0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 2px rgba(255, 255, 255, 0.6) inset",
-                            willChange: "transform",
+                              ? "radial-gradient(circle, rgba(183, 140, 255, 0.35), transparent 70%)"
+                              : "radial-gradient(circle, rgba(124, 58, 237, 0.25), transparent 70%)",
+                            filter: "blur(16px)",
+                            padding: "6px",
+                          }}
+                        />
+                        <span
+                          className="text-base sm:text-lg md:text-xl font-bold tracking-tight transition-all duration-150"
+                          style={{
+                            fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
+                            letterSpacing: "-0.02em",
+                            background: "linear-gradient(to right, #C0C0C0, #808080)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            backgroundClip: "text",
                           }}
                         >
-                          {/* Inner Highlight */}
-                          <div
-                            className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full opacity-60"
+                          NEXCEL
+                        </span>
+                        <span
+                          className="ml-0.5 sm:ml-1 text-base sm:text-lg md:text-xl font-bold tracking-tight transition-all duration-300"
+                          style={{
+                            fontFamily: "var(--font-headline), -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif",
+                            letterSpacing: "-0.02em",
+                            background: "linear-gradient(to right, #A855F7, #8B5CF6)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            backgroundClip: "text",
+                          }}
+                        >
+                          AI
+                        </span>
+                      </motion.div>
+                    </Link>
+                  </div>
+
+                    {/* Mobile: Burger Menu - Rechts (High-End Premium) */}
+                    <div className="flex items-center flex-shrink-0">
+                      {/* Mobile Menu Button - Premium Hamburger */}
+                      <motion.button
+                        className="relative w-12 h-12 sm:w-14 sm:h-14 flex flex-col justify-center items-center gap-1.5 p-2.5 sm:p-3 rounded-2xl transition-all duration-300 flex-shrink-0 group/burger"
+                        style={{
+                          background: theme === "dark"
+                            ? "linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.10) 100%)"
+                            : "linear-gradient(180deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.06) 100%)",
+                          backdropFilter: "blur(32px) saturate(180%)",
+                          WebkitBackdropFilter: "blur(32px) saturate(180%)",
+                          border: theme === "dark"
+                            ? "1px solid rgba(255, 255, 255, 0.20)"
+                            : "1px solid rgba(0, 0, 0, 0.14)",
+                          boxShadow: theme === "dark"
+                            ? "0 4px 20px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.10) inset, 0 1px 2px rgba(255, 255, 255, 0.08) inset"
+                            : "0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08) inset, 0 1px 2px rgba(255, 255, 255, 0.6) inset",
+                        }}
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        whileHover={{ 
+                          scale: 1.05,
+                          background: theme === "dark"
+                            ? "linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.14) 100%)"
+                            : "linear-gradient(180deg, rgba(0, 0, 0, 0.14) 0%, rgba(0, 0, 0, 0.10) 100%)",
+                        }}
+                        whileTap={{ scale: 0.96 }}
+                        aria-label="Menü öffnen"
+                        aria-expanded={mobileMenuOpen}
+                      >
+                        {/* Hamburger Icon Lines - Premium Animation */}
+                        <motion.div
+                          className="flex flex-col gap-1.5 w-5 h-5 sm:w-6 sm:h-6"
+                          animate={mobileMenuOpen ? {
+                            rotate: 180,
+                          } : {
+                            rotate: 0,
+                          }}
+                          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                          <motion.span
+                            className="w-full h-0.5 sm:h-[3px] rounded-full"
+                            animate={mobileMenuOpen ? {
+                              rotate: 45,
+                              y: 6,
+                            } : {
+                              rotate: 0,
+                              y: 0,
+                            }}
+                            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                             style={{
-                              background: theme === "dark"
-                                ? "linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent)"
-                                : "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent)",
+                              background: theme === "dark" 
+                                ? "linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85))"
+                                : "linear-gradient(90deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7))",
+                              boxShadow: theme === "dark"
+                                ? "0 1px 2px rgba(0, 0, 0, 0.3)"
+                                : "0 1px 2px rgba(255, 255, 255, 0.5)",
                             }}
                           />
-
-                          {/* Icon Container */}
-                          <motion.div
-                            className="relative z-10 flex items-center justify-center w-full h-full"
-                            animate={{
-                              rotate: theme === "dark" ? 0 : 180,
+                          <motion.span
+                            className="w-full h-0.5 sm:h-[3px] rounded-full"
+                            animate={mobileMenuOpen ? {
+                              opacity: 0,
+                              x: -10,
+                            } : {
+                              opacity: 1,
+                              x: 0,
                             }}
-                            transition={{
-                              duration: 0.4,
-                              ease: [0.16, 1, 0.3, 1],
-                            }}
-                          >
-                            <AnimatePresence mode="wait" initial={false}>
-                              {theme === "dark" ? (
-                                <motion.svg
-                                  key="moon"
-                                  className="w-3.5 h-3.5"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                  initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
-                                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                                  exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
-                                  transition={{
-                                    duration: 0.3,
-                                    ease: [0.16, 1, 0.3, 1],
-                                  }}
-                                  style={{
-                                    color: "rgba(45, 45, 50, 0.9)",
-                                    strokeWidth: 2.5,
-                                  }}
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                                  />
-                                </motion.svg>
-                              ) : (
-                                <motion.svg
-                                  key="sun"
-                                  className="w-3.5 h-3.5"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                  initial={{ opacity: 0, scale: 0.8, rotate: 90 }}
-                                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                                  exit={{ opacity: 0, scale: 0.8, rotate: -90 }}
-                                  transition={{
-                                    duration: 0.3,
-                                    ease: [0.16, 1, 0.3, 1],
-                                  }}
-                                  style={{
-                                    color: "rgba(255, 204, 0, 0.95)",
-                                    strokeWidth: 2.5,
-                                  }}
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                                  />
-                                </motion.svg>
-                              )}
-                            </AnimatePresence>
-                          </motion.div>
-
-                          {/* Subtle Inner Shadow */}
-                          <div
-                            className="absolute inset-0 rounded-full pointer-events-none opacity-30"
+                            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                             style={{
+                              background: theme === "dark" 
+                                ? "linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85))"
+                                : "linear-gradient(90deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7))",
                               boxShadow: theme === "dark"
-                                ? "inset 0 1px 1px rgba(0, 0, 0, 0.2)"
-                                : "inset 0 1px 1px rgba(255, 255, 255, 0.4)",
+                                ? "0 1px 2px rgba(0, 0, 0, 0.3)"
+                                : "0 1px 2px rgba(255, 255, 255, 0.5)",
+                            }}
+                          />
+                          <motion.span
+                            className="w-full h-0.5 sm:h-[3px] rounded-full"
+                            animate={mobileMenuOpen ? {
+                              rotate: -45,
+                              y: -6,
+                            } : {
+                              rotate: 0,
+                              y: 0,
+                            }}
+                            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                            style={{
+                              background: theme === "dark" 
+                                ? "linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85))"
+                                : "linear-gradient(90deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7))",
+                              boxShadow: theme === "dark"
+                                ? "0 1px 2px rgba(0, 0, 0, 0.3)"
+                                : "0 1px 2px rgba(255, 255, 255, 0.5)",
                             }}
                           />
                         </motion.div>
 
-                        {/* Background Pattern (Subtle Texture) */}
+                        {/* Subtle Glow on Hover */}
                         <div
-                          className="absolute inset-0 rounded-full opacity-5 pointer-events-none"
+                          className="absolute inset-0 rounded-2xl opacity-0 group-hover/burger:opacity-100 transition-opacity duration-300 pointer-events-none -z-10"
                           style={{
-                            backgroundImage: theme === "dark"
-                              ? "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%)"
-                              : "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 50%)",
+                            background: theme === "dark"
+                              ? "radial-gradient(circle, rgba(183, 140, 255, 0.2), transparent 70%)"
+                              : "radial-gradient(circle, rgba(124, 58, 237, 0.15), transparent 70%)",
+                            filter: "blur(12px)",
                           }}
-                        />
-                      </motion.button>
-
-                      {/* Mobile Menu Button - Hamburger */}
-                      <motion.button
-                        className="relative w-11 h-11 flex flex-col justify-center items-center gap-1.5 p-2 rounded-xl transition-all duration-300 flex-shrink-0"
-                        style={{
-                          background: theme === "dark"
-                            ? "rgba(255, 255, 255, 0.12)"
-                            : "rgba(0, 0, 0, 0.08)",
-                          backdropFilter: "blur(30px)",
-                          WebkitBackdropFilter: "blur(30px)",
-                          border: theme === "dark"
-                            ? "1px solid rgba(255, 255, 255, 0.18)"
-                            : "1px solid rgba(0, 0, 0, 0.12)",
-                          boxShadow: theme === "dark"
-                            ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset"
-                            : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
-                        }}
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        aria-label="Menu"
-                      >
-                        <motion.span
-                          className="w-5 h-0.5 rounded-full"
-                          style={{
-                            background: theme === "dark" ? "#FFFFFF" : "#000000",
-                          }}
-                          animate={{
-                            rotate: mobileMenuOpen ? 45 : 0,
-                            y: mobileMenuOpen ? 6 : 0,
-                          }}
-                          transition={{ duration: 0.3 }}
-                        />
-                        <motion.span
-                          className="w-5 h-0.5 rounded-full"
-                          style={{
-                            background: theme === "dark" ? "#FFFFFF" : "#000000",
-                          }}
-                          animate={{
-                            opacity: mobileMenuOpen ? 0 : 1,
-                          }}
-                          transition={{ duration: 0.3 }}
-                        />
-                        <motion.span
-                          className="w-5 h-0.5 rounded-full"
-                          style={{
-                            background: theme === "dark" ? "#FFFFFF" : "#000000",
-                          }}
-                          animate={{
-                            rotate: mobileMenuOpen ? -45 : 0,
-                            y: mobileMenuOpen ? -6 : 0,
-                          }}
-                          transition={{ duration: 0.3 }}
                         />
                       </motion.button>
                     </div>
@@ -731,10 +687,8 @@ export default function Navigation() {
                   </div>
                 </div>
 
-                {/* Desktop: Center Section - Pill Navigation (ECHT ZENTRIERT) - ALLE IMMER SICHTBAR */}
-                {/* Pill wird bei <= 980px ausgeblendet, Hamburger wird gezeigt */}
-                {/* KEIN overflow:hidden - Links dürfen nicht verschwinden */}
-                <div className="hidden nav-mobile:hidden lg:flex items-center justify-center place-self-center w-full" style={{ minWidth: 0 }}>
+                {/* Desktop: Center Section - Pill Navigation (ECHT ZENTRIERT) */}
+                <div className="nav-center hidden nav-mobile:hidden lg:flex items-center justify-center place-self-center w-full" style={{ minWidth: 0 }}>
                   {/* Pill Container - Gemeinsame Glassmorphism-Pill für alle Nav-Links */}
                   <motion.nav
                     className="relative flex items-center gap-0 px-2 py-2 rounded-full"
@@ -758,13 +712,65 @@ export default function Navigation() {
                     }}
                   >
                     {[
-                      { label: "Start", href: "/" },
-                      { label: "Leistungen", href: "/leistungen" },
-                      { label: "Systeme", href: "/systeme" },
-                      { label: "Arbeitsweise", href: "/arbeitsweise" },
-                      { label: "Kontakt", href: "/kontakt" },
-                    ].map((item: { label: string; href: string }, index: number) => {
+                      { label: "Start", href: "/", isFunctions: false },
+                      { label: "Funktionen", href: "#", isFunctions: true },
+                      { label: "Leistungen", href: "/leistungen", isFunctions: false },
+                      { label: "Systeme", href: "/systeme", isFunctions: false },
+                      { label: "Arbeitsweise", href: "/arbeitsweise", isFunctions: false },
+                      { label: "Kontakt", href: "/kontakt", isFunctions: false },
+                    ].map((item: { label: string; href: string; isFunctions?: boolean }, index: number) => {
                       const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+                      
+                      if (item.isFunctions) {
+                        return (
+                          <button
+                            type="button"
+                            key={item.label}
+                            ref={functionsButtonRef}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setFunctionsPanelOpen(!functionsPanelOpen);
+                            }}
+                            aria-expanded={functionsPanelOpen}
+                            aria-controls="functions-panel"
+                            aria-haspopup="true"
+                            className={`pill-nav-link group/navlink ${functionsPanelOpen ? 'active' : ''}`}
+                          >
+                            <motion.span
+                              className="relative px-3 lg:px-4 xl:px-5 py-2 text-[11px] lg:text-xs xl:text-sm font-medium transition-all duration-300 block whitespace-nowrap flex-shrink-0"
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.15, ease: "easeOut" }}
+                              style={{
+                                color: theme === "dark" 
+                                  ? functionsPanelOpen
+                                    ? "var(--accent)" 
+                                    : "rgba(255, 255, 255, 0.95)"
+                                  : functionsPanelOpen
+                                  ? "var(--accent)"
+                                  : "rgba(0, 0, 0, 0.85)",
+                                whiteSpace: "nowrap",
+                                flexShrink: 0,
+                                minWidth: 0,
+                              }}
+                            >
+                              {item.label}
+                              {/* Subtle Glow on Hover */}
+                              <span
+                                className="absolute inset-0 rounded-lg opacity-0 group-hover/navlink:opacity-100 transition-opacity duration-300 -z-10 pointer-events-none"
+                                style={{
+                                  background: theme === "dark"
+                                    ? "radial-gradient(circle, rgba(183, 140, 255, 0.15), transparent 70%)"
+                                    : "radial-gradient(circle, rgba(124, 58, 237, 0.1), transparent 70%)",
+                                  filter: "blur(8px)",
+                                }}
+                              />
+                            </motion.span>
+                          </button>
+                        );
+                      }
+                      
                       return (
                         <Link
                           key={item.label}
@@ -791,7 +797,6 @@ export default function Navigation() {
                             }}
                           >
                             {item.label}
-                            {/* Subtle Glow on Hover */}
                             <span
                               className="absolute inset-0 rounded-lg opacity-0 group-hover/navlink:opacity-100 transition-opacity duration-300 -z-10 pointer-events-none"
                               style={{
@@ -808,42 +813,16 @@ export default function Navigation() {
                   </motion.nav>
                 </div>
 
-                {/* Desktop: Right Section - Search Icon + Theme Toggle */}
-                <div className="hidden lg:flex items-center gap-2 lg:gap-3 xl:gap-4 2xl:gap-4 justify-end">
-                  {/* Search Icon Button - Desktop */}
+                {/* Desktop: Right Section - Controls Pill (Premium Cluster) */}
+                <div className={`controls-pill ${theme === "light" ? "light" : ""} hidden lg:flex`}>
+                  {/* Search Icon Button - Standalone Premium */}
                   <motion.button
                     onClick={() => setSearchModalOpen(true)}
-                    className="relative w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 rounded-xl flex items-center justify-center group/search-btn flex-shrink-0"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
-                    whileHover={{ scale: 1.05, y: -1 }}
-                    whileTap={{ scale: 0.85 }}
-                    style={{
-                      background: theme === "dark"
-                        ? "rgba(255, 255, 255, 0.12)"
-                        : "rgba(0, 0, 0, 0.08)",
-                      backdropFilter: "blur(30px)",
-                      WebkitBackdropFilter: "blur(30px)",
-                      border: theme === "dark"
-                        ? "1px solid rgba(255, 255, 255, 0.18)"
-                        : "1px solid rgba(0, 0, 0, 0.12)",
-                      boxShadow: theme === "dark"
-                        ? "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset, 0 0 40px rgba(168, 85, 247, 0.15)"
-                        : "0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06) inset",
-                      willChange: "transform",
-                    }}
                     aria-label="Suche öffnen"
+                    className="search-btn"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <div
-                      className="absolute inset-0 rounded-xl opacity-0 group-hover/search-btn:opacity-100 transition-opacity duration-300 -z-10"
-                      style={{
-                        background: theme === "dark"
-                          ? "radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%)"
-                          : "radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent 70%)",
-                        filter: "blur(16px)",
-                      }}
-                    />
                     <motion.svg
                       className="w-5 h-5"
                       fill="none"
@@ -851,18 +830,22 @@ export default function Navigation() {
                       stroke="currentColor"
                       strokeWidth={2.5}
                       style={{
-                        color: theme === "dark" ? "rgba(255, 255, 255, 0.95)" : "rgba(0, 0, 0, 0.9)",
+                        color: theme === "dark" ? "rgba(255, 255, 255, 0.95)" : "rgba(0, 0, 0, 0.85)",
                       }}
-                      whileHover={{ scale: 1.1 }}
+                      whileHover={{ 
+                        scale: 1.1,
+                        rotate: [0, -8, 8, 0]
+                      }}
+                      transition={{ duration: 0.3 }}
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </motion.svg>
                   </motion.button>
 
-                  {/* Premium Theme Toggle Switch - Apple-Level Design */}
+                  {/* Premium Theme Toggle Switch - Original High-End Design */}
                   <motion.button
                     onClick={toggleTheme}
-                    className="relative w-[52px] h-[32px] lg:w-[56px] lg:h-[34px] rounded-full flex items-center group/theme-switch flex-shrink-0 cursor-pointer"
+                    className="relative w-[56px] h-[34px] rounded-full flex items-center group/theme-switch flex-shrink-0 cursor-pointer"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
@@ -885,11 +868,9 @@ export default function Navigation() {
                     }}
                     aria-label="Toggle theme"
                   >
-                    {/* NO PULSING GLOW - STATIC ONLY */}
-
                     {/* Toggle Thumb (Circular Switch Button) */}
                     <motion.div
-                      className="relative w-[26px] h-[26px] lg:w-[28px] lg:h-[28px] rounded-full flex items-center justify-center overflow-hidden"
+                      className="relative w-[28px] h-[28px] rounded-full flex items-center justify-center overflow-hidden"
                       animate={{
                         x: theme === "dark" ? 0 : "22px",
                       }}
@@ -934,7 +915,7 @@ export default function Navigation() {
                           {theme === "dark" ? (
                             <motion.svg
                               key="moon"
-                              className="w-4 h-4 lg:w-[15px] lg:h-[15px]"
+                              className="w-4 h-4"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -946,8 +927,9 @@ export default function Navigation() {
                                 ease: [0.16, 1, 0.3, 1],
                               }}
                               style={{
-                                color: "rgba(45, 45, 50, 0.9)",
+                                color: "rgba(60, 60, 67, 1)",
                                 strokeWidth: 2.5,
+                                filter: "drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2))",
                               }}
                             >
                               <path
@@ -959,7 +941,7 @@ export default function Navigation() {
                           ) : (
                             <motion.svg
                               key="sun"
-                              className="w-4 h-4 lg:w-[15px] lg:h-[15px]"
+                              className="w-4 h-4"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -971,8 +953,9 @@ export default function Navigation() {
                                 ease: [0.16, 1, 0.3, 1],
                               }}
                               style={{
-                                color: "rgba(255, 204, 0, 0.95)",
+                                color: "rgba(255, 204, 0, 1)",
                                 strokeWidth: 2.5,
+                                filter: "drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15))",
                               }}
                             >
                               <path
@@ -1009,9 +992,29 @@ export default function Navigation() {
                 </div>
               </div>
             </div>
+
+            {/* Functions Panel - Desktop: Constrained to Nav Width */}
+            {mounted && !isMobile && (
+              <div id="functions-panel" className={functionsPanelOpen ? "dropdown-anim" : ""}>
+                <FunctionsPanel 
+                  isOpen={functionsPanelOpen} 
+                  onClose={closeFunctionsPanel}
+                  isMobile={false}
+                />
+              </div>
+            )}
           </motion.div>
         </div>
       </motion.nav>
+
+      {/* Functions Panel - Mobile: Full Screen Overlay */}
+      {mounted && isMobile && (
+        <FunctionsPanel 
+          isOpen={functionsPanelOpen} 
+          onClose={closeFunctionsPanel}
+          isMobile={true}
+        />
+      )}
 
       {/* Search Modal - High-End Design */}
       {mounted && createPortal(
@@ -1039,28 +1042,29 @@ export default function Navigation() {
                 }}
               />
 
-              {/* Search Modal Container - Direkt unter der Navbar */}
+              {/* Search Modal Container - Premium Design */}
               <motion.div
                 className="fixed top-[100px] left-1/2 -translate-x-1/2 z-[9999] w-full max-w-[700px] mx-4"
-                initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                initial={{ opacity: 0, scale: 0.96, y: 8 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                exit={{ opacity: 0, scale: 0.96, y: 8 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                onClick={(e) => e.stopPropagation()}
               >
                 <div
-                  className="relative rounded-[32px] overflow-hidden"
+                  className="relative rounded-2xl overflow-hidden"
                   style={{
                     background: theme === "dark"
-                      ? "linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.08) 100%)"
-                      : "linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%)",
-                    backdropFilter: "blur(120px) saturate(250%)",
-                    WebkitBackdropFilter: "blur(120px) saturate(250%)",
+                      ? "rgba(15, 18, 24, 0.95)"
+                      : "rgba(255, 255, 255, 0.98)",
+                    backdropFilter: "blur(20px) saturate(180%)",
+                    WebkitBackdropFilter: "blur(20px) saturate(180%)",
                     border: theme === "dark"
-                      ? "1.5px solid rgba(255, 255, 255, 0.4)"
-                      : "1.5px solid rgba(0, 0, 0, 0.2)",
+                      ? "1px solid rgba(255, 255, 255, 0.12)"
+                      : "1px solid rgba(0, 0, 0, 0.08)",
                     boxShadow: theme === "dark"
-                      ? "0 32px 128px rgba(0, 0, 0, 0.9), 0 0 0 0.5px rgba(255, 255, 255, 0.25) inset, 0 0 100px rgba(168, 85, 247, 0.4), 0 0 150px rgba(139, 92, 246, 0.3)"
-                      : "0 32px 128px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.15) inset, 0 0 80px rgba(124, 58, 237, 0.2)",
+                      ? "0 24px 64px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08)"
+                      : "0 24px 64px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
                   }}
                 >
                   {/* Search Input Container */}
@@ -1075,17 +1079,16 @@ export default function Navigation() {
                       style={{
                         color: theme === "dark"
                           ? searchFocused || showResults
-                            ? "rgba(168, 85, 247, 1)"
-                            : "rgba(255, 255, 255, 0.6)"
+                            ? "var(--accent)"
+                            : "rgba(255, 255, 255, 0.5)"
                           : searchFocused || showResults
-                          ? "rgba(124, 58, 237, 1)"
+                          ? "var(--accent)"
                           : "rgba(0, 0, 0, 0.5)",
                       }}
                       animate={{
                         scale: searchFocused || showResults ? 1.1 : 1,
-                        rotate: searchFocused || showResults ? [0, -10, 10, 0] : 0,
                       }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.2 }}
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </motion.svg>
@@ -1117,9 +1120,9 @@ export default function Navigation() {
                           handleKeyDown(e);
                         }
                       }}
-                      className="flex-1 bg-transparent border-none outline-none text-base font-medium placeholder:opacity-60"
+                      className="flex-1 bg-transparent border-none outline-none text-lg font-medium placeholder:opacity-50 focus:placeholder:opacity-30 transition-opacity"
                       style={{
-                        color: theme === "dark" ? "#FFFFFF" : "#0C0F1A",
+                        color: theme === "dark" ? "rgba(255, 255, 255, 0.95)" : "rgba(0, 0, 0, 0.9)",
                         fontFamily: "var(--font-body), -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif",
                         letterSpacing: "-0.01em",
                       }}
@@ -1570,50 +1573,98 @@ export default function Navigation() {
                 {/* Navigation Links */}
                 <nav className="flex-1 space-y-2 mb-4">
                   {[
-                    { label: "Start", href: "/" },
-                    { label: "Leistungen", href: "/leistungen" },
-                    { label: "Systeme", href: "/systeme" },
-                    { label: "Arbeitsweise", href: "/arbeitsweise" },
-                    { label: "Kontakt", href: "/kontakt" },
-                  ].map((item: { label: string; href: string }, index: number) => (
-                    <motion.div
-                      key={item.label}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.15, ease: "easeOut" }}
-                    >
-                      <Link
-                        href={item.href}
-                        prefetch={true}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block"
-                      >
+                    { label: "Start", href: "/", isFunctions: false },
+                    { label: "Funktionen", href: "#", isFunctions: true },
+                    { label: "Leistungen", href: "/leistungen", isFunctions: false },
+                    { label: "Systeme", href: "/systeme", isFunctions: false },
+                    { label: "Arbeitsweise", href: "/arbeitsweise", isFunctions: false },
+                    { label: "Kontakt", href: "/kontakt", isFunctions: false },
+                  ].map((item: { label: string; href: string; isFunctions?: boolean }, index: number) => {
+                    if (item.isFunctions) {
+                      return (
                         <motion.div
-                          className="px-4 py-3 rounded-xl font-medium text-base relative"
-                          style={{
-                            color: theme === "dark" ? "rgba(229, 231, 235, 1)" : "rgba(0, 0, 0, 0.8)",
-                            background: theme === "dark"
-                              ? "linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)"
-                              : "linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.02) 100%)",
-                            backdropFilter: "blur(20px)",
-                            WebkitBackdropFilter: "blur(20px)",
-                            border: theme === "dark"
-                              ? "1px solid rgba(255, 255, 255, 0.18)"
-                              : "1px solid rgba(0, 0, 0, 0.12)",
-                          }}
-                          whileHover={{
-                            background: theme === "dark"
-                              ? "linear-gradient(180deg, rgba(168, 85, 247, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%)"
-                              : "linear-gradient(180deg, rgba(124, 58, 237, 0.12) 0%, rgba(139, 92, 246, 0.1) 100%)",
-                            x: 4,
-                          }}
-                          whileTap={{ scale: 0.98 }}
+                          key={item.label}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.15, ease: "easeOut" }}
                         >
-                          {item.label}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setFunctionsPanelOpen(!functionsPanelOpen);
+                              setMobileMenuOpen(false);
+                            }}
+                            className="block w-full"
+                          >
+                            <motion.div
+                              className="px-4 py-3 rounded-xl font-medium text-base relative"
+                              style={{
+                                color: theme === "dark" ? "rgba(229, 231, 235, 1)" : "rgba(0, 0, 0, 0.8)",
+                                background: theme === "dark"
+                                  ? "linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)"
+                                  : "linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.02) 100%)",
+                                backdropFilter: "blur(20px)",
+                                WebkitBackdropFilter: "blur(20px)",
+                                border: theme === "dark"
+                                  ? "1px solid rgba(255, 255, 255, 0.18)"
+                                  : "1px solid rgba(0, 0, 0, 0.12)",
+                              }}
+                              whileHover={{
+                                background: theme === "dark"
+                                  ? "linear-gradient(180deg, rgba(168, 85, 247, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%)"
+                                  : "linear-gradient(180deg, rgba(124, 58, 237, 0.12) 0%, rgba(139, 92, 246, 0.1) 100%)",
+                                x: 4,
+                              }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              {item.label}
+                            </motion.div>
+                          </button>
                         </motion.div>
-                      </Link>
-                    </motion.div>
-                  ))}
+                      );
+                    }
+                    return (
+                      <motion.div
+                        key={item.label}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                      >
+                        <Link
+                          href={item.href}
+                          prefetch={true}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block"
+                        >
+                          <motion.div
+                            className="px-4 py-3 rounded-xl font-medium text-base relative"
+                            style={{
+                              color: theme === "dark" ? "rgba(229, 231, 235, 1)" : "rgba(0, 0, 0, 0.8)",
+                              background: theme === "dark"
+                                ? "linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)"
+                                : "linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.02) 100%)",
+                              backdropFilter: "blur(20px)",
+                              WebkitBackdropFilter: "blur(20px)",
+                              border: theme === "dark"
+                                ? "1px solid rgba(255, 255, 255, 0.18)"
+                                : "1px solid rgba(0, 0, 0, 0.12)",
+                            }}
+                            whileHover={{
+                              background: theme === "dark"
+                                ? "linear-gradient(180deg, rgba(168, 85, 247, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%)"
+                                : "linear-gradient(180deg, rgba(124, 58, 237, 0.12) 0%, rgba(139, 92, 246, 0.1) 100%)",
+                              x: 4,
+                            }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            {item.label}
+                          </motion.div>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
 
                 </nav>
               </div>

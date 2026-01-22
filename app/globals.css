@@ -70,6 +70,7 @@ html,
 html body {
   background: var(--bg-0) !important;
   color: var(--text-0);
+  overflow-x: hidden;
 }
 
 body {
@@ -78,6 +79,8 @@ body {
   min-height: 100vh;
   color: var(--text-0);
   background-attachment: fixed;
+  margin: 0;
+  padding: 0;
 }
 
 /* Background Lighting - ARCHITECTURAL, NOT DECORATIVE */
@@ -1713,5 +1716,488 @@ div[class*="content"] {
   .btn-primary:hover,
   .btn-secondary:hover {
     transform: none;
+  }
+}
+
+/* ============================================
+   MEGA PANEL - ENTERPRISE HIERARCHY SYSTEM
+   ============================================ */
+
+.mega-panel {
+  /* Base panel container - already styled in component */
+}
+
+/* Desktop: Optimized column ratios */
+@media (min-width: 1024px) {
+  .mega-panel {
+    grid-template-columns: 1fr 1.3fr 1fr;
+  }
+}
+
+.mega-heading {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+
+.mega-item {
+  position: relative;
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.78);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.mega-item:hover:not(.mega-item--active) {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+.mega-item--active {
+  background: linear-gradient(180deg, rgba(183, 140, 255, 0.18), rgba(143, 107, 255, 0.10));
+  border-color: rgba(183, 140, 255, 0.23);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.mega-item--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 60%;
+  background: rgba(183, 140, 255, 0.5);
+  border-radius: 0 1px 1px 0;
+}
+
+.mega-item:focus-visible {
+  outline: 2px solid rgba(183, 140, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.mega-chip {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.78);
+  transition: all 160ms ease;
+}
+
+.mega-chip--independence {
+  background: rgba(183, 140, 255, 0.08);
+  border-color: rgba(183, 140, 255, 0.15);
+}
+
+.mega-divider {
+  position: relative;
+}
+
+.mega-divider::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+}
+
+/* Light theme overrides */
+.light .mega-heading {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.light .mega-item {
+  color: rgba(0, 0, 0, 0.78);
+}
+
+.light .mega-item:hover:not(.mega-item--active) {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.light .mega-item--active {
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.12), rgba(139, 92, 246, 0.08));
+  border-color: rgba(124, 58, 237, 0.20);
+  color: rgba(0, 0, 0, 0.92);
+}
+
+.light .mega-item--active::before {
+  background: rgba(124, 58, 237, 0.5);
+}
+
+.light .mega-item:focus-visible {
+  outline-color: rgba(124, 58, 237, 0.45);
+}
+
+.light .mega-chip {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.78);
+}
+
+.light .mega-chip--independence {
+  background: rgba(124, 58, 237, 0.06);
+  border-color: rgba(124, 58, 237, 0.12);
+}
+
+.light .mega-divider::after {
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.04), transparent);
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet: 2-column layout */
+  .mega-panel {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  
+  .mega-panel-independence {
+    grid-column: 1 / -1 !important;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    padding-left: 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+  
+  .mega-item {
+    font-size: 13px;
+    padding: 9px 14px;
+    min-height: 40px;
+  }
+  
+  .mega-chip {
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .mega-item {
+    font-size: 13px;
+    padding: 9px 14px;
+    min-height: 40px;
+  }
+  
+  .mega-chip {
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .mega-heading {
+    font-size: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .mega-item {
+    font-size: 13px;
+    min-height: 44px;
+  }
+  
+  .mega-chip {
+    font-size: 13px;
+  }
+}
+
+/* ============================================
+   NAVBAR - ENTERPRISE LAYOUT SYSTEM
+   ============================================ */
+
+.nav-shell {
+  /* Base navbar container - already styled */
+}
+
+.nav-center {
+  /* Center nav items - visually centered */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border-radius: 999px;
+  height: auto;
+  width: fit-content;
+  flex: 0 0 auto;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.controls-pill .search-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 180ms ease;
+  outline: none;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.controls-pill .search-btn:hover {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.controls-pill .search-btn:focus-visible {
+  outline: 2px solid rgba(183, 140, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.controls-pill .search-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 1023px) {
+  .controls-pill .search-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+}
+
+.controls-pill button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.controls-pill button:focus-visible {
+  outline: 2px solid rgba(183, 140, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.light .controls-pill .search-btn {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.10);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.light .controls-pill .search-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.light .controls-pill .search-btn:focus-visible {
+  outline-color: rgba(124, 58, 237, 0.45);
+}
+
+.dropdown-anim {
+  animation: dropdownFadeIn 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-anim {
+    animation: none;
+  }
+}
+
+/* ============================================
+   MOBILE ACCORDION - FUNKTIONEN PANEL
+   ============================================ */
+
+.accordion-row {
+  position: relative;
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 180ms ease;
+  outline: none;
+}
+
+.accordion-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.accordion-row:focus-visible {
+  outline: 2px solid rgba(183, 140, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.accordion-row--active {
+  background: rgba(183, 140, 255, 0.12);
+  border-color: rgba(183, 140, 255, 0.20);
+}
+
+.accordion-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.8);
+  transition: transform 200ms ease;
+}
+
+.accordion-row--active .accordion-icon {
+  transform: rotate(45deg);
+}
+
+.accordion-panel {
+  overflow: hidden;
+  transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease;
+}
+
+.accordion-panel-content {
+  padding: 16px;
+  margin-top: 8px;
+  border-radius: 12px;
+  background: rgba(15, 18, 24, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.accordion-section {
+  margin-bottom: 16px;
+}
+
+.accordion-section:last-child {
+  margin-bottom: 0;
+}
+
+.accordion-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 10px;
+}
+
+.accordion-item {
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.accordion-item--independence {
+  background: rgba(183, 140, 255, 0.08);
+  border-color: rgba(183, 140, 255, 0.15);
+}
+
+.accordion-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Light theme overrides */
+.light .accordion-row {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.92);
+}
+
+.light .accordion-row:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.light .accordion-row:focus-visible {
+  outline-color: rgba(124, 58, 237, 0.45);
+}
+
+.light .accordion-row--active {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.18);
+}
+
+.light .accordion-icon {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.light .accordion-panel-content {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.light .accordion-section-title {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.light .accordion-item {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.light .accordion-item--independence {
+  background: rgba(124, 58, 237, 0.06);
+  border-color: rgba(124, 58, 237, 0.12);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .accordion-panel {
+    transition: none;
+  }
+  
+  .accordion-icon {
+    transition: none;
   }
 }

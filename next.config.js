@@ -99,7 +99,8 @@ const nextConfig = {
   headers: async () => {
     return [
       {
-        source: '/:path*',
+        // Headers nur für HTML-Seiten (nicht für _next/JavaScript/Assets)
+        source: '/',
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
@@ -116,11 +117,6 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
-          },
-          // Performance Headers
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
           },
         ],
       },
