@@ -355,8 +355,8 @@ export default function Navigation() {
                   : scrolled
                   ? "linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.80) 50%, rgba(255, 255, 255, 0.85) 100%)"
                   : "linear-gradient(180deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.60) 50%, rgba(255, 255, 255, 0.65) 100%)",
-                backdropFilter: scrolled ? "blur(60px) saturate(180%)" : "blur(50px) saturate(160%)",
-                WebkitBackdropFilter: scrolled ? "blur(60px) saturate(180%)" : "blur(50px) saturate(160%)",
+                backdropFilter: scrolled ? "blur(14px) saturate(140%)" : "blur(14px) saturate(140%)",
+                WebkitBackdropFilter: scrolled ? "blur(14px) saturate(140%)" : "blur(14px) saturate(140%)",
                 border: theme === "dark"
                   ? scrolled
                     ? "1px solid rgba(255, 255, 255, 0.25)"
@@ -743,10 +743,10 @@ export default function Navigation() {
                     transition={{ duration: 0.15, ease: "easeOut" }}
                     style={{
                       background: theme === "dark"
-                        ? "linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.04) 100%)"
+                        ? "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.03) 100%)"
                         : "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.90) 100%)",
-                      backdropFilter: "blur(16px) saturate(140%)",
-                      WebkitBackdropFilter: "blur(16px) saturate(140%)",
+                      backdropFilter: "blur(14px) saturate(140%)",
+                      WebkitBackdropFilter: "blur(14px) saturate(140%)",
                       border: theme === "dark"
                         ? "1px solid rgba(255, 255, 255, 0.08)"
                         : "1px solid rgba(0, 0, 0, 0.08)",
@@ -817,7 +817,7 @@ export default function Navigation() {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
-                    whileHover={{ scale: 1.15, y: -3, rotate: 15 }}
+                    whileHover={{ scale: 1.05, y: -1 }}
                     whileTap={{ scale: 0.85 }}
                     style={{
                       background: theme === "dark"
@@ -885,25 +885,7 @@ export default function Navigation() {
                     }}
                     aria-label="Toggle theme"
                   >
-                    {/* Outer Glow Effect */}
-                    <motion.div
-                      className="absolute inset-0 rounded-full opacity-0 group-hover/theme-switch:opacity-100 transition-opacity duration-500 -z-10"
-                      animate={{
-                        opacity: theme === "dark" ? [0, 0.3, 0] : [0, 0.4, 0],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                      style={{
-                        background: theme === "dark"
-                          ? "radial-gradient(circle, rgba(168, 85, 247, 0.3), transparent 70%)"
-                          : "radial-gradient(circle, rgba(255, 214, 10, 0.4), transparent 70%)",
-                        filter: "blur(12px)",
-                        padding: "4px",
-                      }}
-                    />
+                    {/* NO PULSING GLOW - STATIC ONLY */}
 
                     {/* Toggle Thumb (Circular Switch Button) */}
                     <motion.div

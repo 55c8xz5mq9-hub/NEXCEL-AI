@@ -21,7 +21,7 @@ const FloatingParticles = () => {
   }));
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
@@ -55,7 +55,7 @@ const FloatingParticles = () => {
 // Radial Gradient Overlays Component (from Projekte/Kontakt pages)
 const RadialGradientOverlays = () => {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none">
+    <div className="fixed inset-0 -z-10 pointer-events-none">
       {/* Gradient Overlay 1 - Top Left */}
       <motion.div
         className="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-30 blur-3xl"
