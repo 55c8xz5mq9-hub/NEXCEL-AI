@@ -1,26 +1,10 @@
 "use client";
 
-// #region agent log
-fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:1',message:'Page component starting',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-// #endregion
-
 import { useTheme } from "@/contexts/ThemeContext";
 import dynamic from "next/dynamic";
-import { memo, useMemo } from "react";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
-
-// #region agent log
-fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:12',message:'Before Navigation import',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-// #endregion
-
 import Navigation from "@/components/Navigation";
-
-// #region agent log
-fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:15',message:'Navigation imported successfully',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-// #endregion
+import HeroLuxury from "@/components/hero/HeroLuxury";
 
 // Lazy load heavy components
 const Services = dynamic(() => import("@/components/Services"), {
@@ -60,14 +44,8 @@ export default function Home() {
         zIndex: 10,
         minHeight: "100vh",
       }}>
-        {/* #region agent log */}
-        {(() => {
-          fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:63',message:'Before Navigation render',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-          return null;
-        })()}
-        {/* #endregion */}
         <Navigation />
-        <Hero />
+        <HeroLuxury />
         <div id="services">
           <Services />
         </div>
