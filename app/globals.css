@@ -1938,7 +1938,7 @@ div[class*="content"] {
 }
 
 .controls-pill {
-  display: inline-flex;
+  /* display wird von Tailwind gesteuert (hidden lg:flex) */
   align-items: center;
   gap: 10px;
   padding: 0;
