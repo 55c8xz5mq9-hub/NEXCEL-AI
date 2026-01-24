@@ -436,7 +436,7 @@ const ProjectCard = ({ project, index, isFeatured = false }: { project: typeof p
             </div>
             <div className="mt-8 p-6 rounded-neural min-w-0" style={{ background: "rgba(164, 92, 255, 0.05)", border: "1px solid rgba(164, 92, 255, 0.2)" }}>
               <p className="text-lg md:text-xl typography-h2-gradient font-medium italic leading-relaxed break-words">
-                „{project.quote}"
+                „{project.quote}&quot;
               </p>
             </div>
             {project.id === 1 && (

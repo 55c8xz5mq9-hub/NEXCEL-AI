@@ -7,11 +7,11 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 const footerLinks = {
   produkte: [
-    { label: "KI-Automation", href: "/leistungen" },
-    { label: "AI Agents", href: "/leistungen" },
-    { label: "Control Dashboards", href: "/leistungen" },
-    { label: "Systemdesign", href: "/leistungen" },
-    { label: "Custom Web-Apps", href: "/leistungen" },
+    { label: "KI-Automation", href: "/kontakt" },
+    { label: "AI Agents", href: "/kontakt" },
+    { label: "Control Dashboards", href: "/kontakt" },
+    { label: "Systemdesign", href: "/kontakt" },
+    { label: "Custom Web-Apps", href: "/kontakt" },
   ],
   losungen: [
     { label: "ChronexAI", href: "/systeme" },
@@ -22,7 +22,6 @@ const footerLinks = {
   unternehmen: [
     { label: "Über uns", href: "/ueber-mich" },
     { label: "Systeme", href: "/systeme" },
-    { label: "Leistungen", href: "/leistungen" },
     { label: "Arbeitsweise", href: "/arbeitsweise" },
     { label: "Kontakt", href: "/kontakt" },
   ],

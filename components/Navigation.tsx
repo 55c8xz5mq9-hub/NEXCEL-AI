@@ -20,14 +20,6 @@ const searchIndex = [
     category: "page",
   },
   {
-    id: "leistungen",
-    title: "Leistungen",
-    href: "/leistungen",
-    description: "Unsere Leistungen - KI-Automation, AI Agents, Dashboards, Systemdesign",
-    keywords: ["leistungen", "services", "ki-automation", "ai agents", "dashboards", "systemdesign", "web-apps", "integrationen"],
-    category: "page",
-  },
-  {
     id: "systeme",
     title: "Systeme",
     href: "/systeme",
@@ -86,10 +78,6 @@ const searchIndex = [
 ];
 
 export default function Navigation() {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/42fed8ac-c59f-4f44-bda3-7be9ba8d0144',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/Navigation.tsx:100',message:'Navigation function executing',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
-  
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -383,8 +371,8 @@ export default function Navigation() {
     <>
       <motion.nav
         ref={navRef}
-        className="fixed top-0 left-0 right-0 z-50 group/nav"
-        initial={{ y: -20, opacity: 0 }}
+        className="fixed top-0 left-0 right-0 z-[100] group/nav"
+        initial={{ y: 0, opacity: 1 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
       >
@@ -393,7 +381,7 @@ export default function Navigation() {
           {/* Main Navigation Bar - Apple Intelligence Style */}
           <motion.div
             className="relative mx-auto max-w-[1600px]"
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
           >
@@ -803,7 +791,6 @@ export default function Navigation() {
                     {[
                       { label: "Start", href: "/", isFunctions: false },
                       { label: "Funktionen", href: "#", isFunctions: true },
-                      { label: "Leistungen", href: "/leistungen", isFunctions: false },
                       { label: "Systeme", href: "/systeme", isFunctions: false },
                       { label: "Arbeitsweise", href: "/arbeitsweise", isFunctions: false },
                       { label: "Kontakt", href: "/kontakt", isFunctions: false },
@@ -1601,7 +1588,6 @@ export default function Navigation() {
                   {[
                     { label: "Start", href: "/", isFunctions: false },
                     { label: "Funktionen", href: "#", isFunctions: true },
-                    { label: "Leistungen", href: "/leistungen", isFunctions: false },
                     { label: "Systeme", href: "/systeme", isFunctions: false },
                     { label: "Arbeitsweise", href: "/arbeitsweise", isFunctions: false },
                     { label: "Kontakt", href: "/kontakt", isFunctions: false },

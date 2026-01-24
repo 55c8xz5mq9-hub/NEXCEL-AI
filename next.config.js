@@ -9,11 +9,15 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   
-  // Output standalone für optimiertes Caching
-  output: 'standalone',
+  // output: 'standalone' deaktiviert – verursacht in Next 14 mit diesem Setup
+  // "Cannot find module './1682.js'" (Chunks in server/chunks/, Runtime erwartet server/).
+  // Für Docker/Standalone-Deploy: output: 'standalone' ggf. per Umgebungsvariable steuern.
   
   // Optimierte Image-Konfiguration
   images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' },
+    ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

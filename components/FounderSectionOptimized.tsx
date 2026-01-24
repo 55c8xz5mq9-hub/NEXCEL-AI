@@ -62,7 +62,7 @@ export default function FounderSectionOptimized() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              „Software sollte wie Intelligenz funktionieren – nicht wie Arbeit."
+              „Software sollte wie Intelligenz funktionieren – nicht wie Arbeit.&quot;
             </motion.p>
 
             <motion.div

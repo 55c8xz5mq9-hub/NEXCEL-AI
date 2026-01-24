@@ -13,7 +13,6 @@ const BUDGETS = {
   // Per-route JS budget (gzipped)
   routes: {
     '/': 120 * 1024, // 120KB
-    '/leistungen': 120 * 1024,
     '/projekte': 120 * 1024,
     '/ueber-mich': 120 * 1024,
     '/kontakt': 120 * 1024,

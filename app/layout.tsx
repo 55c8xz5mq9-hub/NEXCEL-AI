@@ -3,6 +3,7 @@ import "./globals.css";
 import dynamic from "next/dynamic";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import Navigation from "@/components/Navigation";
 
 // Headline Font - Future-Premium
 // Optimiert für Performance: preload, display swap, subset optimization
@@ -217,6 +218,9 @@ export default function RootLayout({
           
           {/* Neural Cursor */}
           <NeuralCursor />
+
+          {/* Navigation: fix oben, z-[100], auf allen Seiten sichtbar */}
+          <Navigation />
           
           {/* Content with proper z-index */}
           <div style={{ 

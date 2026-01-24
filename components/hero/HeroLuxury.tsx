@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "@/contexts/ThemeContext";
 import SystemGallery from "./SystemGallery";
+import PricingWizardModal from "@/components/PricingWizardModal";
 
 export default function HeroLuxury() {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [pricingOpen, setPricingOpen] = useState(false);
 
   const isDark = theme === "dark";
 
@@ -17,7 +19,7 @@ export default function HeroLuxury() {
 
   return (
     <section
-      className="relative min-h-[90vh] flex items-center overflow-hidden"
+      className="relative min-h-[90vh] flex items-center overflow-x-hidden"
       aria-label="Hero Section"
     >
       {/* Background */}
@@ -61,17 +63,17 @@ export default function HeroLuxury() {
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-28 pb-20 lg:pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-6 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-6 items-center">
           
           {/* Left: Text */}
-          <div className="lg:col-span-5 text-center lg:text-left">
+          <div className="md:col-span-5 text-center md:text-left">
             
             {/* Meta — System-Metadaten */}
             <p 
-              className={`uppercase mb-6 ${isDark ? "text-white/18" : "text-gray-400/60"}`}
+              className={`uppercase mb-8 ${isDark ? "text-white/18" : "text-gray-400/60"}`}
               style={{
-                fontFamily: "var(--font-body), system-ui, sans-serif",
-                fontSize: "9px",
+                fontFamily: "var(--font-headline), system-ui, sans-serif",
+                fontSize: "10px",
                 fontWeight: 500,
                 letterSpacing: "0.2em",
               }}
@@ -87,11 +89,11 @@ export default function HeroLuxury() {
                 HERO COPY LOCKED – DO NOT MODIFY WITHOUT EXPLICIT INSTRUCTION
                 ═══════════════════════════════════════════════════════════════ */}
             <h1 
-              className="text-[1.375rem] sm:text-[1.75rem] lg:text-[2rem] xl:text-[2.25rem] mb-5"
+              className="text-[1.375rem] sm:text-[1.75rem] lg:text-[2rem] xl:text-[2.25rem] mb-7"
               style={{
-                fontFamily: "var(--font-body), system-ui, sans-serif",
+                fontFamily: "var(--font-headline), system-ui, sans-serif",
                 fontWeight: 500,
-                lineHeight: 1.15,
+                lineHeight: 1.2,
                 letterSpacing: "-0.02em",
                 textRendering: "optimizeLegibility",
                 WebkitFontSmoothing: "antialiased",
@@ -111,12 +113,12 @@ export default function HeroLuxury() {
 
             {/* Subline */}
             <p
-              className={`max-w-[240px] mx-auto lg:mx-0 mb-8 ${isDark ? "text-white/22" : "text-gray-500/50"}`}
+              className={`max-w-[260px] mx-auto md:mx-0 mb-12 ${isDark ? "text-white/22" : "text-gray-500/50"}`}
               style={{
                 fontFamily: "var(--font-body), system-ui, sans-serif",
-                fontSize: "0.8125rem",
+                fontSize: "0.875rem",
                 fontWeight: 400,
-                lineHeight: 1.4,
+                lineHeight: 1.5,
                 letterSpacing: "0.015em",
               }}
             >
@@ -124,103 +126,70 @@ export default function HeroLuxury() {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row items-center gap-5 justify-center md:justify-start">
               <Link
                 href="/kontakt"
                 className={`
-                  group inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg
-                  text-[12px] font-medium transition-all duration-150
+                  group inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl
+                  text-[13px] font-medium transition-all duration-150
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/30
                   ${isDark ? "focus-visible:ring-offset-[#08080d]" : "focus-visible:ring-offset-white"}
                 `}
                 style={{
+                  fontFamily: "var(--font-headline), system-ui, sans-serif",
                   background: isDark ? "#5B21B6" : "#6D28D9",
-                  boxShadow: "0 1px 2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
+                  boxShadow: "0 2px 8px rgba(91,33,182,0.25), 0 1px 2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
                 }}
               >
-                <span className="text-white/85">Abhängigkeiten analysieren</span>
-                <span className="text-white/40 text-[10px] ml-1">→</span>
+                <span className="text-white/90">Abhängigkeiten analysieren</span>
+                <span className="text-white/50 text-[11px]">→</span>
               </Link>
 
               <button
-                onClick={() => document.getElementById("services")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => setPricingOpen(true)}
                 className={`
-                  text-[11px] font-normal
-                  transition-colors duration-150
-                  focus:outline-none
+                  inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl
+                  text-[13px] font-medium transition-all duration-150
+                  border
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/30
                   ${isDark
-                    ? "text-white/25 hover:text-white/40"
-                    : "text-gray-400/70 hover:text-gray-500"
+                    ? "border-white/20 text-white/70 hover:border-white/35 hover:text-white/90 hover:bg-white/5"
+                    : "border-gray-300/60 text-gray-600 hover:border-gray-400 hover:text-gray-800 hover:bg-gray-50/80"
                   }
                 `}
-                style={{ letterSpacing: "0.02em" }}
+                style={{
+                  fontFamily: "var(--font-headline), system-ui, sans-serif",
+                  letterSpacing: "0.02em",
+                }}
               >
-                Systeme verstehen
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="4" y="2" width="16" height="20" rx="2" />
+                  <line x1="8" y1="6" x2="16" y2="6" />
+                  <line x1="7" y1="10" x2="9" y2="10" />
+                  <line x1="11" y1="10" x2="13" y2="10" />
+                  <line x1="15" y1="10" x2="17" y2="10" />
+                  <line x1="7" y1="14" x2="9" y2="14" />
+                  <line x1="11" y1="14" x2="13" y2="14" />
+                  <line x1="15" y1="14" x2="17" y2="14" />
+                  <line x1="7" y1="18" x2="9" y2="18" />
+                  <line x1="11" y1="18" x2="13" y2="18" />
+                  <line x1="15" y1="18" x2="17" y2="18" />
+                </svg>
+                Preis kalkulieren
               </button>
             </div>
           </div>
 
-          {/* Right: System Gallery */}
-          <div className="lg:col-span-7 hidden lg:flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[680px] h-[480px] lg:translate-x-8 xl:translate-x-16">
+          {/* Right: System Gallery (Karussell) – ab sm (640px) sichtbar, ab md daneben */}
+          <div className="md:col-span-7 hidden sm:flex justify-center md:justify-end">
+            <div className="relative w-full max-w-[680px] h-[420px] md:h-[440px] lg:h-[480px] lg:translate-x-8 xl:translate-x-16">
               {mounted && <SystemGallery />}
-            </div>
-          </div>
-
-          {/* Mobile: Simplified preview */}
-          <div className="lg:hidden flex justify-center">
-            <div 
-              className="relative w-full max-w-[400px] h-[280px] rounded-3xl overflow-hidden"
-              style={{
-                background: isDark
-                  ? "linear-gradient(135deg, rgba(20,20,35,0.8) 0%, rgba(15,15,30,0.9) 100%)"
-                  : "linear-gradient(135deg, rgba(248,248,252,0.9) 0%, rgba(240,240,248,0.95) 100%)",
-                border: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.04)",
-                boxShadow: isDark
-                  ? "0 16px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)"
-                  : "0 16px 48px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)",
-              }}
-            >
-              <div
-                className="absolute inset-x-0 top-0 h-px"
-                style={{
-                  background: isDark
-                    ? "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)"
-                    : "linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)",
-                }}
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: isDark
-                    ? "radial-gradient(ellipse 70% 60% at 30% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 60%)"
-                    : "radial-gradient(ellipse 70% 60% at 30% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 60%)",
-                }}
-              />
-              <div className="absolute inset-4 flex flex-col gap-3">
-                {["Enterprise Platform", "Intelligent Scheduling", "Real Estate Operations"].map((name) => (
-                  <div
-                    key={name}
-                    className="flex-1 rounded-xl"
-                    style={{
-                      background: isDark
-                        ? `linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)`
-                        : `linear-gradient(135deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.01) 100%)`,
-                      border: isDark ? "1px solid rgba(255,255,255,0.04)" : "1px solid rgba(0,0,0,0.03)",
-                    }}
-                  >
-                    <div className={`p-3 text-[10px] font-medium tracking-wider uppercase ${
-                      isDark ? "text-white/20" : "text-gray-400/60"
-                    }`}>
-                      {name}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <PricingWizardModal open={pricingOpen} onClose={() => setPricingOpen(false)} />
     </section>
   );
 }
